@@ -279,69 +279,22 @@
             variant="outlined"
             @click="
               signupFunc(
-                parent_type,
                 userName,
                 userLastName,
-                userFatherName,
                 userNationalCode,
-                userEdjucation,
-                userEdjucationStudyField,
-                userTelephone,
-                userAddress,
-                userRegionalMunicipality,
-                userPostalCode,
-                userJob,
-                userOfficeAddress,
-                userGirls,
-                userBoys
+                
               )
             "
           >
             ثبت اطلاعات
           </v-btn>
-          <v-dialog
-            v-model="dialog"
-            width="auto"
-          >
-            <v-card
-              class="py-12 px-8 text-center mx-auto ma-4"
-              max-width="420"
-              width="100%"
-            >
-              <h3 class="text-h6 mb-2">
-                لطفا کد ارسالی به شماره همراه خود را در کادر زیر وارد نمایید:
-              </h3>
-
-              <!-- <div>A code has been sent to *****2489</div> -->
-              <v-locale-provider ltr>
-                <v-otp-input
-                  v-model="otp"
-                  :disabled="validating"
-                  reverse
-                  variant="plain"
-                  color="primary"
-                  length="4"
-                ></v-otp-input>
-              </v-locale-provider>
-              <v-btn
-                border
-                class="mt-6 text-none bg-surface-variant"
-                rounded
-                variant="plain"
-                text="Validate"
-                height="40"
-                width="135"
-                @click="validateCode(otp)"
-              ></v-btn>
-            </v-card>
-          </v-dialog>
         </div>
       </div>
     </v-locale-provider>
   </v-app>
 </template>
 <script>
-// import axios from "axios";
+import axios from "axios";
 import DatePicker from "vue3-persian-datetime-picker";
 
 export default {
@@ -366,7 +319,6 @@ export default {
       userGirlsError: false,
       userBoysError: false,
       userBirthDayError: false,
-      dialog: false,
       validating: false,
       otp: '',
       parent_type: "1",
@@ -466,9 +418,7 @@ export default {
       if (n.length == 0) {
         return;
       }
-      console.log(n)
       n = n.toString();
-      console.log(n)
       var englishNumbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"],
           persianNumbers = ["۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹", "۰"];
 
@@ -592,140 +542,86 @@ export default {
       }
     },
     signupFunc(
-      parent_type,
       name,
       lastName,
-      userFatherName,
       nCode,
-      userEdjucation,
-      userEdjucationStudyField,
-      userTelephone,
-      userAddress,
-      userRegionalMunicipality,
-      userPostalCode,
-      userJob,
-      userOfficeAddress,
-      userGirls,
-      userBoys
     ) {
-      let itemArray = [
-        name,
-        lastName,
-        userFatherName,
-        nCode,
-        userTelephone,
-        userAddress,
-        userRegionalMunicipality,
-        userPostalCode,
-        userJob,
-        userGirls,
-        userBoys,
-      ];
-      if (this.emptyCheck(itemArray) == true) {
+      // let itemArray = [
+      //   name,
+      //   lastName,
+      //   nCode,
+      // ];
+      // if (this.emptyCheck(itemArray) == true) {
         // userBirthDay = this.convertToGerigorian(userBirthDay);
 
-        var bodyObj = {
-          type: parent_type,
-          first_name: name,
-          last_name: lastName,
-          father_name: userFatherName,
-          national_code: nCode,
-          education: userEdjucation,
-          field_study: userEdjucationStudyField,
-          telephone: userTelephone,
-          address: userAddress,
-          Regional_Municipality: userRegionalMunicipality,
-          postal_code: userPostalCode,
-          job: userJob,
-          office_address: userOfficeAddress,
-          girls: userGirls,
-          boys: userBoys,
-        };
-        console.log(JSON.stringify(bodyObj));
+        // var bodyObj = {
+        //   first_name: name,
+        //   last_name: lastName,
+        //   national_code: nCode,
+        // };
+        // console.log(JSON.stringify(bodyObj));
 
-        const requestOptions = {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(bodyObj)
-        };
-        fetch("http://192.168.100.15:8000/api/v1/account/parent-register/", requestOptions)
-            .then(async response => {
-              const data = await response.json();
-              this.dialog = true;
-              console.log(data)
-              // check for error response
-              if (!response.ok) {
-                  // get error message from body or default to response status
-                  const error = (data && data.message) || response.status;
-                  console.log(error)
-                  // return Promise.reject(error);
-              }
-            })
-            .catch(error => {
-              console.log(error)
-            });
-      }
+        // const requestOptions = {
+        //   method: 'POST',
+        //   headers: {
+        //     'Access-Control-Allow-Origin' : '*',
+        //     'Content-Type': 'application/json',
+        //   },
+        //   credentials: 'include',
+        //   body: JSON.stringify(bodyObj)
+        // };
+        // fetch("http://194.9.56.86/api/v1/account/user-register/", requestOptions)
+        //     .then(async response => {
+        //       const data = await response.json();
+        //       console.log(data)
+        //       // check for error response
+        //       if (!response.ok) {
+        //           // get error message from body or default to response status
+        //           const error = (data && data.message) || response.status;
+        //           console.log(error)
+        //           // return Promise.reject(error);
+        //       }
+        //     })
+        //     .catch(error => {
+        //       console.log(error)
+        //     });
 
-      // console.log(typeof phoneNum, typeof phoneNum)
-      // var bodyFormData = new FormData();
-      // JSON.stringify(bodyFormData.append("first_name", name));
-      // JSON.stringify(bodyFormData.append("last_name", lastName));
-      // bodyFormData.append("father_name", fatherName);
-      // JSON.stringify(bodyFormData.append("national_code", nCode));
-      // // bodyFormData.append("birth_date", birthDay);
-      // bodyFormData.append("education", education);
-      // bodyFormData.append("field_study", studyField);
-      // bodyFormData.append("telephone", telephone);
-      // JSON.stringify(bodyFormData.append("phone_number", phoneNum));
-      // bodyFormData.append("address", address);
-      // // bodyFormData.append("Regional_Municipality", region);
-      // bodyFormData.append("postal_code", pCode);
-      // bodyFormData.append("job", job);
-      // bodyFormData.append("office_address", jobAddress);
-      // // bodyFormData.append("girls", girls);
-      // // bodyFormData.append("boys", boys);
-      //   axios({
-      //     method: "POST",
-      //     headers: { 'Content-Type': 'application/json' },
-      //     url: "http://192.168.100.15:8000/api/v1/account/parent-register/",
-      //     data: bodyFormData,
-      //   })
-      //     .then((response) => {
-      //       console.log(response)
-      //     })
-      //     .catch((err) => {
-      //       console.log(err);
-      //       this.$alert(err.response.data.message, "", "error");
-      //     });
-    },
-    validateCode(code) {
-      var bodyObj = {
-        code: code
-      };
-      const requestOptions = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(bodyObj)
-      };
-      fetch("http://192.168.100.15:8000/api/v1/account/phone-verification/", requestOptions)
-        .then(async response => {
-          const data = await response.json();
-          this.dialog = false;
-          console.log(data)
-          // check for error response
-          if (!response.ok) {
-            // get error message from body or default to response status
-            this.dialog = false;
-            const error = (data && data.message) || response.status;
-            console.log(error)
-            this.$swal("کد به درستی وارد نشده است!", "", "error")
-            // return Promise.reject(error);
-          }
+
+        // console.log(typeof phoneNum, typeof phoneNum)
+      var bodyFormData = new FormData();
+      JSON.stringify(bodyFormData.append("first_name", name));
+      JSON.stringify(bodyFormData.append("last_name", lastName));
+      // bodyFormData.append("father_name", userFatherName);
+      JSON.stringify(bodyFormData.append("national_code", nCode));
+      // bodyFormData.append("birth_date", birthDay);
+      // bodyFormData.append("education", userEdjucation);
+      // bodyFormData.append("field_study", userEdjucationStudyField);
+      // bodyFormData.append("telephone", userTelephone);
+      // bodyFormData.append("address", userAddress);
+      // bodyFormData.append("Regional_Municipality", userRegionalMunicipality);
+      // bodyFormData.append("postal_code", userPostalCode);
+      // bodyFormData.append("job", userJob);
+      // bodyFormData.append("office_address", userOfficeAddress);
+      // bodyFormData.append("girls", userGirls);
+      // bodyFormData.append("boys", userBoys);
+        axios({
+          method: "POST",
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          url: "http://192.168.100.15:8000/api/v1/account/user-register/",
+          data: bodyFormData,
+          withCredentials: true,
         })
-        .catch(error => {
-          console.log(error)
-        });
-    }
+          .then((response) => {
+            console.log(response)
+          })
+          .catch((err) => {
+            console.log(err);
+            this.$alert(err.response.data.message, "", "error");
+          });
+      
+    },
   },
 };
 </script>

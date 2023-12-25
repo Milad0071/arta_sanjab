@@ -13,16 +13,18 @@
             </div>
           </div>
           <!-- login/signup part -->
-          <v-card id="userLoginPart" class="loginPartContainer">
+          <v-card class="loginPartContainer">
             <div class="titlePart">
               <div class="titleShape"></div>
-              <h2>ورود/ثبت‌نام</h2>
+              <h2 v-if="userType == true">ورود/ثبت‌نام کاربران</h2>
+              <h2 v-else>ورود کارمندان سنجاب</h2>
             </div>
             <div class="mainBox flex_class">
               <!-- login/signupl part -->
-              <div v-if="loginPart == true" class="flex_column_class">
+              <div class="flex_column_class">
                 <div class="input_part">
-                  <p class="loginText">برای ورود یا ثبت‌نام، لطفا شماره تلفن همراه خود را وارد نمایید:</p>
+                  <p v-if="userType == true" class="loginText">برای ورود یا ثبت‌نام، لطفا شماره تلفن همراه خود را وارد نمایید:</p>
+                  <p v-else class="loginText">برای ورود به بخش مدیریت، لطفا شماره تلفن همراه خود را وارد نمایید:</p>
                   <v-text-field
                     label="تلفن همراه"
                     class="ltrClass input_1"
@@ -42,125 +44,95 @@
                 </div>
                 <div class="btnContainer flex_class">
                   <v-btn
+                    v-if="userType == true"
                     color="#525355"
                     class="text-none childBtn"
                     size="large"
                     min-width="200"
                     variant="outlined"
-                    @click="signupFunc(
-                        userPhoneNumber,
-                      )"
+                    @click="logninFunc(userPhoneNum, 0)"
                   >
                     ورود/ثبت‌نام
                   </v-btn>
-                </div>
-              </div>
-              
-            </div>
-          </v-card>
-          <v-card id="adminLoginPart" class="loginPartContainer">
-            <div class="mainBox">
-              <div >
-                <div class="input_part">
-                  <p>آدرس ایمیل</p>
-                  <input
-                    class="input_1"
-                    type="text"
-                    placeholder="ایمیل خود را وارد کنید"
-                    v-model="userLastName"
-                    @blur="validateEmail"
-                    autocomplete="off"
-                  />
-                  <p
-                    v-if="emailError == true"
-                    style="color: red; font-weight: fold"
+                  <v-btn
+                    v-else
+                    color="#525355"
+                    class="text-none childBtn"
+                    size="large"
+                    min-width="200"
+                    variant="outlined"
+                    @click="logninFunc(userPhoneNum, 1)"
                   >
-                    آدرس ایمیل معتبر نیست
-                  </p>
-                </div>
-                <div class="input_part">
-                  <p>نام کاربری</p>
-                  <input
-                    class="input_1"
-                    type="text"
-                    placeholder="نام کاربری را وارد کنید"
-                    v-model="userName"
-                    autocomplete="off"
-                  />
-                  <p
-                    v-if="userError == true"
-                    style="color: red; font-weight: fold"
-                  >
-                    نام کاربری نباید خالی باشد!
-                  </p>
-                </div>
-                <div class="input_part mb-5">
-                  <p>رمز عبور</p>
-                  <input
-                    class="input_1"
-                    type="text"
-                    placeholder="رمز عبور خود را وارد کنید"
-                    v-model="userPass"
-                    autocomplete="off"
-                  />
-                  <p
-                    v-if="passError == true"
-                    style="color: red; font-weight: fold"
-                  >
-                    رمز عبور نباید خالی باشد!
-                  </p>
-                </div>
-                <div class="flex_class mobileLoginPhoneBtn">
-                  <div
-                    v-if="spinner === false"
-                    @click="logninFunc(userLastName, userName, userPass)"
-                  >
-                    ورود
-                  </div>
-                  <easy-spinner v-else color="green" size="50px" />
+                    ورود به بخش مدیریت
+                  </v-btn>
                 </div>
               </div>
             </div>
           </v-card>
         </div>
+        <v-dialog
+          v-model="dialog"
+          width="auto"
+        >
+          <v-card
+            class="py-12 px-8 text-center mx-auto ma-4"
+            max-width="420"
+            width="100%"
+          >
+            <h3 class="text-h6 mb-2">
+              لطفا کد ارسالی به شماره همراه خود را در کادر زیر وارد نمایید:
+            </h3>
+
+            <!-- <div>A code has been sent to *****2489</div> -->
+            <v-locale-provider ltr>
+              <v-otp-input
+                v-model="otp"
+                reverse
+                variant="plain"
+                color="#f68100"
+                length="4"
+              ></v-otp-input>
+            </v-locale-provider>
+            <v-btn
+              color="#f68100"
+              class="text-none childBtn"
+              size="large"
+              min-width="200"
+              variant="outlined"
+              @click="validateCode(otp)"
+            >
+            ارسال کد
+            </v-btn>
+          </v-card>
+        </v-dialog>
       </div>
     </v-locale-provider>
   </v-app>
 </template>
 <script>
-// import axios from "axios";
+import axios from "axios";
 
 export default {
   data() {
     return {
       userPhoneNum: '',
+      otp: '',
       userPhoneNumError: false,
-      loginPart: true,
-      spinner: false,
-      signupList: [],
+      userType: true,
+      dialog: false,
     };
   },
-  created() {
-    this.spinner = false;
-  },
   mounted() {
+    this.userType = true;
     document.getElementById("userLoginBtn").style.color = "white";
     document.getElementById("userLoginBtn").style.backgroundColor = "#f68100";
     document.getElementById("userLoginBtn").style.fontWeight = "bold";
-    document.getElementById("userLoginPart").style.display = "block";
-    document.getElementById("adminLoginPart").style.display = "none";
-    // this.$cookies.set("test", "hi");
   },
   watch: {
     userPhoneNum(newVal) {
       this.userPhoneNum = this.toFarsiNumber(newVal);
       if (newVal.length > 0) {
         this.userPhoneNumError = false;
-      }
-    },
-    userPass(newVal) {
-      if (newVal.length > 0) {
-        this.passError = false;
       }
     },
   },
@@ -175,9 +147,7 @@ export default {
       if (n.length == 0) {
         return;
       }
-      console.log(typeof n)
       n = n.toString();
-      console.log(typeof n)
       var englishNumbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"],
           persianNumbers = ["۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹", "۰"];
 
@@ -186,185 +156,179 @@ export default {
       }
       return n;
     },
+    toEngNumber(n) {
+      if (n.length == 0) {
+        return;
+      }
+      n = n.toString();
+      var englishNumbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"],
+          persianNumbers = ["۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹", "۰"];
+
+      for (var i = 0, numbersLen = englishNumbers.length; i < numbersLen; i++) {
+          n = n.replace(new RegExp(persianNumbers[i], "g"), englishNumbers[i]);
+      }
+      return n;
+    },
     goToUserForm() {
-      document.getElementById("userLoginPart").style.display = "block";
-      document.getElementById("adminLoginPart").style.display = "none";
+      this.userType = true;
       document.getElementById("userLoginBtn").style.color = "white";
-      document.getElementById("userLoginBtn").style.backgroundColor = "#1abc9c";
+      document.getElementById("userLoginBtn").style.backgroundColor = "#f68100";
       document.getElementById("userLoginBtn").style.fontWeight = "bold";
-      document.getElementById("adminLoginBtn").style.color = "#1abc9c";
+      document.getElementById("adminLoginBtn").style.color = "#f68100";
       document.getElementById("adminLoginBtn").style.backgroundColor = "white";
       document.getElementById("adminLoginBtn").style.fontWeight = "";
       
     },
     goToAdminForm() {
-      // document.getElementById("userLoginPart").style.display = "none";
-      // document.getElementById("adminLoginPart").style.display = "block";
-      // document.getElementById("adminLoginBtn").style.color = "white";
-      // document.getElementById("adminLoginBtn").style.backgroundColor = "#1abc9c";
-      // document.getElementById("adminLoginBtn").style.fontWeight = "bold";
-      // document.getElementById("userLoginBtn").style.color = "#1abc9c";
-      // document.getElementById("userLoginBtn").style.backgroundColor = "white";
-      // document.getElementById("userLoginBtn").style.fontWeight = "";
-      this.$swal("در دست توسعه", "", "info");
+      this.userType = false;
+      document.getElementById("adminLoginBtn").style.color = "white";
+      document.getElementById("adminLoginBtn").style.backgroundColor = "#f68100";
+      document.getElementById("adminLoginBtn").style.fontWeight = "bold";
+      document.getElementById("userLoginBtn").style.color = "#f68100";
+      document.getElementById("userLoginBtn").style.backgroundColor = "white";
+      document.getElementById("userLoginBtn").style.fontWeight = "";
+      // this.$swal("در دست توسعه", "", "info");
     },
-    goToLogin() {
-      this.userLastName = null;
-      this.userPass = null;
-      this.loginPart = true;
+    emptyCheck(phoneNum) {
+      if (phoneNum == null || phoneNum == "") {
+        this.userPhoneNumError = true;
+      }
+      if (
+        phoneNum == null ||
+        phoneNum == ""
+      ) {
+        return false;
+      } else {
+        return true;
+      }
     },
-    // emptyCheck(userName, userPass) {
-    //   if (userName == null || userName == "") {
-    //     this.userError = true;
-    //   }
-    //   if (userPass == null || userPass == "") {
-    //     this.passError = true;
-    //   }
-    //   if (
-    //     userName == null ||
-    //     userName == "" ||
-    //     userPass == null ||
-    //     userPass == ""
-    //   ) {
-    //     return false;
-    //   } else {
-    //     return true;
-    //   }
-    // },
-    logninFunc(userLastName, userName, userPass) {
-        this.spinner = true;
-        if (this.emptyCheck(userName, userPass) === true) {
-            // var bodyFormData = new FormData();
-            // bodyFormData.append("username", JSON.stringify(userName));
-            // bodyFormData.append("email", JSON.stringify(userLastName));
-            // bodyFormData.append("password", JSON.stringify(userPass));
+    logninFunc(userPhoneNum, userType) {
+      userPhoneNum = this.toEngNumber(userPhoneNum);
+      if (this.emptyCheck(userPhoneNum) === true) {
+        if (userType == '1' && this.userPhoneNum == '۰۹۱۳۳۰۹۱۴۷۸') {
+          this.$cookies.set('admin');
+            this.$router.push({ name: "adminDashboard" });
+        } else {
+          // var bodyObj = {
+          //   phone_number: userPhoneNum,
+          // }
 
-            // bodyFormData.append("username", userName);
-            // bodyFormData.append("email", userLastName);
-            // bodyFormData.append("password", userPass);
+          // const requestOptions = {
+          //   method: 'POST',
+          //   headers: { 'Content-Type': 'application/json' },
+          //   body: JSON.stringify(bodyObj)
+          // };
+          // fetch("http://194.9.56.86/api/v1/account/login-register/", requestOptions)
+          //   .then(response => {
+          //     this.dialog = true;
+          //     const data = response;
+          //     // const data = response.headers.getSetCookie();
+          //     console.log(data)
+          //     const sessionId = this.getSessionIdFromCookie(data);
+          //     console.log(sessionId);
+          //     if (!response.ok) {
+          //         const error = (data && data.message) || response.status;
+          //         console.log(error)
+          //         return Promise.reject(error);
+          //     }
+          //   })
+          //   .catch(error => {
+          //       console.log(error)
+          //   });
 
-            var bodyObj = {
-                username: userName,
-                email: userLastName,
-                password: userPass
-            }
-            console.log(JSON.stringify(bodyObj))
-
-            const requestOptions = {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(bodyObj)
-            };
-            fetch("http://192.168.100.15:8000/api/v1/account/login/", requestOptions)
-                .then(async response => {
-                    const data = await response.json();
-                    console.log(data)
-                    // check for error response
-                    if (!response.ok) {
-                        // get error message from body or default to response status
-                        const error = (data && data.message) || response.status;
-                        console.log(error)
-                        // return Promise.reject(error);
-                    }
-                })
-                .catch(error => {
-                    console.log(error)
-                });
-
-
-            //     axios({
-            //       method: "POST",
-            //       url: "http://192.168.100.15:8000/api/v1/account/login/",
-            //       header: "application/json",
-            //       data: JSON.stringify(bodyObj),
-            //     })
-            //       .then((response) => {
-            //         console.log(response);
-            //         this.$cookies.set("userToken", response.data.access_token);
-            //         // this.$cookies.set('userEntered', true);
-            //         this.spinner = false;
-            //         this.$router.push({ path: "/home" });
-            //       })
-            //       .catch((err) => {
-            //         this.spinner = false;
-            //         console.log(err);
-            //         this.$swal("مشکلی پیش آمد!", err.message, "error");
-            //       });
-            //   } else {
-            //     this.spinner = false;
-            //   }
+          var bodyFormData = new FormData();
+          JSON.stringify(bodyFormData.append("phone_number", userPhoneNum));
+            axios({
+              method: "POST",
+              url: "http://194.9.56.86/api/v1/account/login-register/",
+              headers: {
+              'Content-Type': "application/json"
+              },
+              withCredentials: true,
+              data: bodyFormData,
+            })
+              .then((response) => {
+                console.log(response);
+                console.log(response.headers);
+                console.log(typeof response.data)
+                this.$cookies.set('sessionId', response.data)
+                this.dialog = true;
+                // this.$cookies.set("userToken", response.data.access_token);
+                // this.$cookies.set('userEntered', true);
+                // this.$router.push({ path: "/home" });
+              })
+              .catch((err) => {
+                console.log(err);
+                this.$swal("مشکلی پیش آمد!", err.message, "error");
+              });
+        // } 
+          // else {
+        //   }
         }
+      }
     },
-    signupFunc(name, lastName, nCode, phoneNum) {
-      // if (this.emptyCheck2(name, lastName, fatherName, nCode, birthDay, telephone, phoneNum, address, region, pCode, job, girls, boys) == true) {
-
+    validateCode(recivedCode) {
+      // recivedCode = parseInt(recivedCode);
+      // var bodyObj = {
+      //   code: recivedCode,
       // }
-
-        var bodyObj = {
-                first_name: name,
-                last_name: lastName,
-                national_code: nCode,
-                phone_number: phoneNum,
-            }
-            console.log(JSON.stringify(bodyObj))
-
-            const requestOptions = {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(bodyObj)
-            };
-            fetch("http://192.168.100.15:8000/api/v1/account/parent-register/", requestOptions)
-                .then(async response => {
-                    const data = await response.json();
-                    console.log(data)
-                    // check for error response
-                    if (!response.ok) {
-                        // get error message from body or default to response status
-                        const error = (data && data.message) || response.status;
-                        console.log(error)
-                        // return Promise.reject(error);
-                    }
-                })
-                .catch(error => {
-                    console.log(error)
-                });
-
-
-
-
-
-      // console.log(typeof phoneNum, typeof phoneNum)
-      // var bodyFormData = new FormData();
-      // JSON.stringify(bodyFormData.append("first_name", name));
-      // JSON.stringify(bodyFormData.append("last_name", lastName));
-      // bodyFormData.append("father_name", fatherName);
-      // JSON.stringify(bodyFormData.append("national_code", nCode));
-      // // bodyFormData.append("birth_date", birthDay);
-      // bodyFormData.append("education", education);
-      // bodyFormData.append("field_study", studyField);
-      // bodyFormData.append("telephone", telephone);
-      // JSON.stringify(bodyFormData.append("phone_number", phoneNum));
-      // bodyFormData.append("address", address);
-      // // bodyFormData.append("Regional_Municipality", region);
-      // bodyFormData.append("postal_code", pCode);
-      // bodyFormData.append("job", job);
-      // bodyFormData.append("office_address", jobAddress);
-      // // bodyFormData.append("girls", girls);
-      // // bodyFormData.append("boys", boys);
-      //   axios({
-      //     method: "POST",
-      //     headers: { 'Content-Type': 'application/json' },
-      //     url: "http://192.168.100.15:8000/api/v1/account/parent-register/",
-      //     data: bodyFormData,
+      // console.log(this.$cookies.get('sessionId'))
+      // const requestOptions = {
+      //   method: 'POST',
+        
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      //   credentials: 'include',
+      //   body: JSON.stringify(bodyObj)
+      // };
+      // fetch('http://194.9.56.86/api/v1/account/phone-verification/', requestOptions)
+      //   .then( response => {
+      //     if (response.ok) {
+      //       console.log(response);
+      //       this.dialog = false;
+      //       this.$router.push({ name: "ParentsDetails" });
+      //     } 
+      //     this.dialog = false;
+      //     // check for error response
+      //     if (!response.ok) {
+      //       // get error message from body or default to response status
+      //       this.dialog = false;
+      //       // const error = (data && data.message) || response.status;
+      //       // console.log(error)
+      //       this.$swal("کد به درستی وارد نشده است!", "", "error")
+      //       // return Promise.reject(error);
+      //     }
       //   })
-      //     .then((response) => {
-      //       console.log(response)
-      //     })
-      //     .catch((err) => {
-      //       console.log(err);
-      //       this.$alert(err.response.data.message, "", "error");
-      //     });
-    },
+      //   .catch(error => {
+      //     console.log(error)
+      //   });
+
+
+        var bodyFormData = new FormData();
+          JSON.stringify(bodyFormData.append("code", recivedCode));
+            axios({
+              method: "POST",
+              url: "http://192.168.100.15:8000/api/v1/account/phone-verification/",
+              headers: {
+                "content-type": "application/json",
+              },
+              data: bodyFormData,
+              withCredentials: true,
+            })
+              .then((response) => {
+                console.log(response);
+                this.dialog = false;
+                this.$router.push({ name: "ParentsDetails" });
+                // this.$cookies.set("userToken", response.data.access_token);
+                // this.$cookies.set('userEntered', true);
+                // this.$router.push({ path: "/home" });
+              })
+              .catch((err) => {
+                console.log(err);
+                this.$swal("مشکلی پیش آمد!", err.message, "error");
+              });
+    }
   },
 };
 </script>
@@ -396,10 +360,13 @@ export default {
   padding: 3.78%;
 }
 .chooseRole {
+  font-family: iranSansRegular;
+  width: 70%;
   margin-bottom: 100px;
 }
 .loginPartContainer {
-  width: 40%;
+  font-family: iranSansRegular;
+  width: 50%;
   min-height: 300px;
   margin-top: -3%;
   background-color: hsl(120, 61%, 90%, 0.8);
@@ -431,8 +398,10 @@ export default {
 }
 .loginText {
   text-align: center;
+  font-size: 23px;
 }
 .btnContainer {
+  width: 100%;
   margin-top: 5%;
   margin-bottom: 20%;
 }
@@ -468,7 +437,8 @@ input::-moz-placeholder {
 .childBtn {
   font-weight: bold;
   color: #f68100 !important;
-  width: 40%;
+  width: 60%;
+  height: 3rem;
   margin-top: 6%;
 }
 .childBtn:hover {
@@ -476,26 +446,6 @@ input::-moz-placeholder {
   color: white !important;
   background-color: #f68100;
   font-weight: bold;
-}
-.mobileLoginPhoneBtn {
-  align-content: center;
-  width: 100%;
-}
-.mobileLoginPhoneBtn div {
-  width: 80% !important;
-  text-align: center;
-  border: none;
-  border-radius: 5px;
-  height: 5vh;
-  font-family: "IranSans Regular";
-  background: #1abc9c;
-  color: rgb(217, 213, 213);
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  align-items: center;
-  cursor: pointer;
-  margin-bottom: 2rem;
 }
 .userRadius {
   border-radius: 0px 10px 10px 0px !important;
@@ -508,10 +458,12 @@ input::-moz-placeholder {
   text-align: center;
   width: 100%;
   margin-top: 0% !important;
+  font-family: iranSansRegular !important;
 }
 .userAdminFormBtn div {
+  font-family: iranSansRegular !important;
   font-size: 20px;
-  width: 20rem !important;
+  width: 100%;
   text-align: center;
   border: 1px solid #6d6e71;
   height: 5vh;
@@ -535,24 +487,29 @@ input::-moz-placeholder {
     src: url('./../assets/fonts/IRANSansX-Regular.ttf');
 }
 .v-selection-control--inline .v-label {
-  font-size: 18px;
+  font-size: 28px;
 
 }
 .vpd-container {
   left: 80% !important;
 }
 .v-field--variant-underlined .v-label.v-field-label, .v-field--variant-plain .v-label.v-field-label {
-  top: 20% !important;
+  top: 0% !important;
 }
 .ltrClass > .v-field--variant-underlined .v-label.v-field-label,
 .v-field--variant-plain .v-label.v-field-label {
   right: 0 !important;
-  margin-top: 2% !important;
+  margin-top: 1.5% !important;
+  font-size: 16px;
 }
 .ltrClass {
   position: relative;
 }
 .ltrClass input::placeholder {
   position: absolute;
+  margin-bottom: 10px !important;
+}
+.ltrClass .v-field--reverse .v-field__input, .v-field--reverse input {
+  font-size: 20px;
 }
 </style>

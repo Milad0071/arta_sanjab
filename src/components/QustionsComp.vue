@@ -12,12 +12,12 @@
             <div class="flex_class topPart" style="border-bottom: 1px solid black;">
               <v-radio-group v-model="chosenAnswer[index]">
                 <div class="seperatorClass pl-1">
-                  <v-radio color="#f68100" label="نمی‌دانم، اطلاعی ندارم!" value="9"></v-radio>
+                  <v-radio color="#f68100" label="مطمئن نیست یا نمی‌دانم" value="9"></v-radio>
                 </div>
                 
                 <div class="toggleBtn">
                   <v-btn-toggle
-                    color="orange"
+                    color="#f68100"
                     density="compact"
                     divided
                     v-model="chosenAnswer[index]"

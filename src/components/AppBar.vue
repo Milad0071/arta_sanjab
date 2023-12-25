@@ -5,8 +5,6 @@
         <!-- submit new child BTN -->
         <div class="btnContainer">
           <v-btn
-            :disabled="loading"
-            :loading="loading"
             color="#f68100"
             class="text-none childBtn"
             size="large"
@@ -88,13 +86,24 @@
 export default {
   emits: ['rerender-drawer'],
   data: () => ({
-    loading: false,
+    admin: false,
     items: [
       {
         id: 1,
         title: "تکمیل اطلاعات والدین",
         icon: 'mdi-account-details-outline',
       },
+      {
+        id: 2,
+        title: "خرید دوره",
+        icon: 'mdi-basket-plus-outline',
+      },
+      {
+        id: 3,
+        title: "خروج از حساب کاربری",
+        icon: 'mdi-logout',
+      },
+
     ],
     items_2: [
       { title: "Click Me 5" },
@@ -103,6 +112,11 @@ export default {
       { title: "Click Me 8" },
     ],
   }),
+  created() {
+    if (this.$cookies.set('admin')) {
+      this.admin = true;
+    }
+  },
   methods: {
     goToAddChild() {
       this.$emit("rerender-drawer", 1);
@@ -116,17 +130,21 @@ export default {
         this.$cookies.remove('addChildActive');
         this.$cookies.remove('parentsDetailsActive');
         this.$router.push({ name: "ParentsDetails" });
+      } else if (id == 2) {
+        this.$emit("rerender-drawer", 3);
+        this.$cookies.remove('addChildActive');
+        this.$cookies.remove('parentsDetailsActive');
+        this.$cookies.remove('coursesShopActive');
+        this.$router.push({ name: "courseShop" });
+      } else if (id == 3) {
+        if (this.admin == true) {
+          this.admin = false;
+          this.$cookies.remove('admin');
+        }
+        this.$router.push({ name: "SignupLogin" });
       }
     }
   },
-
-  // watch: {
-  //   loading (val) {
-  //     if (!val) return
-
-  //     setTimeout(() => (this.loading = false), 2000)
-  //   },
-  // },
 };
 </script>
 <style scoped>

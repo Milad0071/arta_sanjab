@@ -10,7 +10,7 @@ import { fileURLToPath, URL } from 'node:url'
 // https://vitejs.dev/config/
 export default defineConfig({
   optimizeDeps: {
-    exclude: ['@vue3-persian-datetime-picker']
+    exclude: ['@vue3-persian-datetime-picker', "vue-core-video-player"]
   },
   plugins: [
     vue({

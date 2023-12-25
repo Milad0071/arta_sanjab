@@ -37,7 +37,7 @@ export default {
     },
     showBars() {
       setTimeout(() => {
-        if (this.$route.name === 'SignupLogin' || this.$route.name === 'quizPage') {
+        if (this.$route.name === 'SignupLogin' || this.$route.name === 'ParentsDetails' ||  this.$route.name === 'quizPage' || this.$route.name === 'PlayerComp') {
           this.show = false;
         } else {
           this.show = true;

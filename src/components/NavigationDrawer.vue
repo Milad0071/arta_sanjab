@@ -61,6 +61,21 @@
             تکمیل اطلاعات والدین
           </p>
         </v-list-item>
+        <v-list-item
+        :active="coursesShopActive"
+        class="coursesShop"
+        value="coursesShop"
+        @click="goTo(4)"
+        >
+          <coursesShopIcon id="coursesShopIconTag" style="width: 30px"></coursesShopIcon>
+          <p
+            id="coursesShopText"
+            style="color: rgb(160, 168, 176); font-weight: bold"
+            class="mr-3"
+          >
+            خرید دوره
+          </p>
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
   </v-locale-provider>
@@ -70,28 +85,32 @@
 import Home from "./../assets/svgIcons/homeIcon.vue";
 import AddChild from "./../assets/svgIcons/addChildIcon.vue";
 import ParentsDetailsIcon from "./../assets/svgIcons/parentsDetailsIcon.vue";
+import coursesShopIcon from './../assets/svgIcons/coursesShopIcon.vue';
 
 export default {
   props: { pageNum: Number, renderToken: Number },
-  components: { Home, AddChild, ParentsDetailsIcon },
+  components: { Home, AddChild, ParentsDetailsIcon, coursesShopIcon },
   data: () => ({
     activeKey: 1,
     homeActive: false,
     addChildActive: false,
     parentsDetailsActive: false,
+    coursesShopActive: false,
   }),
   mounted() {
-    this.showChoosenPage();
+    this.showChosenPage();
   },
   methods: {
-    showChoosenPage() {
+    showChosenPage() {
       //highligh the chosen page name
       if (this.renderToken == 1) {
-        this.$cookies.set('addChildActive', 1);
+        this.$cookies.set('addChildActive');
       } else if (this.renderToken == 2) {
-        this.$cookies.set('parentsDetailsActive', 1);
+        this.$cookies.set('parentsDetailsActive');
+      } else if (this.renderToken == 3) {
+        this.$cookies.set('coursesShopActive');
       }
-      if (this.pageNum == 1 && this.$cookies.get('homeActive') == 1) {
+      if (this.pageNum == 1 && this.$cookies.get('homeActive')) {
         this.homeActive = true;
         this.addChildActive = false;
         this.parentsDetailsActive = false;
@@ -101,60 +120,105 @@ export default {
         document.getElementById("addChildIconTag").classList.remove("chosenIcon");
         document.getElementById("parentsDetailsText").classList.remove("chosenLink");
         document.getElementById("parentsDetailsIconTag").classList.remove("chosenIcon");
+        document.getElementById("coursesShopText").classList.remove("chosenLink");
+        document.getElementById("coursesShopIconTag").classList.remove("chosenIcon");
       }
-      if (this.renderToken == 1 || this.$cookies.get('addChildActive') == 1) {
+      if (this.renderToken == 1 || this.$cookies.get('addChildActive')) {
         this.homeActive = false;
         this.addChildActive = true;
         this.parentsDetailsActive = false;
+        this.coursesShopActive = false;
         document.getElementById("homeText").classList.remove("chosenLink");
         document.getElementById("homeIconTag").classList.remove("chosenIcon");
         document.getElementById("newChildText").classList.add("chosenLink");
         document.getElementById("addChildIconTag").classList.add("chosenIcon");
         document.getElementById("parentsDetailsText").classList.remove("chosenLink");
         document.getElementById("parentsDetailsIconTag").classList.remove("chosenIcon");
-      } else if (this.renderToken == 2 || this.$cookies.get('parentsDetailsActive') == 1) {
+        document.getElementById("coursesShopText").classList.remove("chosenLink");
+        document.getElementById("coursesShopIconTag").classList.remove("chosenIcon");
+      } else if (this.renderToken == 2 || this.$cookies.get('parentsDetailsActive')) {
         this.homeActive = false;
         this.addChildActive = false;
+        this.coursesShopActive = false;
         this.parentsDetailsActive = true;
         document.getElementById("homeText").classList.remove("chosenLink");
         document.getElementById("homeIconTag").classList.remove("chosenIcon");
         document.getElementById("newChildText").classList.remove("chosenLink");
         document.getElementById("addChildIconTag").classList.remove("chosenIcon");
+        document.getElementById("coursesShopText").classList.remove("chosenLink");
+        document.getElementById("coursesShopIconTag").classList.remove("chosenIcon");
         document.getElementById("parentsDetailsText").classList.add("chosenLink");
         document.getElementById("parentsDetailsIconTag").classList.add("chosenIcon");
+      } else if (this.renderToken == 3 || this.$cookies.get('coursesShopActive')) {
+        this.homeActive = false;
+        this.addChildActive = false;
+        this.parentsDetailsActive = false;
+        this.coursesShopActive = true;
+        document.getElementById("homeText").classList.remove("chosenLink");
+        document.getElementById("homeIconTag").classList.remove("chosenIcon");
+        document.getElementById("newChildText").classList.remove("chosenLink");
+        document.getElementById("addChildIconTag").classList.remove("chosenIcon");
+        document.getElementById("parentsDetailsText").classList.remove("chosenLink");
+        document.getElementById("parentsDetailsIconTag").classList.remove("chosenIcon");
+        document.getElementById("coursesShopText").classList.add("chosenLink");
+        document.getElementById("coursesShopIconTag").classList.add("chosenIcon");
       }
     },
     changeDecoration(num) {
       this.homeActive = null;
       this.addChildActive = null;
       this.parentsDetailsActive = null;
+      this.coursesShopActive = null;
       if (num == 1) {
         this.$cookies.remove('addChildActive');
         this.$cookies.remove('parentsDetailsActive');
+        this.$cookies.remove('coursesShopActive');
         document.getElementById("homeText").classList.add("chosenLink");
         document.getElementById("homeIconTag").classList.add("chosenIcon");
         document.getElementById("newChildText").classList.remove("chosenLink");
         document.getElementById("addChildIconTag").classList.remove("chosenIcon");
         document.getElementById("parentsDetailsText").classList.remove("chosenLink");
         document.getElementById("parentsDetailsIconTag").classList.remove("chosenIcon");
+        document.getElementById("coursesShopText").classList.remove("chosenLink");
+        document.getElementById("coursesShopIconTag").classList.remove("chosenIcon");
       } else if (num == 2) {
-        this.$cookies.set('addChildActive', 1);
+        this.$cookies.set('addChildActive');
         this.$cookies.remove('parentsDetailsActive');
+        this.$cookies.remove('coursesShopActive');
         document.getElementById("newChildText").classList.add("chosenLink");
         document.getElementById("addChildIconTag").classList.add("chosenIcon");
         document.getElementById("homeText").classList.remove("chosenLink");
         document.getElementById("homeIconTag").classList.remove("chosenIcon");
         document.getElementById("parentsDetailsText").classList.remove("chosenLink");
         document.getElementById("parentsDetailsIconTag").classList.remove("chosenIcon");
+        document.getElementById("coursesShopText").classList.remove("chosenLink");
+        document.getElementById("coursesShopIconTag").classList.remove("chosenIcon");
       } else if (num == 3) {
-        this.$cookies.set('parentsDetailsActive', 1);
+        this.$cookies.set('parentsDetailsActive');
         this.$cookies.remove('addChildActive');
+        this.$cookies.remove('coursesShopActive');
         document.getElementById("newChildText").classList.remove("chosenLink");
         document.getElementById("addChildIconTag").classList.remove("chosenIcon");
         document.getElementById("homeText").classList.remove("chosenLink");
         document.getElementById("homeIconTag").classList.remove("chosenIcon");
         document.getElementById("parentsDetailsText").classList.add("chosenLink");
         document.getElementById("parentsDetailsIconTag").classList.add("chosenIcon");
+        document.getElementById("coursesShopText").classList.remove("chosenLink");
+        document.getElementById("coursesShopIconTag").classList.remove("chosenIcon");
+        
+      }
+      else if (num == 4) {
+        this.$cookies.set('coursesShopActive');
+        this.$cookies.remove('addChildActive');
+        this.$cookies.remove('parentsDetailsActive');
+        document.getElementById("newChildText").classList.remove("chosenLink");
+        document.getElementById("addChildIconTag").classList.remove("chosenIcon");
+        document.getElementById("homeText").classList.remove("chosenLink");
+        document.getElementById("homeIconTag").classList.remove("chosenIcon");
+        document.getElementById("parentsDetailsText").classList.remove("chosenLink");
+        document.getElementById("parentsDetailsIconTag").classList.remove("chosenIcon");
+        document.getElementById("coursesShopText").classList.add("chosenLink");
+        document.getElementById("coursesShopIconTag").classList.add("chosenIcon");
       }
       
     },
@@ -166,6 +230,8 @@ export default {
         this.$router.push({ name: "AddChild" });
       } else if (numPage == 3) {
         this.$router.push({ name: "ParentsDetails" });
+      } else if (numPage == 4) {
+        this.$router.push({ name: "courseShop" });
       }
     },
   },
@@ -205,6 +271,12 @@ export default {
   color: rgb(94, 89, 255) !important;
 }
 .parentsDetailsItem:hover #parentsDetailsIconTag {
+  stroke: rgb(94, 89, 255) !important;
+}
+.coursesShopItem:hover p {
+  color: rgb(94, 89, 255) !important;
+}
+.coursesShopItem:hover #coursesShopIconTag {
   stroke: rgb(94, 89, 255) !important;
 }
 </style>
