@@ -3,42 +3,41 @@
     <v-locale-provider rtl>
       <v-container class="flex_column_class">
         <div style="width: 100%">
-          <!-- add new child btn -->
-          <div class="btnContainer flex_class">
+          <!-- children table -->
+          <ChildrenTable
+          :key="componentKey"
+          @clicked="openDialog"
+          :children="children"
+          :hasChild="hasChild"
+          >
+          </ChildrenTable>
+          <!-- guidance part -->
+          <div class="btnContainer flex_column_class">
+            <h3>در صورت وارد کردن اطلاعات تمامی فرزندان، لطفا روی کلید زیر کلیک کنید تا به مرحله ثبت‌نام دوره فرزند هدایت شوید.</h3>
+            <p>(در صورت غیر فعال بودن کلید، لطفا ابتدا اطلاعات فرزندان خود را وارد نمایید!)</p>
             <v-btn
+              v-if="children.length > 0"
               color="#525355"
-              class="text-none submitBtn"
+              class="text-none submitBtn mt-5"
               size="large"
               min-width="200"
               variant="outlined"
-              @click="this.dialog = true"
+              @click="goToDesctop()"
             >
-              ثبت فرزند جدید
+            ثبت‌نام دوره فرزند
+            </v-btn>
+            <v-btn
+              v-else
+              disabled
+              color="#525355"
+              class="text-none submitBtn mt-5"
+              size="large"
+              min-width="200"
+              variant="outlined"
+            >
+              ثبت‌نام دوره فرزند
             </v-btn>
           </div>
-          <!-- children table -->
-          <v-table class="tableClass" density="compact">
-            <thead>
-              <tr>
-                <th class="text-right font-weight-bold">نام</th>
-                <th class="text-right font-weight-bold">نام خانوادگی</th>
-                <th class="text-right font-weight-bold">کد ملی</th>
-                <th class="text-right font-weight-bold">تاریخ تولد</th>
-                <th class="text-right font-weight-bold">مقطع تحصیلی</th>
-                <th class="text-right font-weight-bold">محل تحصیل</th>
-                <th class="text-right font-weight-bold">فرزند چندم</th>
-              </tr>
-            </thead>
-            <tbody v-if="hasChild == true">
-              <tr v-for="item in children" :key="item.name">
-                <td>{{ item.name }}</td>
-                <td>{{ item.calories }}</td>
-              </tr>
-            </tbody>
-            <div v-else class="text-center">
-              <p>هنوز فرزندی ثبت نکرده‌اید!</p>
-            </div>
-          </v-table>
           <!-- child form dialog -->
           <v-dialog v-model="dialog" persistent width="auto" style="z-index: 1 !important;">
             <v-card class="text-center mx-auto ma-4" style="right: 20%;" min-width="1020">
@@ -119,6 +118,26 @@
                   </p>
                 </div>
                 <div class="input_part">
+                  <!-- child age category -->
+                  <v-select
+                    :items="ageCategories"
+                    density="comfortable"
+                    class="input_1"
+                    variant="plain"
+                    label="بازه سنی"
+                    placeholder="بازه سنی کودک را مشخص نمایید"
+                    item-text="title"
+                    item-value="value"
+                    v-model="userAgeCat"
+                  ></v-select>
+                  <p
+                    v-if="userAgeCatError == true"
+                    style="color: red; font-weight: fold"
+                  >
+                    فیلد بازه سنی نباید خالی باشد!
+                  </p>
+                </div>
+                <div class="input_part">
                   <!-- child education -->
                   <v-text-field
                     label="فرزند چندم"
@@ -183,6 +202,8 @@
                       userName,
                       userLastName,
                       userNationalCode,
+                      userBirthDay,
+                      userAgeCat,
                       userEdjucation,
                       userSchoolStudy,
                       whichChild
@@ -211,22 +232,46 @@
   </v-app>
 </template>
 <script>
+// import axios from 'axios';
 import DatePicker from "vue3-persian-datetime-picker";
+import ChildrenTable from './../components/ChildrenTable.vue';
+import axios from "axios";
 
 export default {
-  components: { DatePicker },
+  components: { DatePicker, ChildrenTable },
+  emits: ['reset-app'],
   data: () => {
     return {
+      componentKey: 0,
+      childrenCount: 0,
       hasChild: true,
+      notShow: true,
       dialog: false,
       userNameError: false,
       userLastNameError: false,
       userNationalCodeError: false,
       userBirthDayError: false,
+      userAgeCatError: false,
       userEdjucationError: false,
       userSchoolStudyError: false,
       whichChildError: false,
       children: [],
+      ageCategories: [
+        {
+          value: 1,
+          title: 'بازه ۷-۴ سال',
+        },
+        {
+          value: 2,
+          title: 'بازه ۱۱-۸ سال',
+        },
+        {
+          value: 3,
+          title: 'بازه ۱۵-۱۲ سال',
+        },
+      ],
+      parentsData: null,
+      userAgeCat: null,
       userName: "",
       userLastName: "",
       userNationalCode: "",
@@ -248,9 +293,14 @@ export default {
       }
     },
     userNationalCode(newVal) {
-      this.userNationalCode = this.toFarsiNumber(newVal);
+      // this.userNationalCode = this.toFarsiNumber(newVal);
       if (newVal.length > 0) {
         this.userNationalCodeError = false;
+      }
+    },
+    userAgeCat(newVal) {
+      if (newVal.length > 0) {
+        this.userAgeCatError = false;
       }
     },
     userEdjucation(newVal) {
@@ -269,13 +319,141 @@ export default {
       }
     },
   },
+  created() { 
+    this.getData();
+    // if (this.$cookies.get('childrenItems')) {
+    //   console.log(this.$cookies.get('childrenItems'))
+    //   this.children = this.$cookies.get('childrenItems');
+    // }
+    
+  },
+  
   mounted() {
     if (this.children.length === 0) {
       this.hasChild = false;
     }
-    console.log(this.hasChild);
   },
   methods: {
+    openDialog() {
+      this.dialog = true;
+    },
+    getData() {
+      axios({
+        method: "GET",
+        url: "http://194.9.56.86/api/v1/account/child-register/",
+        headers: {
+          Authorization: `Bearer ${this.$cookies.get("userToken")}`,
+          'Content-Type': 'application/json'
+        },
+      })
+        .then((response) => {
+          for (let i = 0; i < response.data.length; i++) {
+            this.children.push({
+              childName: response.data[i].first_name,
+              childLastName: response.data[i].last_name,
+              childnCode: response.data[i].national_code,
+              childBirthDay: '۱۴۰۲/۱۰/۱۲',
+              childAgeCat: response.data[i].type,
+              childEducation: response.data[i].grade,
+              childSchoolStudy: response.data[i].school_address,
+              childWhichChild: 'دوم',
+            })
+          }
+          this.hasChild = true;
+          this.componentKey += 1;
+        })
+        .catch((err) => {
+          console.log(err);
+          this.$swal("مشکلی پیش آمد!", err.message, "error");
+        });
+    },
+    closeFunc() {
+      this.dialog = false;
+      this.userName = '';
+      this.userLastName = '';
+      this.userNationalCode = '';
+      this.userBirthDay = '';
+      this.userEdjucation = '';
+      this.userSchoolStudy = '';
+      this.whichChild = '';
+      this.userNameError = false;
+      this.userLastNameError = false;
+      this.userNationalCodeError = false;
+      this.userEdjucationError = false;
+      this.userSchoolStudyError = false;
+      this.whichChildError = false;
+    },
+    submitFunc(
+      userName,
+      userLastName,
+      userNationalCode,
+      userBirthDay,
+      userAgeCat,
+      userEdjucation,
+      userSchoolStudy,
+      whichChild
+    ) {
+      this.children.push({
+        childName: userName,
+        childLastName: userLastName,
+        childnCode: userNationalCode,
+        childBirthDay: userBirthDay,
+        childAgeCat: userAgeCat,
+        childEducation: userEdjucation,
+        childSchoolStudy: userSchoolStudy,
+        childWhichChild: whichChild,
+      })
+      let itemArray = [
+        userName,
+        userLastName,
+        userNationalCode,
+        userAgeCat,
+        userEdjucation,
+        userSchoolStudy,
+        whichChild
+      ]
+      if (this.emptyCheck(itemArray) == true) {
+        // userBirthDay = this.convertToGerigorian(userBirthDay);
+
+        var bodyFormData = new FormData();
+        JSON.stringify(bodyFormData.append("first_name", userName));
+        JSON.stringify(bodyFormData.append("last_name", userLastName));
+        JSON.stringify(bodyFormData.append("national_code", userNationalCode));
+        // bodyFormData.append("birth_date", birthDay);
+        JSON.stringify(bodyFormData.append("type", userAgeCat));
+        JSON.stringify(bodyFormData.append("grade", userEdjucation));
+        JSON.stringify(bodyFormData.append("school_address", userSchoolStudy));
+        axios({
+          method: "POST",
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${this.$cookies.get("userToken")}`
+          },
+          url: "http://194.9.56.86/api/v1/account/child-register/",
+          data: bodyFormData,
+        })
+          .then((response) => {
+            console.log(response)
+            if (response.status == 201) {
+              this.hasChild = true;
+              this.componentKey += 1;
+              this.$swal("اطلاعات فرزند با موفقیت ذخیره شد!", "", "success");
+              this.dialog = false;
+            } else {
+              this.$swal("مشکلی پیش آمد، لطفا مجددا تلاش نمایید!", "error");
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+            this.$alert(err.response.data.message, "", "error");
+          });
+      }
+    },
+    goToDesctop() {
+      this.$cookies.set('showModal');
+      this.$emit("reset-app");
+      this.$router.push({ name: "Home" });
+    },
     stopChars(e) {
       if(e.key.match(/^[a-zA-Z]*$/) && !(e.key == 'Backspace'))
       {
@@ -384,13 +562,16 @@ export default {
             this.userLastNameError = true;
           } else if (i == 2) {
             this.userNationalCodeError = true;
-          } else if (i == 3) {
-            this.userEdjucationError = true;
+          }  else if (i == 3) {
+            this.userAgeCat = true;
           } else if (i == 4) {
-            this.userSchoolStudyError = true;
+            this.userEdjucation = true;
           } else if (i == 5) {
-            this.whichChildError = true;
+            this.userSchoolStudy = true;
+          } else if (i == 6) {
+            this.whichChild = true;
           }
+
         }
       }
       if (emptyCheck == true) {
@@ -402,77 +583,10 @@ export default {
           }
         });
         this.dialog = true;
-        console.log(this.dialog)
         return false;
       } else {
         return true;
       }
-    },
-    submitFunc(
-      userName,
-      userLastName,
-      userNationalCode,
-      userEdjucation,
-      userSchoolStudy,
-      whichChild
-    )
-    {
-      let itemArray = [
-        userName,
-        userLastName,
-        userNationalCode,
-        userEdjucation,
-        userSchoolStudy,
-        whichChild,
-      ];
-      if (this.emptyCheck(itemArray) == true) {
-        // userBirthDay = this.convertToGerigorian(userBirthDay);
-        // var bodyObj = {
-        //   first_name: userName,
-        //   last_name: userLastName,
-        //   national_code: userNationalCode,
-        //   education: userEdjucation,
-        //   school_address: userSchoolStudy,
-        //   which_child: whichChild
-        // };
-        // const requestOptions = {
-        //     method: 'POST',
-        //     headers: { 'Content-Type': 'application/json' },
-        //     body: JSON.stringify(bodyObj)
-        // };
-        // fetch("http://192.168.100.15:8000/api/v1/account/parent-register/", requestOptions)
-        //     .then(async response => {
-        //       const data = await response.json();
-        //       this.dialog = true;
-        //       console.log(data)
-        //       // check for error response
-        //       if (!response.ok) {
-        //           // get error message from body or default to response status
-        //           const error = (data && data.message) || response.status;
-        //           console.log(error)
-        //           // return Promise.reject(error);
-        //       }
-        //     })
-        //     .catch(error => {
-        //       console.log(error)
-        // });
-      }
-    },
-    closeFunc() {
-      this.dialog = false;
-      this.userName = '';
-      this.userLastName = '';
-      this.userNationalCode = '';
-      this.userBirthDay = '';
-      this.userEdjucation = '';
-      this.userSchoolStudy = '';
-      this.whichChild = '';
-      this.userNameError = false;
-      this.userLastNameError = false;
-      this.userNationalCodeError = false;
-      this.userEdjucationError = false;
-      this.userSchoolStudyError = false;
-      this.whichChildError = false;
     },
   },
 };
@@ -487,8 +601,8 @@ export default {
 .flex_column_class {
   display: flex;
   flex-flow: column;
-  justify-content: flex-start;
-  align-items: flex-start;
+  justify-content: center;
+  align-items: center;
   height: 100%;
 }
 .btnContainer {
@@ -518,14 +632,7 @@ export default {
   background-color: #525355;
   font-weight: bold;
 }
-.tableClass {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  color: #373739;
-  background-color: hsl(31, 100%, 48%, 0.5);
-  border-radius: 7px;
-}
+
 .titlePart {
   display: flex;
   margin-top: 10px;

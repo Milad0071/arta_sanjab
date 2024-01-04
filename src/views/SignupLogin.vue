@@ -45,6 +45,7 @@
                 <div class="btnContainer flex_class">
                   <v-btn
                     v-if="userType == true"
+                    :loading="phoneBtnLoading"
                     color="#525355"
                     class="text-none childBtn"
                     size="large"
@@ -56,6 +57,7 @@
                   </v-btn>
                   <v-btn
                     v-else
+                    :loading="phoneBtnLoading"
                     color="#525355"
                     class="text-none childBtn"
                     size="large"
@@ -72,14 +74,14 @@
         </div>
         <v-dialog
           v-model="dialog"
-          width="auto"
+          style="width: 35% !important;"
         >
           <v-card
             class="py-12 px-8 text-center mx-auto ma-4"
-            max-width="420"
+            style="font-family: iranSansRegular !important;"
             width="100%"
           >
-            <h3 class="text-h6 mb-2">
+            <h3 class="text-h6 mb-2" style="font-family: iranSansRegular !important;">
               لطفا کد ارسالی به شماره همراه خود را در کادر زیر وارد نمایید:
             </h3>
 
@@ -93,16 +95,48 @@
                 length="4"
               ></v-otp-input>
             </v-locale-provider>
-            <v-btn
-              color="#f68100"
-              class="text-none childBtn"
-              size="large"
-              min-width="200"
-              variant="outlined"
-              @click="validateCode(otp)"
-            >
-            ارسال کد
-            </v-btn>
+            <div v-if="startCountDown == true" class="timerClass flex_class">
+              <p>ارسال مجدد پیامک:</p>
+              <div v-if="timer > 9" class="flex_class mr-1">00:{{timer}}</div>
+              <div v-else class="flex_class mr-1">00:0{{timer}}</div>
+            </div>
+            <div v-if="sendAgin == false" class="flex_class">
+              <v-btn
+                :loading="verificationBtnLoading"
+                color="#f68100"
+                class="text-none childBtn"
+                size="large"
+                min-width="200"
+                variant="outlined"
+                @click="validateCode(otp)"
+              >
+              ارسال کد
+              </v-btn>
+            </div>
+            <div v-else class="flex_class">
+              <v-btn
+                :loading="verificationBtnLoading"
+                color="#f68100"
+                class="text-none childBtn"
+                size="large"
+                min-width="200"
+                variant="outlined"
+                @click="validateCode(otp)"
+              >
+              ارسال کد
+              </v-btn>
+              <v-btn
+                :loading="verificationBtnLoading"
+                color="#f68100"
+                class="text-none sendAgainBtn"
+                size="large"
+                min-width="200"
+                variant="outlined"
+                @click="logninFunc(userPhoneNum, 0)"
+              >
+              ارسال مجدد پیامک
+              </v-btn>
+            </div>
           </v-card>
         </v-dialog>
       </div>
@@ -113,10 +147,16 @@
 import axios from "axios";
 
 export default {
+  emits: ['reset-app'],
   data() {
     return {
+      timer: 60,
       userPhoneNum: '',
       otp: '',
+      sendAgin: false,
+      startCountDown: false,
+      phoneBtnLoading: false,
+      verificationBtnLoading: false,
       userPhoneNumError: false,
       userType: true,
       dialog: false,
@@ -180,14 +220,14 @@ export default {
       
     },
     goToAdminForm() {
-      this.userType = false;
-      document.getElementById("adminLoginBtn").style.color = "white";
-      document.getElementById("adminLoginBtn").style.backgroundColor = "#f68100";
-      document.getElementById("adminLoginBtn").style.fontWeight = "bold";
-      document.getElementById("userLoginBtn").style.color = "#f68100";
-      document.getElementById("userLoginBtn").style.backgroundColor = "white";
-      document.getElementById("userLoginBtn").style.fontWeight = "";
-      // this.$swal("در دست توسعه", "", "info");
+      // this.userType = false;
+      // document.getElementById("adminLoginBtn").style.color = "white";
+      // document.getElementById("adminLoginBtn").style.backgroundColor = "#f68100";
+      // document.getElementById("adminLoginBtn").style.fontWeight = "bold";
+      // document.getElementById("userLoginBtn").style.color = "#f68100";
+      // document.getElementById("userLoginBtn").style.backgroundColor = "white";
+      // document.getElementById("userLoginBtn").style.fontWeight = "";
+      this.$swal("در دست توسعه", "", "info");
     },
     emptyCheck(phoneNum) {
       if (phoneNum == null || phoneNum == "") {
@@ -203,63 +243,43 @@ export default {
       }
     },
     logninFunc(userPhoneNum, userType) {
+      this.phoneBtnLoading = true;
+      this.sendAgin = false;
       userPhoneNum = this.toEngNumber(userPhoneNum);
       if (this.emptyCheck(userPhoneNum) === true) {
         if (userType == '1' && this.userPhoneNum == '۰۹۱۳۳۰۹۱۴۷۸') {
           this.$cookies.set('admin');
-            this.$router.push({ name: "adminDashboard" });
+          this.phoneBtnLoading = false;
+          this.$router.push({ name: "adminDashboard" });
         } else {
-          // var bodyObj = {
-          //   phone_number: userPhoneNum,
-          // }
-
-          // const requestOptions = {
-          //   method: 'POST',
-          //   headers: { 'Content-Type': 'application/json' },
-          //   body: JSON.stringify(bodyObj)
-          // };
-          // fetch("http://194.9.56.86/api/v1/account/login-register/", requestOptions)
-          //   .then(response => {
-          //     this.dialog = true;
-          //     const data = response;
-          //     // const data = response.headers.getSetCookie();
-          //     console.log(data)
-          //     const sessionId = this.getSessionIdFromCookie(data);
-          //     console.log(sessionId);
-          //     if (!response.ok) {
-          //         const error = (data && data.message) || response.status;
-          //         console.log(error)
-          //         return Promise.reject(error);
-          //     }
-          //   })
-          //   .catch(error => {
-          //       console.log(error)
-          //   });
-
           var bodyFormData = new FormData();
           JSON.stringify(bodyFormData.append("phone_number", userPhoneNum));
             axios({
               method: "POST",
               url: "http://194.9.56.86/api/v1/account/login-register/",
               headers: {
-              'Content-Type': "application/json"
+                'Content-Type': "application/json",
               },
-              withCredentials: true,
               data: bodyFormData,
             })
               .then((response) => {
-                console.log(response);
-                console.log(response.headers);
-                console.log(typeof response.data)
-                this.$cookies.set('sessionId', response.data)
-                this.dialog = true;
-                // this.$cookies.set("userToken", response.data.access_token);
-                // this.$cookies.set('userEntered', true);
-                // this.$router.push({ path: "/home" });
+                if (response.status == 200) {
+                  console.log(response);
+                  this.startCountDown = true;
+                  this.countDownTimer();
+                  this.$cookies.set('sessionId', response.data);
+                  this.phoneBtnLoading = false;
+                  this.dialog = true;
+                } else {
+                  this.$swal("مشکلی پیش آمد!");
+                  this.phoneBtnLoading = false;
+                }
+                
               })
               .catch((err) => {
                 console.log(err);
                 this.$swal("مشکلی پیش آمد!", err.message, "error");
+                this.phoneBtnLoading = false;
               });
         // } 
           // else {
@@ -267,67 +287,53 @@ export default {
         }
       }
     },
+    countDownTimer() {
+      if (this.timer > 0) {
+        setTimeout(() => {
+            this.timer -= 1
+            this.countDownTimer()
+        }, 1000)
+      } else {
+        this.startCountDown = false
+        this.sendAgin = true;
+      }
+    },
     validateCode(recivedCode) {
-      // recivedCode = parseInt(recivedCode);
-      // var bodyObj = {
-      //   code: recivedCode,
-      // }
-      // console.log(this.$cookies.get('sessionId'))
-      // const requestOptions = {
-      //   method: 'POST',
-        
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   credentials: 'include',
-      //   body: JSON.stringify(bodyObj)
-      // };
-      // fetch('http://194.9.56.86/api/v1/account/phone-verification/', requestOptions)
-      //   .then( response => {
-      //     if (response.ok) {
-      //       console.log(response);
-      //       this.dialog = false;
-      //       this.$router.push({ name: "ParentsDetails" });
-      //     } 
-      //     this.dialog = false;
-      //     // check for error response
-      //     if (!response.ok) {
-      //       // get error message from body or default to response status
-      //       this.dialog = false;
-      //       // const error = (data && data.message) || response.status;
-      //       // console.log(error)
-      //       this.$swal("کد به درستی وارد نشده است!", "", "error")
-      //       // return Promise.reject(error);
-      //     }
-      //   })
-      //   .catch(error => {
-      //     console.log(error)
-      //   });
-
-
-        var bodyFormData = new FormData();
-          JSON.stringify(bodyFormData.append("code", recivedCode));
-            axios({
-              method: "POST",
-              url: "http://192.168.100.15:8000/api/v1/account/phone-verification/",
-              headers: {
-                "content-type": "application/json",
-              },
-              data: bodyFormData,
-              withCredentials: true,
-            })
-              .then((response) => {
-                console.log(response);
-                this.dialog = false;
-                this.$router.push({ name: "ParentsDetails" });
-                // this.$cookies.set("userToken", response.data.access_token);
-                // this.$cookies.set('userEntered', true);
-                // this.$router.push({ path: "/home" });
-              })
-              .catch((err) => {
-                console.log(err);
-                this.$swal("مشکلی پیش آمد!", err.message, "error");
-              });
+      this.verificationBtnLoading = true;
+      var bodyFormData = new FormData();
+      JSON.stringify(bodyFormData.append("code", recivedCode));
+        axios({
+          method: "POST",
+          url: `http://194.9.56.86/api/v1/account/phone-verification/?session=${this.$cookies.get('sessionId')}`,
+          headers: {
+            "content-type": "application/json",
+          },
+          data: bodyFormData,
+        })
+          .then((response) => {
+            if (response.status == 201) {
+              this.dialog = false;
+              this.verificationBtnLoading = false;
+              this.$cookies.set("userToken", response.data.access);
+              this.$cookies.set('userEntered', true);
+              this.$cookies.set('showBars');
+              this.$emit("reset-app");
+              this.$router.push({ name: "Home" });
+            } else if (response.status == 200) {
+              this.dialog = false;
+              this.verificationBtnLoading = false;
+              this.$cookies.set('showBars');
+              this.$router.push({ name: "ParentsDetails" });
+            } else {
+              this.$swal("مشکلی پیش آمد، لطفا مجدد تلاش نمایید!", "error");
+              this.verificationBtnLoading = false;
+            }
+            
+          })
+          .catch((err) => {
+            this.$swal("مشکلی پیش آمد!", err.message, "error");
+            this.verificationBtnLoading = false;
+          });
     }
   },
 };
@@ -440,11 +446,27 @@ input::-moz-placeholder {
   width: 60%;
   height: 3rem;
   margin-top: 6%;
+  align-self: center;
 }
 .childBtn:hover {
   border: none;
   color: white !important;
   background-color: #f68100;
+  font-weight: bold;
+}
+.sendAgainBtn {
+  font-weight: bold;
+  color: #3d3d3d !important;
+  width: 10%;
+  height: 3rem;
+  margin-top: 6%;
+  margin-right: 1%;
+  align-self: center;
+}
+.sendAgainBtn:hover {
+  border: none;
+  color: white !important;
+  background-color: #3d3d3d;
   font-weight: bold;
 }
 .userRadius {
@@ -479,6 +501,12 @@ input::-moz-placeholder {
   color: white;
   background-color: #f68100;
   font-weight: bold;
+}
+.timerClass {
+  font-family: iranSansRegular !important;
+  font-size: 20px;
+  font-weight: bold;
+  color: #6d6e71;
 }
 </style>
 <style>

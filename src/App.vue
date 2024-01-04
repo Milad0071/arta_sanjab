@@ -1,9 +1,9 @@
 <template>
-  <v-app class="mainApp">
+  <v-app class="mainApp" :key="resetKey">
     <AppBar @rerender-drawer="forceRender" v-if="show"/>
     <Drawer :key="componentKey" :renderToken="renderToken" :pageNum="pageNum" v-if="show" />
 
-    <router-view />
+    <router-view @reset-app="forceReset"/>
   </v-app>
 </template>
 
@@ -18,6 +18,7 @@ export default {
       show: false,
       pageNum: 1,
       componentKey: 0,
+      resetKey: 0,
       renderToken: 0,
     }
   },
@@ -26,6 +27,7 @@ export default {
     Drawer
   },
   created() {
+    console.log('hi')
     this.showBars();
     
   },
@@ -35,6 +37,11 @@ export default {
       this.$cookies.set('addChildActive', 1)
       this.componentKey += 1;
     },
+    forceReset() {
+      console.log('got it')
+      this.showBars();
+      this.resetKey += 1;
+    },
     showBars() {
       setTimeout(() => {
         if (this.$route.name === 'SignupLogin' || this.$route.name === 'ParentsDetails' ||  this.$route.name === 'quizPage' || this.$route.name === 'PlayerComp') {
@@ -43,7 +50,7 @@ export default {
           this.show = true;
         }
         
-      }, 500);
+      }, 300);
     }
   },
 }

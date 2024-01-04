@@ -2,19 +2,6 @@
   <v-locale-provider style="font-family: iranSansRegular !important;" rtl>
     <v-app-bar class="mainBar" block :elevation="1" scroll-threshold="0">
       <div class="contentBar">
-        <!-- submit new child BTN -->
-        <div class="btnContainer">
-          <v-btn
-            color="#f68100"
-            class="text-none childBtn"
-            size="large"
-            min-width="200"
-            variant="outlined"
-            @click="goToAddChild()"
-          >
-            ثبت فرزند
-          </v-btn>
-        </div>
         <!-- notification bell -->
         <div class="userProfilePart">
           <v-menu>
@@ -118,12 +105,6 @@ export default {
     }
   },
   methods: {
-    goToAddChild() {
-      this.$emit("rerender-drawer", 1);
-      this.$cookies.remove('addChildActive');
-      this.$cookies.remove('parentsDetailsActive');
-      this.$router.push({ name: "AddChild" });
-    },
     goToItem(id) {
       if (id == 1) {
         this.$emit("rerender-drawer", 2);
@@ -154,23 +135,8 @@ export default {
 .contentBar {
   width: 100% !important;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
-}
-.btnContainer {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
-.childBtn {
-  font-weight: bold;
-  color: #f68100;
-}
-.childBtn:hover {
-  border: none;
-  color: white !important;
-  background-color: #f68100;
-  font-weight: bold;
 }
 .userProfilePart {
   display: flex;

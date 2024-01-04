@@ -1,23 +1,36 @@
 <template>
-  <v-app style="margin-right: 20%;">
+  <v-app class="mainContainer">
     <v-locale-provider rtl>
-      <div style="padding-top: 5%">
-        <!-- radios -->
-        <v-radio-group class="radio_part" v-model="parent_type" inline>
-          <v-radio
-            label="پدر"
-            value="1"
-            class="radio_text ml-7"
-            color="#f68100"
-          ></v-radio>
-          <v-radio
-            label="مادر"
-            value="2"
-            class="radio_text"
-            color="#f68100"
-          ></v-radio>
-        </v-radio-group>
+      <div style="margin: 5%; border: 2px solid #6d6e71;">
+        <div class="titlePart">
+          <div class="titleShape"></div>
+          <h2>تکمیل اطلاعات والدین</h2>
+        </div>
+        <div class="topText flex_class">
+          <p>لطفا اطلاعات خود را به طور کامل وارد نمایید:</p>
+        </div>
+        
         <div class="inputContainer row">
+          <div class="input_part">
+            <!-- reletive input -->
+            <v-select
+              :items="userReletivesList"
+              density="comfortable"
+              class="input_1"
+              variant="plain"
+              label="نسبت"
+              placeholder="نسبت خود با کودک را مشخص نمایید"
+              item-text="title"
+              item-value="value"
+              v-model="userReletivity"
+            ></v-select>
+            <p
+              v-if="userReletivityError == true"
+              style="color: red; font-weight: fold"
+            >
+              فیلد نام نباید خالی باشد!
+            </p>
+          </div>
           <div class="input_part">
             <!-- parent name -->
             <v-text-field
@@ -279,10 +292,22 @@
             variant="outlined"
             @click="
               signupFunc(
+                userReletivity,
                 userName,
                 userLastName,
+                userFatherName,
                 userNationalCode,
-                
+                userBirthDay,
+                userEdjucation,
+                userEdjucationStudyField,
+                userTelephone,
+                userRegionalMunicipality,
+                userPostalCode,
+                userJob,
+                userOfficeAddress,
+                userAddress,
+                userGirls,
+                userBoys
               )
             "
           >
@@ -304,6 +329,7 @@ export default {
       type: Number
     },
   },
+  emits: ['reset-app'],
   data() {
     return {
       userNameError: false,
@@ -320,8 +346,9 @@ export default {
       userBoysError: false,
       userBirthDayError: false,
       validating: false,
+      userReletivityError: false,
+      userReletivity: null,
       otp: '',
-      parent_type: "1",
       userName: "",
       userLastName: "",
       userFatherName: "",
@@ -337,9 +364,24 @@ export default {
       userOfficeAddress: "",
       userGirls: "",
       userBoys: "",
+      userReletivesList: [
+        {
+          value: 1,
+          title: 'پدر',
+        },
+        {
+          value: 2,
+          title: 'مادر',
+        },
+      ]
     };
   },
   watch: {
+    userReletivity(newVal) {
+      if (newVal.length > 0) {
+        this.userReletivityError = false;
+      }
+    },
     userName(newVal) {
       if (newVal.length > 0) {
         this.userNameError = false;
@@ -507,29 +549,34 @@ export default {
     emptyCheck(itemArray) {
       let emptyCheck = false;
       for (let i = 0; i < itemArray.length; i++) {
-        if (itemArray[i] == "") {
+        console.log(i , itemArray[i])
+        if (itemArray[i] == "" || itemArray[i] == null) {
           emptyCheck = true;
           if (i == 0) {
-            this.userNameError = true;
+            this.userReletivityError = true;
           } else if (i == 1) {
-            this.userLastNameError = true;
+            this.userNameError = true;
           } else if (i == 2) {
-            this.userFatherNameError = true;
+            this.userLastNameError = true;
           } else if (i == 3) {
-            this.userNationalCodeError = true;
+            this.userFatherNameError = true;
           } else if (i == 4) {
-            this.userTelephoneError = true;
+            this.userNationalCodeError = true;
           } else if (i == 5) {
-            this.userAddressError = true;
-          } else if (i == 6) {
-            this.userRegionalMunicipalityError = true;
-          } else if (i == 7) {
-            this.userPostalCodeError = true;
+            this.userBirthDayError = true;
+          }  else if (i == 7) {
+            this.userTelephoneError = true;
           } else if (i == 8) {
-            this.userJobError = true;
+            this.userRegionalMunicipalityError = true;
           } else if (i == 9) {
-            this.userGirlsError = true;
+            this.userPostalCodeError = true;
           } else if (i == 10) {
+            this.userJobError = true;
+          } else if (i == 11) {
+            this.userAddressError = true;
+          } else if (i == 12) {
+            this.userGirlsError = true;
+          } else if (i == 13) {
             this.userBoysError = true;
           }
         }
@@ -542,85 +589,83 @@ export default {
       }
     },
     signupFunc(
-      name,
-      lastName,
-      nCode,
+      userReletivity,
+      userName,
+      userLastName,
+      userFatherName,
+      userNationalCode,
+      userBirthDay,
+      userEdjucation,
+      userEdjucationStudyField,
+      userTelephone,
+      userRegionalMunicipality,
+      userPostalCode,
+      userJob,
+      userOfficeAddress,
+      userAddress,
+      userGirls,
+      userBoys
     ) {
-      // let itemArray = [
-      //   name,
-      //   lastName,
-      //   nCode,
-      // ];
-      // if (this.emptyCheck(itemArray) == true) {
-        // userBirthDay = this.convertToGerigorian(userBirthDay);
-
-        // var bodyObj = {
-        //   first_name: name,
-        //   last_name: lastName,
-        //   national_code: nCode,
-        // };
-        // console.log(JSON.stringify(bodyObj));
-
-        // const requestOptions = {
-        //   method: 'POST',
-        //   headers: {
-        //     'Access-Control-Allow-Origin' : '*',
-        //     'Content-Type': 'application/json',
-        //   },
-        //   credentials: 'include',
-        //   body: JSON.stringify(bodyObj)
-        // };
-        // fetch("http://194.9.56.86/api/v1/account/user-register/", requestOptions)
-        //     .then(async response => {
-        //       const data = await response.json();
-        //       console.log(data)
-        //       // check for error response
-        //       if (!response.ok) {
-        //           // get error message from body or default to response status
-        //           const error = (data && data.message) || response.status;
-        //           console.log(error)
-        //           // return Promise.reject(error);
-        //       }
-        //     })
-        //     .catch(error => {
-        //       console.log(error)
-        //     });
-
-
-        // console.log(typeof phoneNum, typeof phoneNum)
-      var bodyFormData = new FormData();
-      JSON.stringify(bodyFormData.append("first_name", name));
-      JSON.stringify(bodyFormData.append("last_name", lastName));
-      // bodyFormData.append("father_name", userFatherName);
-      JSON.stringify(bodyFormData.append("national_code", nCode));
-      // bodyFormData.append("birth_date", birthDay);
-      // bodyFormData.append("education", userEdjucation);
-      // bodyFormData.append("field_study", userEdjucationStudyField);
-      // bodyFormData.append("telephone", userTelephone);
-      // bodyFormData.append("address", userAddress);
-      // bodyFormData.append("Regional_Municipality", userRegionalMunicipality);
-      // bodyFormData.append("postal_code", userPostalCode);
-      // bodyFormData.append("job", userJob);
-      // bodyFormData.append("office_address", userOfficeAddress);
-      // bodyFormData.append("girls", userGirls);
-      // bodyFormData.append("boys", userBoys);
+      let itemArray = [
+        userReletivity,
+        userName,
+        userLastName,
+        userFatherName,
+        userNationalCode,
+        userBirthDay,
+        userTelephone,
+        userRegionalMunicipality,
+        userPostalCode,
+        userJob,
+        userOfficeAddress,
+        userGirls,
+        userBoys
+      ];
+      if (this.emptyCheck(itemArray) == true) {
+        userReletivity = parseInt(userReletivity);
+        var bodyFormData = new FormData();
+        JSON.stringify(bodyFormData.append("type", userReletivity));
+        JSON.stringify(bodyFormData.append("first_name", userName));
+        JSON.stringify(bodyFormData.append("last_name", userLastName));
+        JSON.stringify(bodyFormData.append("father_name", userFatherName));
+        JSON.stringify(bodyFormData.append("national_code", userNationalCode));
+        // bodyFormData.append("birth_date", birthDay);
+        JSON.stringify(bodyFormData.append("education", userEdjucation));
+        JSON.stringify(bodyFormData.append("field_study", userEdjucationStudyField));
+        JSON.stringify(bodyFormData.append("telephone", userTelephone));
+        JSON.stringify(bodyFormData.append("address", userAddress));
+        JSON.stringify(bodyFormData.append("Regional_Municipality", userRegionalMunicipality));
+        JSON.stringify(bodyFormData.append("postal_code", userPostalCode));
+        JSON.stringify(bodyFormData.append("job", userJob));
+        JSON.stringify(bodyFormData.append("office_address", userOfficeAddress));
+        JSON.stringify(bodyFormData.append("girls", userGirls));
+        JSON.stringify(bodyFormData.append("boys", userBoys));
         axios({
           method: "POST",
           headers: {
             'Content-Type': 'application/json',
           },
-          url: "http://192.168.100.15:8000/api/v1/account/user-register/",
+          url: `http://194.9.56.86/api/v1/account/user-register/?session=${this.$cookies.get('sessionId')}`,
           data: bodyFormData,
-          withCredentials: true,
         })
           .then((response) => {
             console.log(response)
+            if (response.status == 201) {
+              this.$cookies.set("userToken", response.data.access);
+              this.$cookies.set('userEntered', true);
+              if (this.$cookies.get('showBars')) {
+                this.$emit("reset-app");
+              }
+              this.$router.push({ path: "/add-child" });
+            } else {
+              this.$swal("مشکلی پیش آمد، لطفا مجددا تلاش نمایید!", "error");
+            }
           })
           .catch((err) => {
             console.log(err);
-            this.$alert(err.response.data.message, "", "error");
+            this.$swal(err.response.data.message, "", "error");
           });
-      
+      }
     },
   },
 };
@@ -631,21 +676,33 @@ export default {
   justify-content: center;
   align-items: center;
 }
-.radio_part {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
+.mainContainer {
+  background-color: #fbcd99;
 }
-.radio_text {
-  font-size: 20px !important;
+.titlePart {
+  display: flex;
+  margin-top: 10px;
+  padding-right: 0px;
+}
+.titlePart h2 {
+  margin-right: 10px;
+  color: #6d6e71;
+}
+.titleShape {
+  border-left: 10px solid #6d6e71;
+  border-radius: 7px 0 0 7px;
+}
+.topText {
+  padding: 1% 1% 0 0;
+  font-size: 18px;
+  font-weight: bold;
 }
 .inputContainer {
   display: grid;
   grid-gap: 2%;
   grid-template-columns: repeat(3, minmax(350px, 10fr));
   justify-items: center;
-  padding-top: 0%;
+  padding: 0%;
 }
 .input_part {
   display: flex;
@@ -691,6 +748,7 @@ export default {
   font-weight: bold;
   color: #f68100 !important;
   width: 26%;
+  margin-bottom: 3%;
 }
 .submitBtn:hover {
   border: none;
