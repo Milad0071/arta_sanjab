@@ -8,6 +8,7 @@
   </v-app>
 </template>
 <script>
+import axios from 'axios';
 
 export default {
   data: () => {
@@ -15,7 +16,30 @@ export default {
       video: "./../../../../Arta_Pardaz/sanjab-arta/src/assets/example.mp4"
     }
   },
-
+  created() {
+    this.getData();
+  },
+  methods: {
+    getData() {
+      var id = parseInt(this.$cookies.get('courseId'))
+      console.log(typeof id)
+      axios({
+        method: "GET",
+        url: `http://194.9.56.86/api/v1/dashboard/my-course/${id}/?session=${this.$cookies.get('sessionId')}`,
+        header: "application/json",
+        headers: {
+          Authorization: `Bearer ${this.$cookies.get("userToken")}`,
+          'Content-Type': 'application/json'
+        },
+      })
+        .then((response) => {
+          console.log(response)
+        })
+        .catch((err) => {
+          this.$swal("مشکلی پیش آمد!", err.message, "error");
+        });
+  }
+  },
 }
 </script>
 <style scoped>

@@ -1,5 +1,5 @@
 <template>
-  <v-app class="mainContainer">
+  <v-app>
     <v-locale-provider rtl>
       <div style="margin: 5%; border: 2px solid #6d6e71;">
         <div class="titlePart">
@@ -675,9 +675,6 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-}
-.mainContainer {
-  background-color: #fbcd99;
 }
 .titlePart {
   display: flex;

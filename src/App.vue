@@ -27,7 +27,6 @@ export default {
     Drawer
   },
   created() {
-    console.log('hi')
     this.showBars();
     
   },

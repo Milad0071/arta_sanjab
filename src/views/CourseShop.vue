@@ -4,45 +4,23 @@
       <div class="mainContainer flex_class">
         <v-card
           class="mx-auto my-12"
-          max-width="374"
+          style="border: 1px solid #6d6e71;"
+          min-width="374"
+          elevation="24"
+          v-for="(course, index) in courses"
+          :key="index"
         >
           <v-img
             cover
-            height="250"
-            src="https://cdn.vuetifyjs.com/images/cards/cooking.png"
+            height="320"
+            src="./../assets/sanjabTextLogo.png"
           ></v-img>
           <v-card-item>
-            <v-card-title>رده سنی ۷-۴ سال</v-card-title>
-            <v-card-subtitle>
-              <span class="me-1">Local Favorite</span>
-              <v-icon
-                color="error"
-                icon="mdi-fire-circle"
-                size="small"
-              ></v-icon>
-            </v-card-subtitle>
+            <v-card-title>{{ course.name }}</v-card-title>
           </v-card-item>
           <v-card-text>
-            <v-row
-              align="center"
-              class="mx-0"
-            >
-              <v-rating
-                :model-value="4.5"
-                color="amber"
-                density="compact"
-                half-increments
-                readonly
-                size="small"
-              ></v-rating>
-              <div class="text-grey ms-4">
-                4.5 (413)
-              </div>
-            </v-row>
-            <div class="my-4 text-subtitle-1">
-              $ • Italian, Cafe
-            </div>
-            <div>Small plates, salads and sandwiches - an intimate setting with 12 indoor seats plus patio seating.</div>
+            <div>{{ course.description }}</div>
+            <div>{{ course.price }}</div>
           </v-card-text>
           <v-divider class="mx-4 mb-1"></v-divider>
           <v-card-actions class="btnLocation">
@@ -51,117 +29,7 @@
               color="#f68100"
               variant="outlined"
               size="large"
-              @click="reserve"
-            >
-              خرید دوره
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-        <v-card
-          class="mx-auto my-12"
-          max-width="374"
-        >
-          <v-img
-            cover
-            height="250"
-            src="https://cdn.vuetifyjs.com/images/cards/cooking.png"
-          ></v-img>
-          <v-card-item>
-            <v-card-title>رده سنی ۱۱-۸ سال</v-card-title>
-            <v-card-subtitle>
-              <span class="me-1">Local Favorite</span>
-              <v-icon
-                color="error"
-                icon="mdi-fire-circle"
-                size="small"
-              ></v-icon>
-            </v-card-subtitle>
-          </v-card-item>
-          <v-card-text>
-            <v-row
-              align="center"
-              class="mx-0"
-            >
-              <v-rating
-                :model-value="4.5"
-                color="amber"
-                density="compact"
-                half-increments
-                readonly
-                size="small"
-              ></v-rating>
-              <div class="text-grey ms-4">
-                4.5 (413)
-              </div>
-            </v-row>
-            <div class="my-4 text-subtitle-1">
-              $ • Italian, Cafe
-            </div>
-            <div>Small plates, salads and sandwiches - an intimate setting with 12 indoor seats plus patio seating.</div>
-          </v-card-text>
-          <v-divider class="mx-4 mb-1"></v-divider>
-          <v-card-actions class="btnLocation">
-            <v-btn
-              class="text-none buyBtn"
-              color="#f68100"
-              variant="outlined"
-              size="large"
-              @click="reserve"
-            >
-              خرید دوره
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-        <v-card
-          class="mx-auto my-12"
-          max-width="374"
-        >
-          <v-img
-            cover
-            height="250"
-            src="https://cdn.vuetifyjs.com/images/cards/cooking.png"
-          ></v-img>
-          <v-card-item>
-            <v-card-title>رده سنی ۱۴-۱۲ سال</v-card-title>
-            <v-card-subtitle>
-              <span class="me-1">Local Favorite</span>
-              <v-icon
-                color="error"
-                icon="mdi-fire-circle"
-                size="small"
-              ></v-icon>
-            </v-card-subtitle>
-          </v-card-item>
-          <v-card-text>
-            <v-row
-              align="center"
-              class="mx-0"
-            >
-              <v-rating
-                :model-value="4.5"
-                color="amber"
-                density="compact"
-                half-increments
-                readonly
-                size="small"
-              ></v-rating>
-              <div class="text-grey ms-4">
-                4.5 (413)
-              </div>
-            </v-row>
-            <div class="my-4 text-subtitle-1">
-              $ • Italian, Cafe
-            </div>
-            <div>Small plates, salads and sandwiches - an intimate setting with 12 indoor seats plus patio seating.</div>
-          </v-card-text>
-          <v-divider class="mx-4 mb-1"></v-divider>
-          <v-card-actions class="btnLocation">
-            <v-btn
-              class="text-none buyBtn"
-              color="#f68100"
-              variant="outlined"
-              size="large"
-              @click="reserve"
+              @click="buyCourse(course.id)"
             >
               خرید دوره
             </v-btn>
@@ -172,7 +40,69 @@
   </v-app>
 </template>
 <script>
+import axios from 'axios';
 
+export default {
+  data: () => {
+    return {
+      courses: [],
+    }
+  },
+  created() {
+    this.getData();
+  },
+  methods: {
+    getData() {
+      axios({
+        method: "GET",
+        url: `http://194.9.56.86/api/v1/courses/list/?session=${this.$cookies.get('sessionId')}`,
+        headers: {
+          Authorization: `Bearer ${this.$cookies.get("userToken")}`,
+          'Content-Type': 'application/json'
+        },
+      })
+        .then((response) => {
+          console.log(response)
+          for (let i = 0; i < response.data.length; i++) {
+            this.courses.push({
+              id: response.data[i].id,
+              name: response.data[i].name,
+              description: response.data[i].description,
+              price: response.data[i].price
+            })
+          }
+        })
+        .catch((err) => {
+          this.$swal("مشکلی پیش آمد!", err.message, "error");
+        });
+    },
+    buyCourse(id) {
+      id = parseInt(id);
+      var bodyFormData = new FormData();
+      JSON.stringify(bodyFormData.append("course", id)); 
+        JSON.stringify(bodyFormData.append("session_id", this.$cookies.get('sessionId')));
+        axios({
+          method: "POST",
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${this.$cookies.get("userToken")}`,
+          },
+          url: `http://194.9.56.86/api/v1/courses/create/?session=${this.$cookies.get('sessionId')}`,
+          data: bodyFormData,
+        })
+          .then((response) => {
+            if (response.status == 201) {
+              this.$cookies.set('courseId', id);
+              this.$router.push({ name: "PlayerComp" });
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+            this.$swal(err.response.data.message, "", "error");
+          });
+    },
+  }
+}
 </script>
 <style scoped>
 .flex_class {

@@ -85,12 +85,6 @@ export default {
         title: "خرید دوره",
         icon: 'mdi-basket-plus-outline',
       },
-      {
-        id: 3,
-        title: "خروج از حساب کاربری",
-        icon: 'mdi-logout',
-      },
-
     ],
     items_2: [
       { title: "Click Me 5" },
@@ -117,12 +111,6 @@ export default {
         this.$cookies.remove('parentsDetailsActive');
         this.$cookies.remove('coursesShopActive');
         this.$router.push({ name: "courseShop" });
-      } else if (id == 3) {
-        if (this.admin == true) {
-          this.admin = false;
-          this.$cookies.remove('admin');
-        }
-        this.$router.push({ name: "SignupLogin" });
       }
     }
   },
