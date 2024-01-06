@@ -1,7 +1,7 @@
 <template>
   <v-app class="mainApp" :key="resetKey">
-    <AppBar @rerender-drawer="forceRender" v-if="show"/>
-    <Drawer :key="componentKey" :renderToken="renderToken" :pageNum="pageNum" v-if="show" />
+    <AppBar @rerender-drawer="forceRender" v-if="show == true"/>
+    <Drawer :key="componentKey" :renderToken="renderToken" :pageNum="pageNum" v-if="show == true" />
 
     <router-view @reset-app="forceReset"/>
   </v-app>
@@ -43,7 +43,7 @@ export default {
     },
     showBars() {
       setTimeout(() => {
-        if (this.$route.name === 'SignupLogin' || this.$route.name === 'ParentsDetails' ||  this.$route.name === 'quizPage' || this.$route.name === 'PlayerComp') {
+        if (this.$route.name === 'SignupLogin' || this.$route.name === 'ParentsDetails' ||  this.$route.name === 'quizPage') {
           this.show = false;
         } else {
           this.show = true;

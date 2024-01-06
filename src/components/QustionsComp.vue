@@ -1,18 +1,18 @@
 <template>
-  <v-app>
+  <v-app @click.right.prevent @copy.prevent @paste.prevent>
     <v-locale-provider rtl>
       <div class="mainContainer flex_column_class">
-        <p>(فرزند من شبیه موارد زیر است):</p>
+        <h2>(فرزند من شبیه موارد زیر است):</h2>
         <div v-for="(question, index) in paginated" :key="index" class="questionMold flex_column_class">
-          <div class="titlePart flex_class">
-            <p>{{ question.No}} - </p>
-            <p class="mr-2">{{ question.question }}</p>
+          <div class="titlePart flex_class mr-2">
+            <h3>{{ index+1 }} - </h3>
+            <h3 class="mr-2">{{ question.question }}</h3>
           </div>
           <div class="answersPart">
             <div class="flex_class topPart" style="border-bottom: 1px solid black;">
-              <v-radio-group v-model="chosenAnswer[index]">
+              <v-radio-group v-model="chosenAnswer[question.No]">
                 <div class="seperatorClass pl-1">
-                  <v-radio color="#f68100" label="مطمئن نیست یا نمی‌دانم" value="9"></v-radio>
+                  <v-radio class="radioClass" color="#1b1c1c" label="مطمئن نیستم یا نمی‌دانم" value="9"></v-radio>
                 </div>
                 
                 <div class="toggleBtn">
@@ -20,15 +20,15 @@
                     color="#f68100"
                     density="compact"
                     divided
-                    v-model="chosenAnswer[index]"
+                    v-model="chosenAnswer[question.No]"
                   >
-                    <v-btn>۰</v-btn>
-                    <v-btn>۱</v-btn>
-                    <v-btn>۲</v-btn>
-                    <v-btn>۳</v-btn>
-                    <v-btn>۴</v-btn>
-                    <v-btn>۵</v-btn>
-                    <v-btn>۶</v-btn>
+                    <v-btn><h3>۰</h3></v-btn>
+                    <v-btn><h3>۱</h3></v-btn>
+                    <v-btn><h3>۲</h3></v-btn>
+                    <v-btn><h3>۳</h3></v-btn>
+                    <v-btn><h3>۴</h3></v-btn>
+                    <v-btn><h3>۵</h3></v-btn>
+                    <v-btn><h3>۶</h3></v-btn>
                   </v-btn-toggle>
                 </div>
               </v-radio-group>
@@ -39,11 +39,11 @@
                   end
                   icon="mdi-arrow-right"
                 ></v-icon>
-                <span>کمتر مشاهده شده</span>
+                <span><h3>کمتر مشاهده شده</h3></span>
                 
               </div>
               <div class="divSeperatorClass">
-                <span>بیشتر مشاهده شده</span>
+                <span><h3>بیشتر مشاهده شده</h3></span>
                 <v-icon
                   start
                   icon="mdi-arrow-left"
@@ -53,7 +53,7 @@
           </div>
         </div>
         <div class="flex_class paginateClass">
-          <v-btn v-if="this.showNext" id="nextBtn" class="paginationBtn ml-2" @click="next()">
+          <!-- <v-btn v-if="this.showNext" id="nextBtn" class="paginationBtn ml-2" @click="next()">
             صفحه بعدی
           </v-btn>
           <v-btn v-else class="paginationBtn ml-2" disabled>
@@ -65,7 +65,14 @@
           </v-btn>
           <v-btn v-else class="paginationBtn mr-2" disabled>
             صفحه قبلی
-          </v-btn>
+          </v-btn> -->
+          <v-pagination
+            v-model="current"
+            :length="totalPages"
+            :total-visible="3"
+            :next="scroll()"
+            :prev="scroll()"
+          ></v-pagination>
         </div>
         <div v-if="!this.showNext" class="endExamBtnContainer flex_class">
           <v-btn id="prevBtn" class="endExamBtn mr-2" @click="endExam()">
@@ -78,6 +85,7 @@
 </template>
 <script>
 import questions from "./../assets/temp_files/questions.json"
+import axios from 'axios';
 
 export default {
   data: () => {
@@ -85,6 +93,7 @@ export default {
       showNext: true,
       current: 1,
       pageSize: 10,
+      totalPages: null,
       questionsArray: [],
       chosenAnswer: [],
     }
@@ -105,20 +114,34 @@ export default {
   },
   methods: {
     setQuestions() {
-      this.questionsArray = questions.questionsFile.questions;
+      axios({
+        method: "GET",
+        url: `http://194.9.56.86/api/v1/exam/qs-list/${this.$cookies.get('courseId')}/${this.$cookies.get('examId')}/?session=${this.$cookies.get('sessionId')}`,
+        header: "application/json",
+        headers: {
+          Authorization: `Bearer ${this.$cookies.get("userToken")}`,
+          'Content-Type': 'application/json'
+        },
+      })
+        .then((response) => {
+          console.log(response)
+          
+          for (let j = 0; j < response.data[0].content.questions.length; j++) {
+            this.questionsArray.push({
+              no: response.data[0].content.questions[j].id,
+              question: response.data[0].content.questions[j].question
+            })
+          }
+        })
+        .catch((err) => {
+          this.$swal("مشکلی پیش آمد!", err.message, "error");
+        });
+      // this.questionsArray = questions.questionsFile.questions;
+      console.log(this.questionsArray)
+      this.totalPages = Math.ceil(this.questionsArray.length / this.pageSize);
     },
-    prev() {
-      this.current = this.current - 1;
-      this.showNext = true;
-      window.scrollTo({
-        top: 0,
-        left: 0,
-        behavior: 'smooth'
-      });
-    },
-    next() {
-      this.current = this.current + 1;
-      if (this.questionsArray.slice((this.indexStart + 10), (this.indexEnd + 10)).length == 0) {
+    scroll() {
+      if (this.current == this.totalPages) {
         this.showNext = false;
       } else {
         this.showNext = true;
@@ -160,6 +183,9 @@ export default {
   margin-top: 5%;
   padding: 0%;
 }
+.titlePart {
+  align-self: flex-start;
+}
 .answersPart {
   border-top: 1px solid black;
   width: 100%;
@@ -185,23 +211,13 @@ export default {
 .paginateClass {
   margin: 20px 0px;
 }
-.paginationBtn {
-  font-weight: bold;
-  color: black !important;
-  width: 40%;
-}
-.paginationBtn:hover {
-  border: none;
-  color: white !important;
-  background-color: #c5c5c6;
-  font-weight: bold;
-}
 .endExamBtnContainer {
   width: 100%;
 }
 .endExamBtn {
   font-weight: bold;
   color: #f68100 !important;
+  border: 1px solid #f68100 !important;
   width: 40%;
 }
 .endExamBtn:hover {
@@ -227,5 +243,8 @@ export default {
 }
 .toggleBtn > .v-btn-group--density-compact.v-btn-group {
   height: 40px !important;
+}
+.v-selection-control .v-label {
+  font-weight: bold !important;
 }
 </style>

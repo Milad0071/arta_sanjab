@@ -187,6 +187,7 @@ export default {
       }
     },
     chooseCourse(nCOde) {
+      this.$cookies.set('childNationalCode', nCOde);
         axios({
           method: "GET",
           headers: {

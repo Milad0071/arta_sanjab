@@ -7,7 +7,7 @@
           <v-menu>
             <template v-slot:activator="{ props }">
               <div class="notifPart" v-bind="props">
-                <span class="notifNum"> 9 </span>
+                <span class="notifNum"> 0 </span>
                 <v-icon size="large" color="#525355" icon="mdi-bell-outline"></v-icon>
               </div>
             </template>
@@ -87,10 +87,7 @@ export default {
       },
     ],
     items_2: [
-      { title: "Click Me 5" },
-      { title: "Click Me 6" },
-      { title: "Click Me 7" },
-      { title: "Click Me 8" },
+      { title: "موردی یافت نشد" },
     ],
   }),
   created() {

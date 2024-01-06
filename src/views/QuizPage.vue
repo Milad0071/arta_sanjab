@@ -79,13 +79,16 @@
   </v-app>
 </template>
 <script>
-import QuestionsComp from "./../components/QustionsComp.vue"
+import QuestionsComp from "./../components/QustionsComp.vue";
+import axios from 'axios';
 
 export default {
   components: {QuestionsComp},
   data: () => {
     return {
+      children: [],
       goToQuestions: false,
+      chosenChild: null,
       todayDate: null,
       childName: '',
       gender: '',
@@ -100,12 +103,48 @@ export default {
     }
   },
   created() {
+    this.getData();
     this.setJalaliDate();
     if (this.$cookies.get('examStarted')) {
       this.goToQuestions = true;
     }
   },
   methods: {
+    getData() {
+      axios({
+          method: "GET",
+          url: `http://194.9.56.86/api/v1/dashboard/?session=${this.$cookies.get('sessionId')}`,
+          header: "application/json",
+          headers: {
+            Authorization: `Bearer ${this.$cookies.get("userToken")}`,
+            'Content-Type': 'application/json'
+          },
+        })
+        .then((response) => {
+            console.log(response)
+            this.children = response.data.children;
+            for (let i = 0; i < this.children.length; i++) {
+              if (this.children[i].type == 1) {
+                this.children[i].type = '۴-۷ سال';
+              } else if (this.children[i].type == 2) {
+                this.children[i].type = '۸-۱۱ سال';
+              } else {
+                this.children[i].type = '۱۲-۱۵ سال';
+              }
+              // if (this.children[i].national_code == this.$cookies.get('childNationalCode')) {
+              //   this.chosenChild = {
+              //     name: this.children[i].first_name,
+              //     lastName: this.children[i].last_name,
+              //     lastName: this.children[i].last_name,
+              //   }
+              // }
+            }
+            console.log(this.children)
+          })
+          .catch((err) => {
+            this.$swal("مشکلی پیش آمد!", err.message, "error");
+          });
+    },
     setJalaliDate() {
       const options = {
         year: "numeric",
