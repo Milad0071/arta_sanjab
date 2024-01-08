@@ -128,10 +128,11 @@ export default {
         } else {
           this.$swal('هنوز اطلاعات کودک را وارد نکرده‌اید!', "", 'warning').then((result) => {
             if (result.isConfirmed) {
+              this.$emit("rerender-drawer", 1);
               this.$cookies.remove('addChildActive');
               this.$cookies.remove('parentsDetailsActive');
-              this.$emit("rerender-drawer", 1);
-              this.$emit("reset-app");
+              this.$cookies.remove('coursesShopActive');
+              // this.$emit("reset-app");
               this.$router.push({ path: "/add-child" });
             }
           });
@@ -153,6 +154,11 @@ export default {
         })
           .then((response) => {
             console.log(response);
+            this.$emit("rerender-drawer", 3);
+            this.$cookies.remove('addChildActive');
+            this.$cookies.remove('parentsDetailsActive');
+            this.$cookies.remove('coursesShopActive');
+            // this.$emit("reset-app");
             this.$router.push({ name: "courseShop" });
           })
           .catch((err) => {
@@ -203,6 +209,7 @@ export default {
             this.$cookies.remove('addChildActive');
             this.$cookies.remove('parentsDetailsActive');
             this.$cookies.remove('coursesShopActive');
+            // this.$emit("reset-app");
             this.$router.push({ name: "courseShop" });
           })
           .catch((err) => {

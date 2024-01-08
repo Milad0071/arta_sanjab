@@ -7,6 +7,9 @@ const routes = [
     path: '/',
     name: "SignupLogin",
     component: () => import('@/views/SignupLogin.vue'),
+    meta: {
+      hideNavbar: true,
+    }
   },
   {
     path: '/home',
@@ -15,6 +18,9 @@ const routes = [
       pageNum: true,
     },
     component: () => import('@/views/Home.vue'),
+    meta: {
+      hideNavbar: false,
+    }
   },
   {
     path: '/add-child',
@@ -23,6 +29,9 @@ const routes = [
       pageNum: true,
     },
     component: () => import('@/views/newChild.vue'),
+    meta: {
+      hideNavbar: false,
+    }
   },
   {
     path: '/parents-details',
@@ -31,21 +40,33 @@ const routes = [
       pageNum: true,
     },
     component: () => import('@/views/ParentsDetails.vue'),
+    meta: {
+      hideNavbar: true,
+    }
   },
   {
     path: '/course-shop',
     name: "courseShop",
     component: () => import('@/views/CourseShop.vue'),
+    meta: {
+      hideNavbar: false,
+    }
   },
   {
     path: '/player-comp',
     name: "PlayerComp",
     component: () => import('@/views/PlayerComponent.vue'),
+    meta: {
+      hideNavbar: false,
+    }
   },
   {
     path: '/quiz-page',
     name: "quizPage",
     component: () => import('@/views/QuizPage.vue'),
+    meta: {
+      hideNavbar: true,
+    }
   },
   {
     path: '/admin-dashboard',

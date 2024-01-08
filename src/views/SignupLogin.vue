@@ -4,27 +4,27 @@
       <div class="mainBody">
         <div class="mainLogSignBody">
           <!-- choose user type -->
-          <div class="flex_class chooseRole">
+          <!-- <div class="flex_class chooseRole">
             <div class="flex_class userAdminFormBtn hoverClass">
               <div id="userLoginBtn" class="userRadius" @click="goToUserForm()">ورود کاربران</div>
             </div>
             <div class="flex_class userAdminFormBtn hoverClass">
               <div id="adminLoginBtn" class="adminRadius" @click="goToAdminForm()">ورود کارمندان سنجاب</div>
             </div>
-          </div>
+          </div> -->
           <!-- login/signup part -->
           <v-card class="loginPartContainer">
             <div class="titlePart">
               <div class="titleShape"></div>
-              <h2 v-if="userType == true">ورود/ثبت‌نام کاربران</h2>
-              <h2 v-else>ورود کارمندان سنجاب</h2>
+              <h2>ورود/ثبت‌نام کاربران</h2>
+              <!-- <h2 v-else>ورود کارمندان سنجاب</h2> -->
             </div>
             <div class="mainBox flex_class">
               <!-- login/signupl part -->
               <div class="flex_column_class">
                 <div class="input_part">
-                  <p v-if="userType == true" class="loginText">برای ورود یا ثبت‌نام، لطفا شماره تلفن همراه خود را وارد نمایید:</p>
-                  <p v-else class="loginText">برای ورود به بخش مدیریت، لطفا شماره تلفن همراه خود را وارد نمایید:</p>
+                  <p class="loginText">برای ورود یا ثبت‌نام، لطفا شماره تلفن همراه خود را وارد نمایید:</p>
+                  <!-- <p v-else class="loginText">برای ورود به بخش مدیریت، لطفا شماره تلفن همراه خود را وارد نمایید:</p> -->
                   <v-text-field
                     label="تلفن همراه"
                     class="ltrClass input_1"
@@ -44,18 +44,17 @@
                 </div>
                 <div class="btnContainer flex_class">
                   <v-btn
-                    v-if="userType == true"
                     :loading="phoneBtnLoading"
                     color="#525355"
                     class="text-none childBtn"
                     size="large"
                     min-width="200"
                     variant="outlined"
-                    @click="logninFunc(userPhoneNum, 0)"
+                    @click="logninFunc(userPhoneNum)"
                   >
                     ورود/ثبت‌نام
                   </v-btn>
-                  <v-btn
+                  <!-- <v-btn
                     v-else
                     :loading="phoneBtnLoading"
                     color="#525355"
@@ -63,10 +62,10 @@
                     size="large"
                     min-width="200"
                     variant="outlined"
-                    @click="logninFunc(userPhoneNum, 1)"
+                    @click="logninFunc(userPhoneNum)"
                   >
                     ورود به بخش مدیریت
-                  </v-btn>
+                  </v-btn> -->
                 </div>
               </div>
             </div>
@@ -132,7 +131,7 @@
                 size="large"
                 min-width="200"
                 variant="outlined"
-                @click="logninFunc(userPhoneNum, 0)"
+                @click="logninFunc(userPhoneNum)"
               >
               ارسال مجدد پیامک
               </v-btn>
@@ -158,15 +157,15 @@ export default {
       phoneBtnLoading: false,
       verificationBtnLoading: false,
       userPhoneNumError: false,
-      userType: true,
+      // userType: true,
       dialog: false,
     };
   },
   mounted() {
-    this.userType = true;
-    document.getElementById("userLoginBtn").style.color = "white";
-    document.getElementById("userLoginBtn").style.backgroundColor = "#f68100";
-    document.getElementById("userLoginBtn").style.fontWeight = "bold";
+    // this.userType = true;
+    // document.getElementById("userLoginBtn").style.color = "white";
+    // document.getElementById("userLoginBtn").style.backgroundColor = "#f68100";
+    // document.getElementById("userLoginBtn").style.fontWeight = "bold";
   },
   watch: {
     userPhoneNum(newVal) {
@@ -209,16 +208,16 @@ export default {
       }
       return n;
     },
-    goToUserForm() {
-      this.userType = true;
-      document.getElementById("userLoginBtn").style.color = "white";
-      document.getElementById("userLoginBtn").style.backgroundColor = "#f68100";
-      document.getElementById("userLoginBtn").style.fontWeight = "bold";
-      document.getElementById("adminLoginBtn").style.color = "#f68100";
-      document.getElementById("adminLoginBtn").style.backgroundColor = "white";
-      document.getElementById("adminLoginBtn").style.fontWeight = "";
+    // goToUserForm() {
+    //   this.userType = true;
+    //   document.getElementById("userLoginBtn").style.color = "white";
+    //   document.getElementById("userLoginBtn").style.backgroundColor = "#f68100";
+    //   document.getElementById("userLoginBtn").style.fontWeight = "bold";
+    //   document.getElementById("adminLoginBtn").style.color = "#f68100";
+    //   document.getElementById("adminLoginBtn").style.backgroundColor = "white";
+    //   document.getElementById("adminLoginBtn").style.fontWeight = "";
       
-    },
+    // },
     goToAdminForm() {
       // this.userType = false;
       // document.getElementById("adminLoginBtn").style.color = "white";
@@ -242,49 +241,49 @@ export default {
         return true;
       }
     },
-    logninFunc(userPhoneNum, userType) {
+    logninFunc(userPhoneNum) {
       this.phoneBtnLoading = true;
       this.sendAgin = false;
       userPhoneNum = this.toEngNumber(userPhoneNum);
       if (this.emptyCheck(userPhoneNum) === true) {
-        if (userType == '1' && this.userPhoneNum == '۰۹۱۳۳۰۹۱۴۷۸') {
-          this.$cookies.set('admin');
-          this.phoneBtnLoading = false;
-          this.$router.push({ name: "adminDashboard" });
-        } else {
-          var bodyFormData = new FormData();
-          JSON.stringify(bodyFormData.append("phone_number", userPhoneNum));
-            axios({
-              method: "POST",
-              url: "http://194.9.56.86/api/v1/account/login-register/",
-              headers: {
-                'Content-Type': "application/json",
-              },
-              data: bodyFormData,
-            })
-              .then((response) => {
-                if (response.status == 200) {
-                  console.log(response);
-                  this.startCountDown = true;
-                  this.countDownTimer();
-                  this.$cookies.set('sessionId', response.data);
-                  this.phoneBtnLoading = false;
-                  this.dialog = true;
-                } else {
-                  this.$swal("مشکلی پیش آمد!");
-                  this.phoneBtnLoading = false;
-                }
-                
-              })
-              .catch((err) => {
-                console.log(err);
-                this.$swal("مشکلی پیش آمد!", err.message, "error");
+        // if (userType == '1' && this.userPhoneNum == '۰۹۱۳۳۰۹۱۴۷۸') {
+        //   this.$cookies.set('admin');
+        //   this.phoneBtnLoading = false;
+        //   this.$router.push({ name: "adminDashboard" });
+        // } else {}
+        var bodyFormData = new FormData();
+        JSON.stringify(bodyFormData.append("phone_number", userPhoneNum));
+          axios({
+            method: "POST",
+            url: "http://194.9.56.86/api/v1/account/login-register/",
+            headers: {
+              'Content-Type': "application/json",
+            },
+            data: bodyFormData,
+          })
+            .then((response) => {
+              if (response.status == 200) {
+                console.log(response);
+                this.startCountDown = true;
+                this.countDownTimer();
+                this.$cookies.set('sessionId', response.data);
                 this.phoneBtnLoading = false;
-              });
+                this.dialog = true;
+              } else {
+                this.$swal("مشکلی پیش آمد!");
+                this.phoneBtnLoading = false;
+              }
+              
+            })
+            .catch((err) => {
+              console.log(err);
+              this.$swal("مشکلی پیش آمد!", err.message, "error");
+              this.phoneBtnLoading = false;
+            });
         // } 
           // else {
         //   }
-        }
+        
       }
     },
     countDownTimer() {
@@ -312,13 +311,13 @@ export default {
         })
           .then((response) => {
             if (response.status == 201) {
-              this.dialog = false;
-              this.verificationBtnLoading = false;
               this.$cookies.set("userToken", response.data.access);
               this.$cookies.set('userEntered', true);
               this.$cookies.set('showBars');
               this.$emit("reset-app");
               this.$router.push({ name: "Home" });
+              this.dialog = false;
+              this.verificationBtnLoading = false;
             } else if (response.status == 200) {
               this.dialog = false;
               this.verificationBtnLoading = false;
@@ -359,10 +358,10 @@ export default {
 }
 .mainLogSignBody {
   display: flex;
-  flex-flow: column;
   justify-content: center;
   align-items: center;
   width: 100%;
+  height: 100%;
   padding: 3.78%;
 }
 .chooseRole {

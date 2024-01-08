@@ -1,11 +1,24 @@
 <template>
   <v-app>
     <v-locale-provider rtl>
-      <div style="margin: 5%; border: 2px solid #6d6e71;">
+      <div class="mainContainer">
         <div class="titlePart">
-          <div class="titleShape"></div>
-          <h2>تکمیل اطلاعات والدین</h2>
+            <div class="titleShape"></div>
+            <h2>تکمیل اطلاعات والدین</h2>
         </div>
+        <v-btn
+          color="#525355"
+          class="text-none goHomeBtn"
+          size="large"
+          variant="outlined"
+          @click="backToHome()"
+        >
+          بازگشت به داشبورد  
+          <v-icon
+            end
+            icon="mdi-arrow-left"
+          ></v-icon>
+        </v-btn>
         <div class="topText flex_class">
           <p>لطفا اطلاعات خود را به طور کامل وارد نمایید:</p>
         </div>
@@ -28,7 +41,7 @@
               v-if="userReletivityError == true"
               style="color: red; font-weight: fold"
             >
-              فیلد نام نباید خالی باشد!
+              فیلد نسبت نباید خالی باشد!
             </p>
           </div>
           <div class="input_part">
@@ -38,6 +51,7 @@
               class="input_1"
               placeholder="نام خود را وارد کنید"
               variant="plain"
+              v-on:keydown="stopEnglishChars($event)"
               v-model="userName"
             >
             </v-text-field>
@@ -55,6 +69,7 @@
               class="input_1"
               variant="plain"
               placeholder="نام خانوادگی خود را وارد کنید"
+              v-on:keydown="stopEnglishChars($event)"
               v-model="userLastName"
             >
             </v-text-field>
@@ -71,6 +86,7 @@
               class="input_1"
               variant="plain"
               placeholder="نام پدر خود را وارد کنید"
+              v-on:keydown="stopEnglishChars($event)"
               v-model="userFatherName"
             >
             </v-text-field>
@@ -82,18 +98,39 @@
             </p>
           </div>
           <div class="input_part">
+            <!-- nationality input -->
+            <v-select
+              :items="userNationalitArray"
+              density="comfortable"
+              class="input_1"
+              variant="plain"
+              label="ملیت"
+              placeholder="ملیت خود را مشخص نمایید"
+              item-text="title"
+              item-value="value"
+              v-model="userNationality"
+            ></v-select>
+            <p
+              v-if="userNationalityError == true"
+              style="color: red; font-weight: fold"
+            >
+              فیلد ملیت نباید خالی باشد!
+            </p>
+          </div>
+          <div v-if="userNationality == 1" class="input_part">
+            <!-- national code input -->
             <v-text-field
               label="کد ملی"
               class="ltrClass input_1"
               reverse
               variant="plain"
-              v-on:keydown="stopChars($event)"
+              v-on:keydown="stopAllChars($event)"
               placeholder="کد ملی خود را وارد کنید"
               v-model="userNationalCode"
             >
             </v-text-field>
             <p
-              v-if="userNationalCodeError == true"
+              v-if="userNationalCodeError == true && userNationality == 1"
               style="color: red; font-weight: fold"
             >
               فیلد کد ملی نباید خالی باشد!
@@ -105,7 +142,27 @@
               کد ملی به درستی وارد نشده است!
             </p>
           </div>
+          <div v-else-if="userNationality == 2" class="input_part">
+            <!-- citizen code input -->
+            <v-text-field
+              label="کد شهروندی"
+              class="ltrClass input_1"
+              reverse
+              variant="plain"
+              v-on:keydown="stopAllChars($event)"
+              placeholder="کد شهروندی خود را وارد کنید"
+              v-model="userNationalCode"
+            >
+            </v-text-field>
+            <p
+              v-if="userNationalCodeError == true && userNationality == 2"
+              style="color: red; font-weight: fold"
+            >
+              فیلد کد شهروندی نباید خالی باشد!
+            </p>
+          </div>
           <div class="input_part">
+            <!-- Birth day field -->
             <DatePicker
               format="jYYYY/jMM/jDD"
               simple
@@ -122,6 +179,7 @@
             </p>
           </div>
           <div class="input_part">
+            <!-- Edjucation field -->
             <v-text-field
               label="تحصیلات"
               class="input_1"
@@ -132,23 +190,26 @@
             </v-text-field>
           </div>
           <div class="input_part">
+            <!-- EdjucationStudy field -->
             <v-text-field
               label="رشته تحصیلی"
               class="input_1"
               variant="plain"
               placeholder="رشته تحصیلی خود را وارد کنید"
+              v-on:keydown="stopEnglishChars($event)"
               v-model="userEdjucationStudyField"
             >
             </v-text-field>
           </div>
           <div class="input_part">
+            <!-- Telephone field -->
             <v-text-field
               label="تلفن ثابت"
               class="ltrClass input_1"
               variant="plain"
               reverse
               placeholder="شماره تلفن ثابت خود را وارد کنید"
-              v-on:keydown="stopChars($event)"
+              v-on:keydown="stopAllChars($event)"
               v-model="userTelephone"
             >
             </v-text-field>
@@ -160,12 +221,13 @@
             </p>
           </div>
           <div class="input_part">
+            <!-- RegionalMunicipality field -->
             <v-text-field
               label="منطقه شهرداری"
               class="ltrClass input_1"
               variant="plain"
               reverse
-              v-on:keydown="stopChars($event)"
+              v-on:keydown="stopAllChars($event)"
               placeholder="منطقه شهرداری را وارد کنید"
               v-model="userRegionalMunicipality"
             >
@@ -178,12 +240,13 @@
             </p>
           </div>
           <div class="input_part">
+            <!-- PostalCode field -->
             <v-text-field
               label="کد پستی"
               class="ltrClass input_1"
               variant="plain"
               reverse
-              v-on:keydown="stopChars($event)"
+              v-on:keydown="stopAllChars($event)"
               placeholder="کد پستی محل سکونت را وارد کنید"
               v-model="userPostalCode"
             >
@@ -196,11 +259,13 @@
             </p>
           </div>
           <div class="input_part">
+            <!-- Job field -->
             <v-text-field
               label="شغل"
               class="input_1"
               variant="plain"
               placeholder="شغل را وارد کنید"
+              v-on:keydown="stopEnglishChars($event)"
               v-model="userJob"
             >
             </v-text-field>
@@ -212,18 +277,7 @@
             </p>
           </div>
           <div class="input_part">
-            <v-textarea
-              class="textareaClass"
-              clearable
-              clear-icon="mdi-close-circle"
-              label="آدرس محل کار خود را وارد کنید:"
-              rows="2"
-              hide-details
-              variant="plain"
-              v-model="userOfficeAddress"
-            ></v-textarea>
-          </div>
-          <div class="input_part">
+            <!-- Address field -->
             <v-textarea
               class="textareaClass"
               clearable
@@ -232,6 +286,7 @@
               rows="2"
               hide-details
               variant="plain"
+              v-on:keydown="stopEnglishChars($event)"
               v-model="userAddress"
             ></v-textarea>
             <p
@@ -242,42 +297,59 @@
             </p>
           </div>
           <div class="input_part">
+            <!-- children field -->
             <p>تعداد فرزند</p>
             <div class="flex_class">
               <div class="girls">
-                <v-text-field
+                <v-combobox
                   label="دختر"
                   class="ltrClass input_children"
                   variant="plain"
-                  reverse
+                  v-on:keydown="stopAllChars($event)"
                   v-model="userGirls"
+                  :items="numbers"
+                  hide-spin-buttons
                   type="number"
                   min="0"
                 >
-                </v-text-field>
+                </v-combobox>
                 <p
                   v-if="userGirlsError == true"
                   style="color: red; font-weight: fold"
                 >
                   فیلد تعداد فرزندان دختر نباید خالی باشد!
                 </p>
+                <p
+                  v-if="userGirlsZeroError == true"
+                  style="color: red; font-weight: fold"
+                >
+                  مقدار فیلد تعداد فرزندان دختر نباید صفر باشد!
+                </p>
               </div>
               <div class="boys">
-                <v-text-field
+                <v-combobox
                   label="پسر"
                   class="ltrClass input_children"
                   variant="plain"
-                  reverse
+                  v-on:keydown="stopAllChars($event)"
                   v-model="userBoys"
+                  :items="numbers"
+                  hide-spin-buttons
                   type="number"
                   min="0"
                 >
-                </v-text-field>
+                </v-combobox>
                 <p
                   v-if="userBoysError == true"
                   style="color: red; font-weight: fold"
                 >
                   فیلد تعداد فرزندان پسر نباید خالی باشد!
+                </p>
+                <p
+                  v-if="userBoysZeroError == true"
+                  style="color: red; font-weight: fold"
+                >
+                  مقدار فیلد تعداد فرزندان ‌سر نباید صفر باشد!
                 </p>
               </div>
             </div>
@@ -296,6 +368,7 @@
                 userName,
                 userLastName,
                 userFatherName,
+                userNationality,
                 userNationalCode,
                 userBirthDay,
                 userEdjucation,
@@ -304,7 +377,6 @@
                 userRegionalMunicipality,
                 userPostalCode,
                 userJob,
-                userOfficeAddress,
                 userAddress,
                 userGirls,
                 userBoys
@@ -336,6 +408,7 @@ export default {
       userLastNameError: false,
       userFatherNameError: false,
       userNationalCodeError: false,
+      userCitizenCodeError: false,
       userNationalCodeValidateError: false,
       userTelephoneError: false,
       userAddressError: false,
@@ -343,11 +416,15 @@ export default {
       userPostalCodeError: false,
       userJobError: false,
       userGirlsError: false,
+      userGirlsZeroError: false,
       userBoysError: false,
+      userBoysZeroError: false,
       userBirthDayError: false,
       validating: false,
       userReletivityError: false,
+      userNationalityError: false,
       userReletivity: null,
+      userNationality: null,
       otp: '',
       userName: "",
       userLastName: "",
@@ -361,9 +438,9 @@ export default {
       userRegionalMunicipality: "",
       userPostalCode: "",
       userJob: "",
-      userOfficeAddress: "",
-      userGirls: "",
-      userBoys: "",
+      userGirls: "0",
+      userBoys: "0",
+      numbers: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
       userReletivesList: [
         {
           value: 1,
@@ -373,12 +450,22 @@ export default {
           value: 2,
           title: 'مادر',
         },
-      ]
+      ],
+      userNationalitArray: [
+        {
+          value: 1,
+          title: 'ایرانی',
+        },
+        {
+          value: 2,
+          title: 'اتباع خارجه',
+        },
+      ],
     };
   },
   watch: {
     userReletivity(newVal) {
-      if (newVal.length > 0) {
+      if (newVal == 1 || newVal == 2) {
         this.userReletivityError = false;
       }
     },
@@ -397,10 +484,17 @@ export default {
         this.userFatherNameError = false;
       }
     },
+    userNationality(newVal) {
+      if (newVal == 1 || newVal == 2) {
+        this.userNationalityError = false;
+      }
+    },
     userNationalCode(newVal) {
       this.userNationalCode = this.toFarsiNumber(newVal);
       if (newVal.length > 0) {
         this.userNationalCodeError = false;
+        this.userCitizenCodeError == false;
+        
       }
     },
     userBirthDay(newVal) {
@@ -441,17 +535,32 @@ export default {
       if (newVal.length > 0) {
         this.userGirlsError = false;
       }
+      if (newVal > 0) {
+        this.userGirlsError = false;
+        this.userGirlsZeroError = false;
+      }
     },
     userBoys(newVal) {
+      console.log(newVal.length)
       // this.userBoys = this.toFarsiNumber(newVal);
       if (newVal.length > 0) {
         this.userBoysError = false;
       }
+      if (newVal > 0) {
+        this.userBoysError = false;
+        this.userBoysZeroError = false;
+      }
     },
   },
   methods: {
-    stopChars(e) {
-      if(e.key.match(/^[a-zA-Z]*$/) && !(e.key == 'Backspace'))
+    stopAllChars(e) {
+      if(e.key.match(/^[a-zA-Zا-ی]*$/) && !(e.key == 'Backspace'))
+      {
+        e.preventDefault();
+      }
+    },
+    stopEnglishChars(e) {
+      if(e.key.match(/^[a-zA-Z0-9۰-۹]*$/) && !(e.key == 'Backspace'))
       {
         e.preventDefault();
       }
@@ -546,6 +655,10 @@ export default {
       let result = jD[0] + "/" + jD[1] + "/" + jD[2];
       return result;
     },
+    backToHome() {
+      this.$emit("reset-app");
+      this.$router.push({ name: "Home" });
+    },
     emptyCheck(itemArray) {
       let emptyCheck = false;
       for (let i = 0; i < itemArray.length; i++) {
@@ -561,8 +674,10 @@ export default {
           } else if (i == 3) {
             this.userFatherNameError = true;
           } else if (i == 4) {
-            this.userNationalCodeError = true;
+            this.userNationalityError = true;
           } else if (i == 5) {
+            this.userNationalCodeError = true; 
+          }else if (i == 6) {
             this.userBirthDayError = true;
           }  else if (i == 7) {
             this.userTelephoneError = true;
@@ -593,6 +708,7 @@ export default {
       userName,
       userLastName,
       userFatherName,
+      userNationality,
       userNationalCode,
       userBirthDay,
       userEdjucation,
@@ -601,7 +717,6 @@ export default {
       userRegionalMunicipality,
       userPostalCode,
       userJob,
-      userOfficeAddress,
       userAddress,
       userGirls,
       userBoys
@@ -611,60 +726,66 @@ export default {
         userName,
         userLastName,
         userFatherName,
+        userNationality,
         userNationalCode,
         userBirthDay,
         userTelephone,
         userRegionalMunicipality,
         userPostalCode,
         userJob,
-        userOfficeAddress,
+        userAddress,
         userGirls,
         userBoys
       ];
       if (this.emptyCheck(itemArray) == true) {
-        userReletivity = parseInt(userReletivity);
-        var bodyFormData = new FormData();
-        JSON.stringify(bodyFormData.append("type", userReletivity));
-        JSON.stringify(bodyFormData.append("first_name", userName));
-        JSON.stringify(bodyFormData.append("last_name", userLastName));
-        JSON.stringify(bodyFormData.append("father_name", userFatherName));
-        JSON.stringify(bodyFormData.append("national_code", userNationalCode));
-        // bodyFormData.append("birth_date", birthDay);
-        JSON.stringify(bodyFormData.append("education", userEdjucation));
-        JSON.stringify(bodyFormData.append("field_study", userEdjucationStudyField));
-        JSON.stringify(bodyFormData.append("telephone", userTelephone));
-        JSON.stringify(bodyFormData.append("address", userAddress));
-        JSON.stringify(bodyFormData.append("Regional_Municipality", userRegionalMunicipality));
-        JSON.stringify(bodyFormData.append("postal_code", userPostalCode));
-        JSON.stringify(bodyFormData.append("job", userJob));
-        JSON.stringify(bodyFormData.append("office_address", userOfficeAddress));
-        JSON.stringify(bodyFormData.append("girls", userGirls));
-        JSON.stringify(bodyFormData.append("boys", userBoys));
-        axios({
-          method: "POST",
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          url: `http://194.9.56.86/api/v1/account/user-register/?session=${this.$cookies.get('sessionId')}`,
-          data: bodyFormData,
-        })
-          .then((response) => {
-            console.log(response)
-            if (response.status == 201) {
-              this.$cookies.set("userToken", response.data.access);
-              this.$cookies.set('userEntered', true);
-              if (this.$cookies.get('showBars')) {
-                this.$emit("reset-app");
-              }
-              this.$router.push({ path: "/add-child" });
-            } else {
-              this.$swal("مشکلی پیش آمد، لطفا مجددا تلاش نمایید!", "error");
-            }
+        if ((this.userGirls == 0 && this.userBoys == 0)  || (this.userGirls == '0' && this.userBoys == '0')) {
+          this.$swal("مقدار فیلدهای فرزند نباید صفر باشد!",  "", 'warning');
+        } else {
+          userReletivity = parseInt(userReletivity);
+          var bodyFormData = new FormData();
+          JSON.stringify(bodyFormData.append("type", userReletivity));
+          JSON.stringify(bodyFormData.append("first_name", userName));
+          JSON.stringify(bodyFormData.append("last_name", userLastName));
+          JSON.stringify(bodyFormData.append("father_name", userFatherName));
+          // JSON.stringify(bodyFormData.append("nationality", userNationality));
+          JSON.stringify(bodyFormData.append("national_code", userNationalCode)); 
+          // bodyFormData.append("birth_date", birthDay);
+          JSON.stringify(bodyFormData.append("education", userEdjucation));
+          JSON.stringify(bodyFormData.append("field_study", userEdjucationStudyField));
+          JSON.stringify(bodyFormData.append("telephone", userTelephone));
+          JSON.stringify(bodyFormData.append("address", userAddress));
+          JSON.stringify(bodyFormData.append("Regional_Municipality", userRegionalMunicipality));
+          JSON.stringify(bodyFormData.append("postal_code", userPostalCode));
+          JSON.stringify(bodyFormData.append("job", userJob));
+          JSON.stringify(bodyFormData.append("girls", userGirls));
+          JSON.stringify(bodyFormData.append("boys", userBoys));
+          axios({
+            method: "POST",
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            url: `http://194.9.56.86/api/v1/account/user-register/?session=${this.$cookies.get('sessionId')}`,
+            data: bodyFormData,
           })
-          .catch((err) => {
-            console.log(err);
-            this.$swal(err.response.data.message, "", "error");
-          });
+            .then((response) => {
+              console.log(response)
+              if (response.status == 201) {
+                this.$cookies.set("userToken", response.data.access);
+                this.$cookies.set('userEntered', true);
+                if (this.$cookies.get('showBars')) {
+                  this.$emit("reset-app");
+                }
+                this.$router.push({ path: "/add-child" });
+              } else {
+                this.$swal("مشکلی پیش آمد، لطفا مجددا تلاش نمایید!", "error");
+              }
+            })
+            .catch((err) => {
+              console.log(err);
+              this.$swal(err.response.data.message, "", "error");
+            });
+        }
+        
       }
     },
   },
@@ -675,6 +796,11 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+.mainContainer {
+  position: relative;
+  margin: 5%;
+  border: 2px solid #6d6e71;
 }
 .titlePart {
   display: flex;
@@ -688,6 +814,22 @@ export default {
 .titleShape {
   border-left: 10px solid #6d6e71;
   border-radius: 7px 0 0 7px;
+}
+
+.goHomeBtn {
+  position: absolute;
+  top: 2%;
+  left: 1%;
+  font-weight: bold;
+  color: #6d6e71 !important;
+  width:12%;
+  margin-bottom: 3%;
+}
+.goHomeBtn:hover {
+  border: none;
+  color: white !important;
+  background-color: #6d6e71;
+  font-weight: bold;
 }
 .topText {
   padding: 1% 1% 0 0;
@@ -777,6 +919,11 @@ export default {
   top: 20% !important;
 }
 .ltrClass > .v-field--variant-underlined .v-label.v-field-label,
+.v-field--variant-plain .v-label.v-field-label {
+  right: 0 !important;
+  margin-top: 2% !important;
+}
+.textareaClass > .v-field--variant-underlined .v-label.v-field-label,
 .v-field--variant-plain .v-label.v-field-label {
   right: 0 !important;
   margin-top: 2% !important;

@@ -10,7 +10,7 @@
           </div>
           <div class="answersPart">
             <div class="flex_class topPart" style="border-bottom: 1px solid black;">
-              <v-radio-group v-model="chosenAnswer[question.No]">
+              <v-radio-group v-model="chosenAnswer[question.no]">
                 <div class="seperatorClass pl-1">
                   <v-radio class="radioClass" color="#1b1c1c" label="مطمئن نیستم یا نمی‌دانم" value="9"></v-radio>
                 </div>
@@ -20,7 +20,7 @@
                     color="#f68100"
                     density="compact"
                     divided
-                    v-model="chosenAnswer[question.No]"
+                    v-model="chosenAnswer[question.no]"
                   >
                     <v-btn><h3>۰</h3></v-btn>
                     <v-btn><h3>۱</h3></v-btn>
@@ -53,29 +53,14 @@
           </div>
         </div>
         <div class="flex_class paginateClass">
-          <!-- <v-btn v-if="this.showNext" id="nextBtn" class="paginationBtn ml-2" @click="next()">
-            صفحه بعدی
-          </v-btn>
-          <v-btn v-else class="paginationBtn ml-2" disabled>
-            صفحه بعدی
-          </v-btn>
-          <span>{{ current }}</span>
-          <v-btn v-if="current != 1" id="prevBtn" class="paginationBtn mr-2" @click="prev()">
-            صفحه قبلی
-          </v-btn>
-          <v-btn v-else class="paginationBtn mr-2" disabled>
-            صفحه قبلی
-          </v-btn> -->
           <v-pagination
             v-model="current"
             :length="totalPages"
-            :total-visible="3"
-            :next="scroll()"
-            :prev="scroll()"
+            total-visible="3"
           ></v-pagination>
         </div>
-        <div v-if="!this.showNext" class="endExamBtnContainer flex_class">
-          <v-btn id="prevBtn" class="endExamBtn mr-2" @click="endExam()">
+        <div v-if="this.showNext" class="endExamBtnContainer flex_class">
+          <v-btn id="prevBtn" class="endExamBtn mr-2 mb-3" @click="endExam()">
             پایان آزمون
           </v-btn>
         </div>
@@ -84,18 +69,26 @@
   </v-app>
 </template>
 <script>
-import questions from "./../assets/temp_files/questions.json"
 import axios from 'axios';
+// import questions from "./../assets/temp_files/questions.json";
 
 export default {
   data: () => {
     return {
       showNext: true,
+      scrollVal: true,
       current: 1,
       pageSize: 10,
       totalPages: null,
       questionsArray: [],
       chosenAnswer: [],
+    }
+  },
+  watch: {
+    current(newVal) {
+      if (newVal) {
+        this.scroll();
+      }
     }
   },
   computed: {
@@ -141,16 +134,17 @@ export default {
       this.totalPages = Math.ceil(this.questionsArray.length / this.pageSize);
     },
     scroll() {
+      console.log(this.chosenAnswer)
       if (this.current == this.totalPages) {
         this.showNext = false;
       } else {
+        window.scrollTo({
+          top: 0,
+          left: 0,
+          behavior: 'smooth'
+        });
         this.showNext = true;
       }
-      window.scrollTo({
-        top: 0,
-        left: 0,
-        behavior: 'smooth'
-      });
     },
     endExam() {
       this.$cookies.remove('examStarted');

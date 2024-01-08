@@ -1,9 +1,9 @@
 <template>
   <v-app class="mainApp" :key="resetKey">
-    <AppBar @rerender-drawer="forceRender" v-if="show == true"/>
-    <Drawer :key="componentKey" :renderToken="renderToken" :pageNum="pageNum" v-if="show == true" />
+    <AppBar @rerender-drawer="forceRender" :userName="userName" v-if="!$route.meta.hideNavbar && show == true"/>
+    <Drawer :key="componentKey" :renderToken="renderToken" :pageNum="pageNum" v-if="!$route.meta.hideNavbar && show == true" />
 
-    <router-view @reset-app="forceReset"/>
+    <router-view @reset-app="forceReset" @rerender-drawer="forceRender"/>
   </v-app>
 </template>
 
@@ -20,6 +20,7 @@ export default {
       componentKey: 0,
       resetKey: 0,
       renderToken: 0,
+      userName: null,
     }
   },
   components: {
@@ -32,6 +33,7 @@ export default {
   },
   methods: {
     forceRender(n) {
+      console.log(n)
       this.renderToken = n;
       this.$cookies.set('addChildActive', 1)
       this.componentKey += 1;

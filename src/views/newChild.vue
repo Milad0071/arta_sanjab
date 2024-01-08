@@ -53,6 +53,7 @@
                     class="input_1"
                     placeholder="نام خود را وارد کنید"
                     variant="plain"
+                    v-on:keydown="stopEnglishChars($event)"
                     v-model="userName"
                   >
                   </v-text-field>
@@ -70,6 +71,7 @@
                     class="input_1"
                     variant="plain"
                     placeholder="نام خانوادگی خود را وارد کنید"
+                    v-on:keydown="stopEnglishChars($event)"
                     v-model="userLastName"
                   >
                   </v-text-field>
@@ -88,7 +90,7 @@
                     reverse
                     variant="plain"
                     placeholder="کد ملی خود را وارد کنید"
-                    v-on:keydown="stopChars($event)"
+                    v-on:keydown="stopAllChars($event)"
                     v-model="userNationalCode"
                   >
                   </v-text-field>
@@ -144,6 +146,7 @@
                     class="input_1"
                     variant="plain"
                     placeholder="مشخص کنید فرزند چندم هستند"
+                    v-on:keydown="stopEnglishChars($event)"
                     v-model="whichChild"
                   >
                   </v-text-field>
@@ -161,6 +164,7 @@
                     class="input_1"
                     variant="plain"
                     placeholder="مقطع تحصیلی را وارد کنید"
+                    v-on:keydown="stopEnglishChars($event)"
                     v-model="userEdjucation"
                   >
                   </v-text-field>
@@ -178,6 +182,7 @@
                     class="input_1"
                     variant="plain"
                     placeholder="شهر محل تحصیل را وارد کنید"
+                    v-on:keydown="stopEnglishChars($event)"
                     v-model="userSchoolStudy"
                   >
                   </v-text-field>
@@ -454,8 +459,14 @@ export default {
       this.$emit("reset-app");
       this.$router.push({ name: "Home" });
     },
-    stopChars(e) {
-      if(e.key.match(/^[a-zA-Z]*$/) && !(e.key == 'Backspace'))
+    stopAllChars(e) {
+      if(e.key.match(/^[a-zA-Zا-ی]*$/) && !(e.key == 'Backspace'))
+      {
+        e.preventDefault();
+      }
+    },
+    stopEnglishChars(e) {
+      if(e.key.match(/^[a-zA-Z0-9۰-۹]*$/) && !(e.key == 'Backspace'))
       {
         e.preventDefault();
       }
