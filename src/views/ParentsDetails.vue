@@ -391,7 +391,7 @@
   </v-app>
 </template>
 <script>
-import axios from "axios";
+import axios from './../axios.js';
 import DatePicker from "vue3-persian-datetime-picker";
 
 export default {
@@ -764,7 +764,7 @@ export default {
             headers: {
               'Content-Type': 'application/json',
             },
-            url: `http://194.9.56.86/api/v1/account/user-register/?session=${this.$cookies.get('sessionId')}`,
+            url: `account/user-register/?session=${this.$cookies.get('sessionId')}`,
             data: bodyFormData,
           })
             .then((response) => {

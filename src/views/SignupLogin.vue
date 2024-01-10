@@ -143,7 +143,7 @@
   </v-app>
 </template>
 <script>
-import axios from "axios";
+import axios from './../axios.js';
 
 export default {
   emits: ['reset-app'],
@@ -255,7 +255,7 @@ export default {
         JSON.stringify(bodyFormData.append("phone_number", userPhoneNum));
           axios({
             method: "POST",
-            url: "http://194.9.56.86/api/v1/account/login-register/",
+            url: "account/login-register/",
             headers: {
               'Content-Type': "application/json",
             },
@@ -303,7 +303,7 @@ export default {
       JSON.stringify(bodyFormData.append("code", recivedCode));
         axios({
           method: "POST",
-          url: `http://194.9.56.86/api/v1/account/phone-verification/?session=${this.$cookies.get('sessionId')}`,
+          url: `account/phone-verification/?session=${this.$cookies.get('sessionId')}`,
           headers: {
             "content-type": "application/json",
           },

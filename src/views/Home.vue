@@ -11,7 +11,7 @@
             size="large"
             min-width="200"
             variant="outlined"
-            @click="this.dialog = true"
+            @click="showModalFunc()"
           >
             تغییر نقش
           </v-btn>
@@ -74,7 +74,7 @@
               </div>
               <!-- choose child -->
               <div v-if="show == 3" class="chooseChildContainer">
-                <div class="choseChild mt-2" v-for="(child, index) in children" :key="index" @click="chooseCourse(child.national_code)">
+                <div class="choseChild mt-2" v-for="(child, index) in children" :key="index" @click="chooseCourse(child.first_name, child.national_code)">
                   <h2>{{ child.first_name }}</h2>
                   <h2>{{ child.last_name }}</h2>
                   <h2>{{ child.type }}</h2>
@@ -87,7 +87,7 @@
   </v-app>
 </template>
 <script>
-import axios from 'axios';
+import axios from './../axios.js';
 
 export default {
   emits: ['rerender-drawer', 'reset-app'],
@@ -100,8 +100,10 @@ export default {
     }
   },
   created() {
-    this.getData();
+    this.$cookies.remove('currentUserName');
+    this.$cookies.remove('currentUserRole');
     if (this.$cookies.get('showModal')) {
+      this.getData();
       this.dialog = true;
     }
   },
@@ -110,6 +112,10 @@ export default {
       if (this.show == 3) {
         this.show = 1;
       }
+    },
+    showModalFunc() {
+      this.getData();
+      this.dialog = true;
     },
     goTo(num) {
       if (num == 1) {
@@ -145,7 +151,7 @@ export default {
       if (perm == 1) {
         axios({
           method: "GET",
-          url: `http://194.9.56.86/api/v1/dashboard/?session=${this.$cookies.get('sessionId')}`,
+          url: `dashboard/?session=${this.$cookies.get('sessionId')}`,
           header: "application/json",
           headers: {
             Authorization: `Bearer ${this.$cookies.get("userToken")}`,
@@ -154,6 +160,8 @@ export default {
         })
           .then((response) => {
             console.log(response);
+            this.$cookies.set('currentUserName', response.data.first_name);
+            this.$cookies.set('currentUserRole', 'والد');
             this.$emit("rerender-drawer", 3);
             this.$cookies.remove('addChildActive');
             this.$cookies.remove('parentsDetailsActive');
@@ -167,7 +175,7 @@ export default {
       } else {
         axios({
           method: "GET",
-          url: `http://194.9.56.86/api/v1/dashboard/?session=${this.$cookies.get('sessionId')}`,
+          url: `dashboard/?session=${this.$cookies.get('sessionId')}`,
           header: "application/json",
           headers: {
             Authorization: `Bearer ${this.$cookies.get("userToken")}`,
@@ -175,6 +183,8 @@ export default {
           },
         })
           .then((response) => {
+            this.$cookies.set('currentUserName', response.data.first_name);
+            this.$cookies.set('currentUserRole', 'والد');
             this.children = response.data.children;
             for (let i = 0; i < this.children.length; i++) {
               if (this.children[i].type == 1) {
@@ -192,7 +202,9 @@ export default {
           });
       }
     },
-    chooseCourse(nCOde) {
+    chooseCourse(first_name, nCOde) {
+      this.$cookies.set('currentUserName', first_name);
+      this.$cookies.set('currentUserRole', 'فرزند');
       this.$cookies.set('childNationalCode', nCOde);
         axios({
           method: "GET",
@@ -200,8 +212,7 @@ export default {
             Authorization: `Bearer ${this.$cookies.get("userToken")}`,
             'Content-Type': 'application/json',
           },
-          url: `http://194.9.56.86/api/v1/dashboard/change-child-user/${nCOde}/?session=${this.$cookies.get('sessionId')}`,
-          // url: `http://192.168.100.15/api/v1/dashboard/change-child-user/1234567/?session=ti1twpkt8zdvwyu6w9rd0ldhzuwv1hod`,
+          url: `dashboard/change-child-user/${nCOde}/?session=${this.$cookies.get('sessionId')}`,
         })
           .then((response) => {
             console.log(response)

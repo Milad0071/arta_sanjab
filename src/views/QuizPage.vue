@@ -80,7 +80,7 @@
 </template>
 <script>
 import QuestionsComp from "./../components/QustionsComp.vue";
-import axios from 'axios';
+import axios from './../axios.js';
 
 export default {
   components: {QuestionsComp},
@@ -113,7 +113,7 @@ export default {
     getData() {
       axios({
           method: "GET",
-          url: `http://194.9.56.86/api/v1/dashboard/?session=${this.$cookies.get('sessionId')}`,
+          url: `dashboard/?session=${this.$cookies.get('sessionId')}`,
           header: "application/json",
           headers: {
             Authorization: `Bearer ${this.$cookies.get("userToken")}`,

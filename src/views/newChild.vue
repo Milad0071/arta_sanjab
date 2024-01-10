@@ -237,10 +237,9 @@
   </v-app>
 </template>
 <script>
-// import axios from 'axios';
 import DatePicker from "vue3-persian-datetime-picker";
 import ChildrenTable from './../components/ChildrenTable.vue';
-import axios from "axios";
+import axios from './../axios.js';
 
 export default {
   components: { DatePicker, ChildrenTable },
@@ -345,7 +344,7 @@ export default {
     getData() {
       axios({
         method: "GET",
-        url: "http://194.9.56.86/api/v1/account/child-register/",
+        url: "account/child-register/",
         headers: {
           Authorization: `Bearer ${this.$cookies.get("userToken")}`,
           'Content-Type': 'application/json'
@@ -434,7 +433,7 @@ export default {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${this.$cookies.get("userToken")}`
           },
-          url: "http://194.9.56.86/api/v1/account/child-register/",
+          url: "account/child-register/",
           data: bodyFormData,
         })
           .then((response) => {

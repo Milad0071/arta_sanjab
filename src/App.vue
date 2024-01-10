@@ -1,6 +1,6 @@
 <template>
   <v-app class="mainApp" :key="resetKey">
-    <AppBar @rerender-drawer="forceRender" :userName="userName" v-if="!$route.meta.hideNavbar && show == true"/>
+    <AppBar :key="componentKey" @rerender-drawer="forceRender" :userName="userName" v-if="!$route.meta.hideNavbar && show == true"/>
     <Drawer :key="componentKey" :renderToken="renderToken" :pageNum="pageNum" v-if="!$route.meta.hideNavbar && show == true" />
 
     <router-view @reset-app="forceReset" @rerender-drawer="forceRender"/>

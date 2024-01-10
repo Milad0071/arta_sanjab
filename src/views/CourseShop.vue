@@ -7,7 +7,7 @@
             <div class="titleShape"></div>
             <h2>دوره‌های قابل خریداری</h2>
           </div>
-          <div class="cardClass1 flex_class">
+          <div v-if="showCourses == true" class="cardClass1 flex_class">
             <v-card
               class="mx-auto my-12 "
               style="border: 1px solid #6d6e71;"
@@ -26,7 +26,7 @@
               </v-card-item>
               <v-card-text>
                 <div>{{ course.description }}</div>
-                <div>ریال {{ course.price }}قیمت: </div>
+                <div>قیمت: {{ course.price }}ریال </div>
               </v-card-text>
               <v-divider class="mx-4 mb-1"></v-divider>
               <v-card-actions class="btnLocation">
@@ -41,6 +41,9 @@
                 </v-btn>
               </v-card-actions>
             </v-card>
+          </div>
+          <div v-else>
+            دوره متناسب با این کاربر وجود ندارد.
           </div>
         </div>
         <div class="coursesContainer flex_column_class mt-4 mb-4">
@@ -93,7 +96,7 @@
   </v-app>
 </template>
 <script>
-import axios from 'axios';
+import axios from './../axios.js';
 
 export default {
   data: () => {
@@ -111,7 +114,7 @@ export default {
       //get courses that can be purchased
       axios({
         method: "GET",
-        url: `http://194.9.56.86/api/v1/courses/list/?session=${this.$cookies.get('sessionId')}`,
+        url: `courses/list/?session=${this.$cookies.get('sessionId')}`,
         headers: {
           Authorization: `Bearer ${this.$cookies.get("userToken")}`,
           'Content-Type': 'application/json'
@@ -134,7 +137,7 @@ export default {
       //get courses that have been purchased before
       axios({
         method: "GET",
-        url: `http://194.9.56.86/api/v1/dashboard/my-courses/?session=${this.$cookies.get('sessionId')}`,
+        url: `dashboard/my-courses/?session=${this.$cookies.get('sessionId')}`,
         headers: {
           Authorization: `Bearer ${this.$cookies.get("userToken")}`,
           'Content-Type': 'application/json'
@@ -174,7 +177,7 @@ export default {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${this.$cookies.get("userToken")}`,
           },
-          url: `http://194.9.56.86/api/v1/courses/create/?session=${this.$cookies.get('sessionId')}`,
+          url: `courses/create/?session=${this.$cookies.get('sessionId')}`,
           data: bodyFormData,
         })
           .then((response) => {

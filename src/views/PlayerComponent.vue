@@ -11,7 +11,7 @@
             <v-expansion-panel-text>
               <p v-if="video.description">{{ video.description }}</p>
               <div v-else>نمونه سوالات مربوط به این محتوا:</div>
-              <a v-if="video.url" :href="video.url" target="_blank" @click="makeDone(video.videoId)">
+              <a v-if="video.url" :href="video.url" target="_blank" @click="makeDone(video.videoId, video.objectId)">
                 برای مشاهده ویدئو، کلیک نمایید.
               </a>
               <v-btn
@@ -60,7 +60,7 @@
   </v-app>
 </template>
 <script>
-import axios from 'axios';
+import axios from './../axios.js';
 
 export default {
   emits: ["reset-app"],
@@ -83,7 +83,7 @@ export default {
       //get courses that have been purchased before
       axios({
         method: "GET",
-        url: `http://194.9.56.86/api/v1/dashboard/my-courses/?session=${this.$cookies.get('sessionId')}`,
+        url: `dashboard/my-courses/?session=${this.$cookies.get('sessionId')}`,
         headers: {
           Authorization: `Bearer ${this.$cookies.get("userToken")}`,
           'Content-Type': 'application/json'
@@ -117,7 +117,7 @@ export default {
     getContent(id) {
       axios({
         method: "GET",
-        url: `http://194.9.56.86/api/v1/dashboard/my-course/${id}/?session=${this.$cookies.get('sessionId')}`,
+        url: `dashboard/my-course/${id}/?session=${this.$cookies.get('sessionId')}`,
         header: "application/json",
         headers: {
           Authorization: `Bearer ${this.$cookies.get("userToken")}`,
@@ -127,7 +127,6 @@ export default {
         .then((response) => {
           console.log(response)
           for (let i = 0; i < response.data.length; i++) {
-            console.log(response.data[i].is_exam_writeable)
             if (response.data[i].content_type === 6) {
               this.examContentId = response.data[i].id;
               this.$cookies.set('examId', this.examContentId);
@@ -140,7 +139,8 @@ export default {
               description: response.data[i].content.description,
               url: response.data[i].content.url,
               examWritable: response.data[i].is_exam_writeable,
-              videoId: response.data[i].id
+              videoId: response.data[i].id,
+              objectId: response.data[i].object_id,
             })
           }
           console.log(this.videoArray)
@@ -156,7 +156,7 @@ export default {
       document.getElementById("questionBtn").style.display = 'none';
       axios({
         method: "GET",
-        url: `http://194.9.56.86/api/v1/exam/qs-list/${this.courseId}/${this.examContentId}/?session=${this.$cookies.get('sessionId')}`,
+        url: `exam/qs-list/${this.courseId}/${this.examContentId}/?session=${this.$cookies.get('sessionId')}`,
         header: "application/json",
         headers: {
           Authorization: `Bearer ${this.$cookies.get("userToken")}`,
@@ -180,10 +180,10 @@ export default {
       this.$emit("reset-app");
       this.$router.push({ name: "quizPage"})
     },
-    makeDone(id) {
+    makeDone(videoId, objectId) {
       axios({
         method: "GET",
-        url: `http://194.9.56.86/api/v1/courses/video/${this.courseId}/${id}/?session=${this.$cookies.get('sessionId')}`,
+        url: `courses/content/${this.courseId}/${videoId}/${objectId}/?session=${this.$cookies.get('sessionId')}`,
         header: "application/json",
         headers: {
           Authorization: `Bearer ${this.$cookies.get("userToken")}`,

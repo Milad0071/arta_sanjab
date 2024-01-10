@@ -69,7 +69,7 @@
   </v-app>
 </template>
 <script>
-import axios from 'axios';
+import axios from './../axios.js';
 // import questions from "./../assets/temp_files/questions.json";
 
 export default {
@@ -109,7 +109,7 @@ export default {
     setQuestions() {
       axios({
         method: "GET",
-        url: `http://194.9.56.86/api/v1/exam/qs-list/${this.$cookies.get('courseId')}/${this.$cookies.get('examId')}/?session=${this.$cookies.get('sessionId')}`,
+        url: `exam/qs-list/${this.$cookies.get('courseId')}/${this.$cookies.get('examId')}/?session=${this.$cookies.get('sessionId')}`,
         header: "application/json",
         headers: {
           Authorization: `Bearer ${this.$cookies.get("userToken")}`,
@@ -118,7 +118,6 @@ export default {
       })
         .then((response) => {
           console.log(response)
-          
           for (let j = 0; j < response.data[0].content.questions.length; j++) {
             this.questionsArray.push({
               no: response.data[0].content.questions[j].id,

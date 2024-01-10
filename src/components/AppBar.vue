@@ -40,11 +40,20 @@
                   <v-img src="./../assets/newUser.png" alt="newUser"></v-img>
                 </v-avatar>
                 <div
-                  style="width: 70px !important"
+                  v-if="currentUserName == null"
+                  style="width: 150px !important"
                   class="ml-2 mr-5 space-y-0.5 text-right"
                 >
                   <p class="topText">مهمان</p>
                   <p class="bottomText">کاربر مهمان</p>
+                </div>
+                <div
+                  v-else
+                  style="width: 150px !important"
+                  class="ml-2 mr-5 space-y-0.5 text-right"
+                >
+                  <p class="topText">{{ this.currentUserName }}</p>
+                  <p class="bottomText">{{ this.currentUserRole }}</p>
                 </div>
                 <v-icon size="x-large" color="#525355" icon="mdi-chevron-down"></v-icon>
               </div>
@@ -74,6 +83,8 @@ export default {
   emits: ['rerender-drawer'],
   data: () => ({
     admin: false,
+    currentUserName: null,
+    currentUserRole: null,
     items: [
       {
         id: 1,
@@ -94,6 +105,8 @@ export default {
     if (this.$cookies.set('admin')) {
       this.admin = true;
     }
+    this.currentUserName = this.$cookies.get('currentUserName');
+    this.currentUserRole = this.$cookies.get('currentUserRole');
   },
   methods: {
     goToItem(id) {

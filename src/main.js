@@ -17,7 +17,7 @@ import App from './App.vue'
 // Composables
 import { createApp } from 'vue'
 
-const app = createApp(App)
+const app = createApp(App);
 app.use(VueCookies);
 app.use(VueSweetalert2);
 app.use(easySpinner, {
