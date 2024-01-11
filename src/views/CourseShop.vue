@@ -51,7 +51,7 @@
             <div class="titleShape"></div>
             <h2>دوره‌های خریداری شده</h2>
           </div>
-          <div v-if="showCourses == true" class="cardClass flex_class">
+          <div v-if="showPurchasedCourses == true" class="cardClass flex_class">
             <v-card
               class="mx-auto my-12 "
               style="border: 1px solid #6d6e71;"
@@ -102,6 +102,7 @@ export default {
   data: () => {
     return {
       showCourses: true,
+      showPurchasedCourses: true,
       courses: [],
       purchasedCourses: [],
     }
@@ -130,6 +131,7 @@ export default {
               price: response.data[i].price
             })
           }
+          console.log(this.courses)
         })
         .catch((err) => {
           this.$swal("مشکلی پیش آمد!", err.message, "error");
@@ -156,9 +158,9 @@ export default {
             })
           }
           if (this.purchasedCourses.length > 0) {
-            this.showCourses = true;
+            this.showPurchasedCourses = true;
           } else {
-            this.showCourses = false;
+            this.showPurchasedCourses = false;
           }
         })
         .catch((err) => {
