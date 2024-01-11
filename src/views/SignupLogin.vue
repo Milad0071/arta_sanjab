@@ -263,27 +263,21 @@ export default {
           })
             .then((response) => {
               if (response.status == 200) {
-                console.log(response);
                 this.startCountDown = true;
                 this.countDownTimer();
                 this.$cookies.set('sessionId', response.data);
                 this.phoneBtnLoading = false;
                 this.dialog = true;
               } else {
-                this.$swal("مشکلی پیش آمد!");
+                this.$swal("مشکلی پیش آمد!", response.message, "error");
                 this.phoneBtnLoading = false;
               }
               
             })
             .catch((err) => {
-              console.log(err);
               this.$swal("مشکلی پیش آمد!", err.message, "error");
               this.phoneBtnLoading = false;
             });
-        // } 
-          // else {
-        //   }
-        
       }
     },
     countDownTimer() {

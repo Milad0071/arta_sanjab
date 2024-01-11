@@ -69,6 +69,8 @@ export default {
       courseId: null,
       examContentId: null,
       videoContentId: null,
+      item: null,
+      nextItem: null,
       video: "./../../../../Arta_Pardaz/sanjab-arta/src/assets/example.mp4",
       videoArray: [],
       purchasedCourses: [],
@@ -90,7 +92,6 @@ export default {
         },
       })
         .then((response) => {
-          console.log(response)
           for (let i = 0; i < response.data.length; i++) {
             this.courseId = response.data[i].id;
             this.$cookies.set('courseId', this.courseId);
@@ -125,25 +126,27 @@ export default {
         },
       })
         .then((response) => {
-          console.log(response)
           for (let i = 0; i < response.data.length; i++) {
-            if (response.data[i].content_type === 6) {
-              this.examContentId = response.data[i].id;
+            this.item = response.data[i];
+            this.videoArray.push({
+              name: this.item.content.name,
+              description: this.item.content.description,
+              url: this.item.content.url,
+              examWritable: this.item.is_exam_writeable,
+              videoId: this.item.id,
+              objectId: this.item.object_id,
+            })
+            if (this.item.content_type === 6) {
+              this.examContentId = this.item.id;
               this.$cookies.set('examId', this.examContentId);
             }
-            if (response.data[i].content_type == 24) {
-              this.videoContentId = response.data[i].id;
+            if (this.item.content_type == 24) {
+              this.videoContentId = this.item.id;
             }
-            this.videoArray.push({
-              name: response.data[i].content.name,
-              description: response.data[i].content.description,
-              url: response.data[i].content.url,
-              examWritable: response.data[i].is_exam_writeable,
-              videoId: response.data[i].id,
-              objectId: response.data[i].object_id,
-            })
           }
-          console.log(this.videoArray)
+          this.videoArray.sort(function(a, b) { 
+            return a.videoId - b.videoId;
+          });
         })
         .catch((err) => {
           this.$swal("مشکلی پیش آمد!", err.message, "error");
@@ -164,7 +167,6 @@ export default {
         },
       })
         .then((response) => {
-          console.log(response)
           for (let j = 0; j < response.data[0].content.questions.length; j++) {
             this.questions.push({
               no: response.data[0].content.questions[j].id,
@@ -190,8 +192,7 @@ export default {
           'Content-Type': 'application/json'
         },
       })
-        .then((response) => {
-          console.log(response)
+        .then(() => {
         })
         .catch((err) => {
           this.$swal("مشکلی پیش آمد!", err.message, "error");

@@ -33,13 +33,11 @@ export default {
   },
   methods: {
     forceRender(n) {
-      console.log(n)
       this.renderToken = n;
       this.$cookies.set('addChildActive', 1)
       this.componentKey += 1;
     },
     forceReset() {
-      console.log('got it')
       this.showBars();
       this.resetKey += 1;
     },

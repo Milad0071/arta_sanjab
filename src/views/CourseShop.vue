@@ -122,7 +122,6 @@ export default {
         },
       })
         .then((response) => {
-          console.log(response)
           for (let i = 0; i < response.data.length; i++) {
             this.courses.push({
               id: response.data[i].id,
@@ -131,7 +130,6 @@ export default {
               price: response.data[i].price
             })
           }
-          console.log(this.courses)
         })
         .catch((err) => {
           this.$swal("مشکلی پیش آمد!", err.message, "error");
@@ -146,7 +144,6 @@ export default {
         },
       })
         .then((response) => {
-          console.log(response)
           for (let i = 0; i < response.data.length; i++) {
             this.purchasedCourses.push({
               id: response.data[i].id,
@@ -168,7 +165,6 @@ export default {
         });
     },
     buyCourse(id) {
-      console.log(id)
       id = parseInt(id);
       var bodyFormData = new FormData();
       JSON.stringify(bodyFormData.append("course", id)); 
@@ -188,7 +184,6 @@ export default {
             }
           })
           .catch((err) => {
-            console.log(err);
             this.$swal(err.response.data.message, "", "error");
           });
     },

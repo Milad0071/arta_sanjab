@@ -325,11 +325,6 @@ export default {
   },
   created() { 
     this.getData();
-    // if (this.$cookies.get('childrenItems')) {
-    //   console.log(this.$cookies.get('childrenItems'))
-    //   this.children = this.$cookies.get('childrenItems');
-    // }
-    
   },
   
   mounted() {
@@ -367,7 +362,6 @@ export default {
           this.componentKey += 1;
         })
         .catch((err) => {
-          console.log(err);
           this.$swal("مشکلی پیش آمد!", err.message, "error");
         });
     },
@@ -437,7 +431,6 @@ export default {
           data: bodyFormData,
         })
           .then((response) => {
-            console.log(response)
             if (response.status == 201) {
               this.hasChild = true;
               this.componentKey += 1;
@@ -448,7 +441,6 @@ export default {
             }
           })
           .catch((err) => {
-            console.log(err);
             this.$alert(err.response.data.message, "", "error");
           });
       }
@@ -586,10 +578,8 @@ export default {
       }
       if (emptyCheck == true) {
         this.$swal("لطفا فیلدهای خالی رو پر کنید!", "", "warning").then((result) => {
-          console.log(result)
           if (result.isConfirmed) {
             this.dialog = true;
-            console.log(this.dialog)
           }
         });
         this.dialog = true;

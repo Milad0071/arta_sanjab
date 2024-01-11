@@ -541,7 +541,6 @@ export default {
       }
     },
     userBoys(newVal) {
-      console.log(newVal.length)
       // this.userBoys = this.toFarsiNumber(newVal);
       if (newVal.length > 0) {
         this.userBoysError = false;
@@ -662,7 +661,6 @@ export default {
     emptyCheck(itemArray) {
       let emptyCheck = false;
       for (let i = 0; i < itemArray.length; i++) {
-        console.log(i , itemArray[i])
         if (itemArray[i] == "" || itemArray[i] == null) {
           emptyCheck = true;
           if (i == 0) {
@@ -768,7 +766,6 @@ export default {
             data: bodyFormData,
           })
             .then((response) => {
-              console.log(response)
               if (response.status == 201) {
                 this.$cookies.set("userToken", response.data.access);
                 this.$cookies.set('userEntered', true);
@@ -781,7 +778,6 @@ export default {
               }
             })
             .catch((err) => {
-              console.log(err);
               this.$swal(err.response.data.message, "", "error");
             });
         }

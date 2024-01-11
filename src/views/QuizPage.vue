@@ -121,7 +121,6 @@ export default {
           },
         })
         .then((response) => {
-            console.log(response)
             this.children = response.data.children;
             for (let i = 0; i < this.children.length; i++) {
               if (this.children[i].type == 1) {
@@ -131,15 +130,7 @@ export default {
               } else {
                 this.children[i].type = '۱۲-۱۵ سال';
               }
-              // if (this.children[i].national_code == this.$cookies.get('childNationalCode')) {
-              //   this.chosenChild = {
-              //     name: this.children[i].first_name,
-              //     lastName: this.children[i].last_name,
-              //     lastName: this.children[i].last_name,
-              //   }
-              // }
             }
-            console.log(this.children)
           })
           .catch((err) => {
             this.$swal("مشکلی پیش آمد!", err.message, "error");

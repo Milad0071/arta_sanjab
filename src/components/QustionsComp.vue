@@ -117,7 +117,6 @@ export default {
         },
       })
         .then((response) => {
-          console.log(response)
           for (let j = 0; j < response.data[0].content.questions.length; j++) {
             this.questionsArray.push({
               no: response.data[0].content.questions[j].id,
@@ -129,11 +128,9 @@ export default {
           this.$swal("مشکلی پیش آمد!", err.message, "error");
         });
       // this.questionsArray = questions.questionsFile.questions;
-      console.log(this.questionsArray)
       this.totalPages = Math.ceil(this.questionsArray.length / this.pageSize);
     },
     scroll() {
-      console.log(this.chosenAnswer)
       if (this.current == this.totalPages) {
         this.showNext = false;
       } else {

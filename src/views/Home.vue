@@ -125,10 +125,8 @@ export default {
         this.getData(1);
       } else if (num == 2) {
         //nothing yet
-        console.log('2')
       } else if (num == 3) {
         //children choosed
-        console.log(this.children)
         if (this.children.length > 0) {
           this.show = 3;
         } else {
@@ -159,15 +157,19 @@ export default {
           },
         })
           .then((response) => {
-            console.log(response);
-            this.$cookies.set('currentUserName', response.data.first_name);
-            this.$cookies.set('currentUserRole', 'والد');
-            this.$emit("rerender-drawer", 3);
-            this.$cookies.remove('addChildActive');
-            this.$cookies.remove('parentsDetailsActive');
-            this.$cookies.remove('coursesShopActive');
-            // this.$emit("reset-app");
-            this.$router.push({ name: "courseShop" });
+            if (response.status == 200) {
+              this.$cookies.set('currentUserName', response.data.first_name);
+              this.$cookies.set('currentUserRole', 'والد');
+              this.$emit("rerender-drawer", 3);
+              this.$cookies.remove('addChildActive');
+              this.$cookies.remove('parentsDetailsActive');
+              this.$cookies.remove('coursesShopActive');
+              // this.$emit("reset-app");
+              this.$router.push({ name: "courseShop" });
+            } else {
+              this.$swal("مشکلی پیش آمد!", response.message, "error");
+            }
+            
           })
           .catch((err) => {
             this.$swal("مشکلی پیش آمد!", err.message, "error");
@@ -183,19 +185,23 @@ export default {
           },
         })
           .then((response) => {
-            this.$cookies.set('currentUserName', response.data.first_name);
-            this.$cookies.set('currentUserRole', 'والد');
-            this.children = response.data.children;
-            for (let i = 0; i < this.children.length; i++) {
-              if (this.children[i].type == 1) {
-                this.children[i].type = '۴-۷ سال';
-              } else if (this.children[i].type == 2) {
-                this.children[i].type = '۸-۱۱ سال';
-              } else {
-                this.children[i].type = '۱۲-۱۵ سال';
+            if (response.status == 200) {
+              this.$cookies.set('currentUserName', response.data.first_name);
+              this.$cookies.set('currentUserRole', 'والد');
+              this.children = response.data.children;
+              for (let i = 0; i < this.children.length; i++) {
+                if (this.children[i].type == 1) {
+                  this.children[i].type = '۴-۷ سال';
+                } else if (this.children[i].type == 2) {
+                  this.children[i].type = '۸-۱۱ سال';
+                } else {
+                  this.children[i].type = '۱۲-۱۵ سال';
+                }
               }
+            } else {
+              this.$swal("مشکلی پیش آمد!", response.message, "error");
             }
-            console.log(this.children)
+            
           })
           .catch((err) => {
             this.$swal("مشکلی پیش آمد!", err.message, "error");
@@ -214,8 +220,7 @@ export default {
           },
           url: `dashboard/change-child-user/${nCOde}/?session=${this.$cookies.get('sessionId')}`,
         })
-          .then((response) => {
-            console.log(response)
+          .then(() => {
             this.$emit("rerender-drawer", 3);
             this.$cookies.remove('addChildActive');
             this.$cookies.remove('parentsDetailsActive');
@@ -224,7 +229,6 @@ export default {
             this.$router.push({ name: "courseShop" });
           })
           .catch((err) => {
-            console.log(err);
             this.$swal(err.response.data.message, "", "error");
           });
     }
