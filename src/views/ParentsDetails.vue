@@ -740,30 +740,38 @@ export default {
           this.$swal("مقدار فیلدهای فرزند نباید صفر باشد!",  "", 'warning');
         } else {
           userReletivity = parseInt(userReletivity);
-          var bodyFormData = new FormData();
-          JSON.stringify(bodyFormData.append("type", userReletivity));
-          JSON.stringify(bodyFormData.append("first_name", userName));
-          JSON.stringify(bodyFormData.append("last_name", userLastName));
-          JSON.stringify(bodyFormData.append("father_name", userFatherName));
-          // JSON.stringify(bodyFormData.append("nationality", userNationality));
-          JSON.stringify(bodyFormData.append("national_code", userNationalCode)); 
-          // bodyFormData.append("birth_date", birthDay);
-          JSON.stringify(bodyFormData.append("education", userEdjucation));
-          JSON.stringify(bodyFormData.append("field_study", userEdjucationStudyField));
-          JSON.stringify(bodyFormData.append("telephone", userTelephone));
-          JSON.stringify(bodyFormData.append("address", userAddress));
-          JSON.stringify(bodyFormData.append("Regional_Municipality", userRegionalMunicipality));
-          JSON.stringify(bodyFormData.append("postal_code", userPostalCode));
-          JSON.stringify(bodyFormData.append("job", userJob));
-          JSON.stringify(bodyFormData.append("girls", userGirls));
-          JSON.stringify(bodyFormData.append("boys", userBoys));
+          var data = {
+            type: userReletivity,
+            first_name: userName,
+            last_name: userLastName,
+            national_code: userNationalCode,
+            user_profile: {
+              father_name: userFatherName,
+              education: userEdjucation,
+              field_study: userEdjucationStudyField,
+              telephone: userTelephone,
+              address: userAddress,
+              Regional_Municipality: userRegionalMunicipality,
+              postal_code: userPostalCode,
+              job: userJob,
+              girls: userGirls,
+              boys: userBoys,
+              // nationality: userNationality,
+              // birth_date: birthDay
+            }
+          }
+          // JSON.stringify(bodyFormData.append("type", userReletivity));
+          // JSON.stringify(bodyFormData.append("first_name", userName));
+          // JSON.stringify(bodyFormData.append("last_name", userLastName));
+          // JSON.stringify(bodyFormData.append("national_code", userNationalCode)); 
+          // JSON.stringify(bodyFormData.append("user_profile", userprofile));
           axios({
             method: "POST",
             headers: {
               'Content-Type': 'application/json',
             },
             url: `account/user-register/?session=${this.$cookies.get('sessionId')}`,
-            data: bodyFormData,
+            data: JSON.stringify(data),
           })
             .then((response) => {
               if (response.status == 201) {

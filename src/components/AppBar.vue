@@ -82,7 +82,6 @@
 export default {
   emits: ['rerender-drawer'],
   data: () => ({
-    admin: false,
     currentUserName: null,
     currentUserRole: null,
     items: [
@@ -102,9 +101,6 @@ export default {
     ],
   }),
   created() {
-    if (this.$cookies.set('admin')) {
-      this.admin = true;
-    }
     this.currentUserName = this.$cookies.get('currentUserName');
     this.currentUserRole = this.$cookies.get('currentUserRole');
   },

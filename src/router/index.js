@@ -9,6 +9,7 @@ const routes = [
     component: () => import('@/views/SignupLogin.vue'),
     meta: {
       hideNavbar: true,
+      adminNavbar: false,
     }
   },
   {
@@ -20,6 +21,7 @@ const routes = [
     component: () => import('@/views/Home.vue'),
     meta: {
       hideNavbar: false,
+      adminNavbar: false,
     }
   },
   {
@@ -31,6 +33,7 @@ const routes = [
     component: () => import('@/views/newChild.vue'),
     meta: {
       hideNavbar: false,
+      adminNavbar: false,
     }
   },
   {
@@ -42,6 +45,7 @@ const routes = [
     component: () => import('@/views/ParentsDetails.vue'),
     meta: {
       hideNavbar: true,
+      adminNavbar: false,
     }
   },
   {
@@ -50,6 +54,7 @@ const routes = [
     component: () => import('@/views/CourseShop.vue'),
     meta: {
       hideNavbar: false,
+      adminNavbar: false,
     }
   },
   {
@@ -58,6 +63,7 @@ const routes = [
     component: () => import('@/views/PlayerComponent.vue'),
     meta: {
       hideNavbar: false,
+      adminNavbar: false,
     }
   },
   {
@@ -66,13 +72,19 @@ const routes = [
     component: () => import('@/views/QuizPage.vue'),
     meta: {
       hideNavbar: true,
+      adminNavbar: false,
     }
   },
   {
     path: '/admin-dashboard',
     name: "adminDashboard",
     component: () => import('@/views/AdminDashboard.vue'),
+    meta: {
+      hideNavbar: false,
+      adminNavbar: true,
+    }
   },
+  
 ]
 
 const router = createRouter({

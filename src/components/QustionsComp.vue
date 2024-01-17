@@ -2,6 +2,17 @@
   <v-app @click.right.prevent @copy.prevent @paste.prevent>
     <v-locale-provider rtl>
       <div class="mainContainer flex_column_class">
+        <div class="pointsDiscription">
+          <h3>راهنمای گزینه‌ها:</h3>
+          <div
+          v-for="(point, index) in pointsArray"
+          :key="index"
+          class="pointsClass"
+          >
+            <p>گزینه {{ point.option }}: </p>
+            <p class="mr-2">{{ point.meaning }}</p>
+          </div>
+        </div>
         <h2>(فرزند من شبیه موارد زیر است):</h2>
         <div v-for="(question, index) in paginated" :key="index" class="questionMold flex_column_class">
           <div class="titlePart flex_class mr-2">
@@ -82,6 +93,48 @@ export default {
       totalPages: null,
       questionsArray: [],
       chosenAnswer: [],
+      pointsArray: [
+        {
+          id: 1,
+          option: 'مطمئن نیستم یا نمی‌دانم',
+          meaning: 'به رفتار فرزند توجه نکرده‌اید!'
+        },
+        {
+          id: 2,
+          option: '0',
+          meaning: 'هرگز!'
+        },
+        {
+          id: 3,
+          option: '1',
+          meaning: 'به ندرت!'
+        },
+        {
+          id: 4,
+          option: '2',
+          meaning: 'تا حدودی!'
+        },
+        {
+          id: 5,
+          option: '3',
+          meaning: 'بعضی اوقات!'
+        },
+        {
+          id: 6,
+          option: '4',
+          meaning: 'به میزان قابل توجه!'
+        },
+        {
+          id: 7,
+          option: '5',
+          meaning: 'تقریبا همیشه!'
+        },
+        {
+          id: 8,
+          option: '6',
+          meaning: 'همیشه!'
+        },
+      ],
     }
   },
   watch: {
@@ -166,6 +219,25 @@ export default {
   width: 100%;
   height: 100%;
   padding: 0%;
+}
+.pointsDiscription {
+  display: flex;
+  flex-flow: column;
+  justify-content: space-around;
+  align-items: flex-start;
+  border: 1px solid black;
+  border-radius: 7px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+.pointsClass {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f68100;
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 7px;
 }
 .questionMold {
   width: 100٪;

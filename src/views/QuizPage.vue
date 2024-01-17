@@ -9,7 +9,7 @@
               <div class="flex_column_class" style="width: 100%;">
                 <p class="dateClass">تاریخ: {{ todayDate }}</p>
                 <v-card-title>
-                  چک‌لیست در مسیر شناخت فرزندم
+                  چک‌لیست شناخت کودکان
                 </v-card-title>
               </div>
               <v-card-subtitle style="font-weight: bold; font-size: 16px;">
@@ -17,7 +17,7 @@
               </v-card-subtitle>
               </div>
               <!-- information table -->
-              <div class="infoClass flex_column_class">
+              <!-- <div class="infoClass flex_column_class">
               <div class="partItems1">
                 <p>نام و نام خانوادگی کودک: {{ childName }}</p>
                 <p>جنسیت: {{ gender }}</p>
@@ -34,7 +34,7 @@
                 <p>شغل مادر: {{ RegionalMunicipality }}</p>
                 <p>تحصیلات مادر: {{ RegionalMunicipality }}</p>
               </div>
-            </div>
+            </div> -->
             <!-- discriptions -->
             <div class="textClass" style="width: 100%;">
               <h4>والدین محترم و گرامی!</h4>
@@ -72,7 +72,7 @@
         </v-card>
         <v-card v-else elevation="16" class="flex_column_class questionsCardClass">
           <!-- questions component -->
-          <QuestionsComp ></QuestionsComp>
+          <QuestionsComp></QuestionsComp>
         </v-card>
       </div>
     </v-locale-provider>
