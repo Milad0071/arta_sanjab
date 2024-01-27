@@ -168,7 +168,8 @@ export default {
       id = parseInt(id);
       var bodyFormData = new FormData();
       JSON.stringify(bodyFormData.append("course", id)); 
-        JSON.stringify(bodyFormData.append("session_id", this.$cookies.get('sessionId')));
+      JSON.stringify(bodyFormData.append("session_id", this.$cookies.get('sessionId')));
+      if (this.$cookies.get('stay')) {
         axios({
           method: "POST",
           headers: {
@@ -186,6 +187,7 @@ export default {
           .catch((err) => {
             this.$swal(err.response.data.message, "", "error");
           });
+      }
     },
     goToCourse() {
       this.$router.push({ name: "PlayerComp" });

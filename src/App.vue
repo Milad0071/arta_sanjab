@@ -1,11 +1,12 @@
 <template>
   <v-app class="mainApp" :key="resetKey">
-    <!-- user nav bars -->
-    <AppBar :key="componentKey" @rerender-drawer="forceRender" v-if="!$route.meta.hideNavbar && show == true"/>
-    <Drawer :key="componentKey" :renderToken="renderToken" :pageNum="pageNum" v-if="!$route.meta.hideNavbar && show == true" />
     <!-- admin nav bars -->
     <AppBarAdmin :key="componentKey" @rerender-drawer="forceRender" v-if="$route.meta.adminNavbar && showAdmin == true"/>
     <DrawerAdmin :key="componentKey" :renderToken="renderToken" :pageNum="pageNum" v-if="$route.meta.adminNavbar && showAdmin == true" />
+    <!-- user nav bars -->
+    <AppBar :key="componentKey" @rerender-drawer="forceRender" v-if="!$route.meta.hideNavbar && show == true"/>
+    <Drawer :key="componentKey" :renderToken="renderToken" :pageNum="pageNum" v-if="!$route.meta.hideNavbar && show == true" />
+    
 
     <router-view @reset-app="forceReset" @rerender-drawer="forceRender" @user-type="userType"/>
       
@@ -41,6 +42,21 @@ export default {
     this.showBars();
     
   },
+  mounted() {
+    //code for stopping browser back button
+    window.onpopstate = (event) => {
+      console.log(event)
+      if (
+        event.state.forward == "/quiz-page"
+      ) {
+        this.$router.push("/quiz-page"); // redirect to home, for example
+        this.$cookies.set('stay');
+      } else if (this.$cookies.get('stay')) {
+        this.$router.push("/quiz-page");
+      }
+      
+    };
+  },
   methods: {
     forceRender(n) {
       this.renderToken = n;
@@ -62,8 +78,13 @@ export default {
       setTimeout(() => {
         if (this.$route.name === 'SignupLogin' || this.$route.name === 'ParentsDetails' ||  this.$route.name === 'quizPage') {
           this.show = false;
+          this.showAdmin = false;
+        } else if (this.$route.name === 'adminDashboard') {
+          this.show = false;
+          this.showAdmin = true;
         } else {
           this.show = true;
+          this.showAdmin = false;
         }
         
       }, 300);
@@ -80,5 +101,12 @@ export default {
   display: flex;
   flex-flow: column;
   font-family: iranSansRegular !important;
+}
+</style>
+<style>
+.mainApp > .v-application__wrap {
+  position: unset !important;
+  min-height: 0 !important;
+  max-height: 0 !important;
 }
 </style>

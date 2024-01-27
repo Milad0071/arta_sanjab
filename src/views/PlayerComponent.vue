@@ -1,66 +1,77 @@
 <template>
-  <v-app style="margin-right: 20%;" @click.right.prevent @copy.prevent @paste.prevent>
+  <v-app
+    style="margin-right: 20%"
+    @click.right.prevent
+    @copy.prevent
+    @paste.prevent
+  >
     <v-locale-provider rtl>
       <div class="mainContainer flex_column_class">
         <v-expansion-panels variant="popout">
-          <v-expansion-panel
-            v-for="(video, index) in videoArray"
-            :key="index"
-          >
-            <v-expansion-panel-title @click="removeQuestions()">{{video.name}}</v-expansion-panel-title>
+          <v-expansion-panel v-for="(video, index) in videoArray" :key="index">
+            <v-expansion-panel-title @click="removeQuestions()">{{
+              video.name
+            }}</v-expansion-panel-title>
             <v-expansion-panel-text>
               <p v-if="video.description">{{ video.description }}</p>
               <div v-else>نمونه سوالات مربوط به این محتوا:</div>
-              <a v-if="video.url" :href="video.url" target="_blank" @click="makeDone(video.videoId, video.objectId)">
+              <a
+                v-if="video.url"
+                :href="video.url"
+                target="_blank"
+                @click="makeDone(video.videoId, video.objectId)"
+              >
                 برای مشاهده ویدئو، کلیک نمایید.
               </a>
               <v-btn
-              v-else-if="video.examWritable == false"
-              id="questionBtn"
-              color="#525355"
-              class="text-none submitBtn"
-              style="margin-top: 8%"
-              size="large"
-              min-width="200"
-              variant="outlined"
-              @click="
-                showQuestions()
-              "
-            >
-              مشاهده نمونه سوالات
-            </v-btn>
-            <v-btn
-            v-else-if="video.examWritable == true"
-              color="#525355"
-              class="text-none submitBtn"
-              style="margin-top: 8%"
-              size="large"
-              min-width="200"
-              variant="outlined"
-              @click="
-                goToExam()
-              "
-            >
-              ورود به آزمون
-            </v-btn>
-            <!-- sample questions -->
-            <div v-if="!video.url" class="quesionsContainer flex_column_class">
-              <div v-for="(question, index) in questions" :key="index" class="questionClass flex_class">
-                <p>{{ question.no }}-</p>
-                <p class="mr-2">{{ question.question }}</p>
+                v-else-if="video.examWritable == false"
+                id="questionBtn"
+                color="#525355"
+                class="text-none submitBtn"
+                style="margin-top: 8%"
+                size="large"
+                min-width="200"
+                variant="outlined"
+                @click="showQuestions(video.videoId)"
+              >
+                مشاهده نمونه سوالات
+              </v-btn>
+              <v-btn
+                v-else-if="video.examWritable == true"
+                color="#525355"
+                class="text-none submitBtn"
+                style="margin-top: 8%"
+                size="large"
+                min-width="200"
+                variant="outlined"
+                @click="goToExam(video.videoId)"
+              >
+                ورود به آزمون
+              </v-btn>
+              <!-- sample questions -->
+              <div
+                v-if="!video.url"
+                class="quesionsContainer flex_column_class"
+              >
+                <div
+                  v-for="(question, index) in questions"
+                  :key="index"
+                  class="questionClass flex_class"
+                >
+                  <p>{{ question.no }}-</p>
+                  <p class="mr-2">{{ question.question }}</p>
+                </div>
               </div>
-            </div>
             </v-expansion-panel-text>
           </v-expansion-panel>
         </v-expansion-panels>
         <!-- <video width="450" controls :src="video"></video> -->
-        
       </div>
     </v-locale-provider>
   </v-app>
 </template>
 <script>
-import axios from './../axios.js';
+import axios from "./../axios.js";
 
 export default {
   emits: ["reset-app"],
@@ -75,7 +86,7 @@ export default {
       videoArray: [],
       purchasedCourses: [],
       questions: [],
-    }
+    };
   },
   created() {
     this.getData();
@@ -85,16 +96,16 @@ export default {
       //get courses that have been purchased before
       axios({
         method: "GET",
-        url: `dashboard/my-courses/?session=${this.$cookies.get('sessionId')}`,
+        url: `dashboard/my-courses/?session=${this.$cookies.get("sessionId")}`,
         headers: {
           Authorization: `Bearer ${this.$cookies.get("userToken")}`,
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
       })
         .then((response) => {
           for (let i = 0; i < response.data.length; i++) {
             this.courseId = response.data[i].id;
-            this.$cookies.set('courseId', this.courseId);
+            this.$cookies.set("courseId", this.courseId);
             this.purchasedCourses.push({
               id: response.data[i].id,
               name: response.data[i].course.name,
@@ -102,7 +113,7 @@ export default {
               price: response.data[i].course.price,
               startDate: response.data[i].created_at,
               expireDate: response.data[i].expire_at,
-            })
+            });
           }
           this.getContent(this.courseId);
           if (this.purchasedCourses.length > 0) {
@@ -118,14 +129,17 @@ export default {
     getContent(id) {
       axios({
         method: "GET",
-        url: `dashboard/my-course/${id}/?session=${this.$cookies.get('sessionId')}`,
+        url: `dashboard/my-course/${id}/?session=${this.$cookies.get(
+          "sessionId"
+        )}`,
         header: "application/json",
         headers: {
           Authorization: `Bearer ${this.$cookies.get("userToken")}`,
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
       })
         .then((response) => {
+          console.log(response);
           for (let i = 0; i < response.data.length; i++) {
             this.item = response.data[i];
             this.videoArray.push({
@@ -135,16 +149,13 @@ export default {
               examWritable: this.item.is_exam_writeable,
               videoId: this.item.id,
               objectId: this.item.object_id,
-            })
-            if (this.item.content_type === 6) {
-              this.examContentId = this.item.id;
-              this.$cookies.set('examId', this.examContentId);
-            }
+            });
             if (this.item.content_type == 24) {
               this.videoContentId = this.item.id;
             }
           }
-          this.videoArray.sort(function(a, b) { 
+          console.log(this.$cookies.get("examId"));
+          this.videoArray.sort(function (a, b) {
             return a.videoId - b.videoId;
           });
         })
@@ -155,51 +166,57 @@ export default {
     removeQuestions() {
       this.questions = [];
     },
-    showQuestions() {
-      document.getElementById("questionBtn").style.display = 'none';
+    showQuestions(id) {
+      document.getElementById("questionBtn").style.display = "none";
+      // if (this.$cookies.get('stay')) {
       axios({
         method: "GET",
-        url: `exam/qs-list/${this.courseId}/${this.examContentId}/?session=${this.$cookies.get('sessionId')}`,
+        url: `exam/qs-list/${this.courseId}/${id}/?session=${this.$cookies.get(
+          "sessionId"
+        )}`,
         header: "application/json",
         headers: {
           Authorization: `Bearer ${this.$cookies.get("userToken")}`,
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
       })
         .then((response) => {
           for (let j = 0; j < response.data[0].content.questions.length; j++) {
             this.questions.push({
               no: response.data[0].content.questions[j].id,
-              question: response.data[0].content.questions[j].question
-            })
+              question: response.data[0].content.questions[j].question,
+            });
           }
         })
         .catch((err) => {
           this.$swal("مشکلی پیش آمد!", err.message, "error");
         });
+      // }
     },
-    goToExam() {
+    goToExam(id) {
+      this.$cookies.set("examId", id);
       this.$emit("reset-app");
-      this.$router.push({ name: "quizPage"})
+      this.$router.push({ name: "quizPage" });
     },
     makeDone(videoId, objectId) {
       axios({
         method: "GET",
-        url: `courses/content/${this.courseId}/${videoId}/${objectId}/?session=${this.$cookies.get('sessionId')}`,
+        url: `courses/content/${
+          this.courseId
+        }/${videoId}/${objectId}/?session=${this.$cookies.get("sessionId")}`,
         header: "application/json",
         headers: {
           Authorization: `Bearer ${this.$cookies.get("userToken")}`,
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
       })
-        .then(() => {
-        })
+        .then(() => {})
         .catch((err) => {
           this.$swal("مشکلی پیش آمد!", err.message, "error");
         });
     },
   },
-}
+};
 </script>
 <style scoped>
 .flex_class {
@@ -217,7 +234,7 @@ export default {
   width: 100%;
   height: 100%;
   padding: 10%;
-  background-image: url('./../assets/quiz_background.jpg');
+  background-image: url("./../assets/quiz_background.jpg");
   background-size: cover;
 }
 .btnContainer {

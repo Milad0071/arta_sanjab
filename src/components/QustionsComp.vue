@@ -198,6 +198,7 @@ export default {
     endExam() {
       this.$cookies.remove('examStarted');
       this.$cookies.set('resetPage');
+      this.$cookies.remove('stay');
       this.$router.push({ name: "Home" });
     },
   },

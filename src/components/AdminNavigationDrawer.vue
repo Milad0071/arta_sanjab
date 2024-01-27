@@ -1,85 +1,106 @@
 <template>
-  <v-app>
-    <v-locale-provider rtl>
-      <v-navigation-drawer
-        permanent
-        location="right"
-        :elevation="1"
-        style="top: 0 !important; width: 20%; height: 100% !important"
-      >
-        <div class="logoPart">
-          <v-img
-            src="./../assets/sanjabTextLogo.png"
-            alt="mainLogo"
-            style="width: 250px; height: 250px; padding: 10px !important"
-          ></v-img>
-        </div>
-        <v-list class="drawerList" density="compact" nav>
-          <v-list-item
-            class="homeItem"
-            :key="activeKey"
-            :active="homeActive"
-            value="home"
-            @click="goTo(1)"
+  <v-locale-provider rtl>
+    <v-navigation-drawer
+      permanent
+      location="right"
+      :elevation="1"
+      style="top: 0 !important; width: 20%; height: 100% !important"
+    >
+      <div class="logoPart">
+        <v-img
+          src="./../assets/sanjabTextLogo.png"
+          alt="mainLogo"
+          style="width: 250px; height: 250px; padding: 10px !important"
+        ></v-img>
+      </div>
+      <v-list class="drawerList" density="compact" nav open-on-hover>
+        <v-list-item
+          class="homeItem"
+          :key="activeKey"
+          :active="homeActive"
+          value="home"
+          @click="goTo(1)"
+          
+        >
+          <Home id="homeIconTag" style="width: 30px" />
+          <p
+            id="homeText"
+            style="color: rgb(160, 168, 176); font-weight: bold"
+            class="mr-3"
           >
-            <Home id="homeIconTag" style="width: 30px" />
-            <p
-              id="homeText"
-              style="color: rgb(160, 168, 176); font-weight: bold"
-              class="mr-3"
-            >
-              داشبورد
-            </p>
-          </v-list-item>
-          <v-list-item
-          :active="addChildActive"
-          class="newChildItem"
-          value="addChild"
-          @click="goTo(2)"
+            داشبورد
+          </p>
+        </v-list-item>
+        <v-list-item
+        :active="addChildActive"
+        
+        class="newChildItem"
+        value="addChild"
+        @click="goTo(2)"
+        >
+          <AddChild id="addChildIconTag" style="width: 30px" />
+          <p
+            id="newChildText"
+            style="color: rgb(160, 168, 176); font-weight: bold"
+            class="mr-3"
           >
-            <AddChild id="addChildIconTag" style="width: 30px" />
-            <p
-              id="newChildText"
-              style="color: rgb(160, 168, 176); font-weight: bold"
-              class="mr-3"
+            دوره‌ها
+          </p>
+        </v-list-item>
+        <v-menu
+          open-on-hover
+        >
+          <template v-slot:activator="{ props }">
+            <v-btn
+              color="primary"
+              v-bind="props"
             >
-              ثبت ادمین
-            </p>
-          </v-list-item>
-          <v-list-item
-          :active="parentsDetailsActive"
-          class="parentsDetailsItem"
-          value="parentsDetails"
-          @click="goTo(3)"
+              Dropdown
+            </v-btn>
+          </template>
+
+          <v-list>
+            <v-list-item
+              v-for="(item, index) in items"
+              :key="index"
+            >
+              <v-list-item-title>{{ item.title }}</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+        <v-list-item
+        :active="parentsDetailsActive"
+        class="parentsDetailsItem"
+        value="parentsDetails"
+        @click="goTo(3)"
+        >
+          <ParentsDetailsIcon id="parentsDetailsIconTag" style="width: 30px" />
+          <p
+            id="parentsDetailsText"
+            style="color: rgb(160, 168, 176); font-weight: bold"
+            class="mr-3"
           >
-            <ParentsDetailsIcon id="parentsDetailsIconTag" style="width: 30px" />
-            <p
-              id="parentsDetailsText"
-              style="color: rgb(160, 168, 176); font-weight: bold"
-              class="mr-3"
-            >
-              تکمیل اطلاعات والدین
-            </p>
-          </v-list-item>
-          <v-list-item
-          :active="coursesShopActive"
-          class="coursesShop"
-          value="coursesShop"
-          @click="goTo(4)"
+            لیست ثبت‌نامی‌ها
+          </p>
+        </v-list-item>
+        <v-list-item
+        :active="coursesShopActive"
+        class="coursesShop"
+        value="coursesShop"
+        @click="goTo(4)"
+        >
+          <coursesShopIcon id="coursesShopIconTag" style="width: 30px"></coursesShopIcon>
+          <p
+            id="coursesShopText"
+            style="color: rgb(160, 168, 176); font-weight: bold"
+            class="mr-3"
           >
-            <coursesShopIcon id="coursesShopIconTag" style="width: 30px"></coursesShopIcon>
-            <p
-              id="coursesShopText"
-              style="color: rgb(160, 168, 176); font-weight: bold"
-              class="mr-3"
-            >
-              خرید دوره
-            </p>
-          </v-list-item>
-        </v-list>
-      </v-navigation-drawer>
-    </v-locale-provider>
-  </v-app>
+            تراکنش مالی
+          </p>
+        </v-list-item>
+      </v-list>
+    </v-navigation-drawer>
+  </v-locale-provider>
 </template>
 <script>
 
