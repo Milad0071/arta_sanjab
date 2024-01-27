@@ -313,10 +313,16 @@ export default {
               this.dialog = false;
               this.verificationBtnLoading = false;
             } else if (response.status == 200) {
-              this.dialog = false;
-              this.verificationBtnLoading = false;
-              this.$cookies.set('showBars');
-              this.$router.push({ name: "ParentsDetails" });
+              if (response.is_registered == false) {
+                this.dialog = false;
+                this.$swal("مشکلی پیش آمد، لطفا مجدد تلاش نمایید!", "error");
+                this.verificationBtnLoading = false;
+              } else {
+                this.dialog = false;
+                this.verificationBtnLoading = false;
+                this.$cookies.set('showBars');
+                this.$router.push({ name: "ParentsDetails" });
+              }
             } else {
               this.$swal("مشکلی پیش آمد، لطفا مجدد تلاش نمایید!", "error");
               this.verificationBtnLoading = false;
