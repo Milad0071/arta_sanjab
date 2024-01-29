@@ -64,8 +64,8 @@
               </div>
             </v-expansion-panel-text>
           </v-expansion-panel>
-        </v-expansion-panels>
-        <!-- <video width="450" controls :src="video"></video> -->
+        </v-expansion-panels> 
+        <!-- <video width="450" controls :src="videoAddress"></video> -->
       </div>
     </v-locale-provider>
   </v-app>
@@ -82,7 +82,7 @@ export default {
       videoContentId: null,
       item: null,
       nextItem: null,
-      video: "./../../../../Arta_Pardaz/sanjab-arta/src/assets/example.mp4",
+      videoAddress: "https://atpz.ir/videos/Sequence04_1.mp4",
       videoArray: [],
       purchasedCourses: [],
       questions: [],
@@ -124,6 +124,7 @@ export default {
         })
         .catch((err) => {
           this.$swal("مشکلی پیش آمد!", err.message, "error");
+          this.$router.push({ name: "SignupLogin" });
         });
     },
     getContent(id) {
@@ -139,7 +140,6 @@ export default {
         },
       })
         .then((response) => {
-          console.log(response);
           for (let i = 0; i < response.data.length; i++) {
             this.item = response.data[i];
             this.videoArray.push({
@@ -154,13 +154,13 @@ export default {
               this.videoContentId = this.item.id;
             }
           }
-          console.log(this.$cookies.get("examId"));
           this.videoArray.sort(function (a, b) {
             return a.videoId - b.videoId;
           });
         })
         .catch((err) => {
           this.$swal("مشکلی پیش آمد!", err.message, "error");
+          this.$router.push({ name: "SignupLogin" });
         });
     },
     removeQuestions() {
@@ -190,6 +190,7 @@ export default {
         })
         .catch((err) => {
           this.$swal("مشکلی پیش آمد!", err.message, "error");
+          this.$router.push({ name: "SignupLogin" });
         });
       // }
     },
@@ -213,6 +214,7 @@ export default {
         .then(() => {})
         .catch((err) => {
           this.$swal("مشکلی پیش آمد!", err.message, "error");
+          this.$router.push({ name: "SignupLogin" });
         });
     },
   },

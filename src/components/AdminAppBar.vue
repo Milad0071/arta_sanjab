@@ -93,6 +93,11 @@ export default {
         title: "خرید دوره",
         icon: 'mdi-basket-plus-outline',
       },
+      {
+        id: 3,
+        title: "خروج از حساب",
+        icon: 'mdi-logout-variant',
+      },
     ],
     items_2: [
       { title: "موردی یافت نشد" },
@@ -115,6 +120,13 @@ export default {
         this.$cookies.remove('parentsDetailsActive');
         this.$cookies.remove('coursesShopActive');
         this.$router.push({ name: "courseShop" });
+      } else if (id == 3) {
+        this.$cookies.remove('addChildActive');
+        this.$cookies.remove('parentsDetailsActive');
+        this.$cookies.remove('coursesShopActive');
+        this.$cookies.remove("userToken");
+        this.$cookies.set('userEntered', false);
+        this.$router.push({ name: "SignupLogin" });
       }
     }
   },

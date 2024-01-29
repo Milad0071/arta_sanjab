@@ -783,10 +783,12 @@ export default {
                 this.$router.push({ path: "/add-child" });
               } else {
                 this.$swal("مشکلی پیش آمد، لطفا مجددا تلاش نمایید!", "error");
+                this.$router.push({ name: "SignupLogin" });
               }
             })
             .catch((err) => {
-              this.$swal(err.response.data.message, "", "error");
+              this.$swal("مشکلی پیش آمد!", err.message, "error");
+              this.$router.push({ name: "SignupLogin" });
             });
         }
         

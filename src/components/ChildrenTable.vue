@@ -85,8 +85,6 @@ export default {
     getData() {
       this.childrenArray = this.children;
       this.hasChildBoolean = this.hasChild;
-      console.log(this.childrenArray)
-      console.log(this.hasChildBoolean)
       if (this.childrenArray.length === 0) {
         this.hasChildBoolean = false;
       }

@@ -133,6 +133,7 @@ export default {
         })
         .catch((err) => {
           this.$swal("مشکلی پیش آمد!", err.message, "error");
+          this.$router.push({ name: "SignupLogin" });
         });
       //get courses that have been purchased before
       axios({
@@ -162,14 +163,16 @@ export default {
         })
         .catch((err) => {
           this.$swal("مشکلی پیش آمد!", err.message, "error");
+          this.$router.push({ name: "SignupLogin" });
         });
     },
     buyCourse(id) {
+      console.log(id)
       id = parseInt(id);
       var bodyFormData = new FormData();
       JSON.stringify(bodyFormData.append("course", id)); 
       JSON.stringify(bodyFormData.append("session_id", this.$cookies.get('sessionId')));
-      if (this.$cookies.get('stay')) {
+      // if (this.$cookies.get('stay')) {
         axios({
           method: "POST",
           headers: {
@@ -180,14 +183,19 @@ export default {
           data: bodyFormData,
         })
           .then((response) => {
+            console.log(response)
             if (response.status == 201) {
               this.$router.push({ name: "PlayerComp" });
+            } else {
+              this.$swal("مشکلی پیش آمد!", response.message, "error");
+              this.$router.push({ name: "SignupLogin" });
             }
           })
           .catch((err) => {
-            this.$swal(err.response.data.message, "", "error");
+            this.$swal("مشکلی پیش آمد!", err.message, "error");
+            this.$router.push({ name: "SignupLogin" });
           });
-      }
+      // }
     },
     goToCourse() {
       this.$router.push({ name: "PlayerComp" });

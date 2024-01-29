@@ -363,6 +363,7 @@ export default {
         })
         .catch((err) => {
           this.$swal("مشکلی پیش آمد!", err.message, "error");
+          this.$router.push({ name: "SignupLogin" });
         });
     },
     closeFunc() {
@@ -438,10 +439,12 @@ export default {
               this.dialog = false;
             } else {
               this.$swal("مشکلی پیش آمد، لطفا مجددا تلاش نمایید!", "error");
+              this.$router.push({ name: "SignupLogin" });
             }
           })
           .catch((err) => {
-            this.$alert(err.response.data.message, "", "error");
+            this.$swal("مشکلی پیش آمد!", err.message, "error");
+            this.$router.push({ name: "SignupLogin" });
           });
       }
     },

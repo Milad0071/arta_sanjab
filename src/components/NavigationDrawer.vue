@@ -103,7 +103,6 @@ export default {
   methods: {
     showChosenPage() {
       //highligh the chosen page name
-      console.log(this.renderToken)
       if (this.renderToken == 1) {
         this.$cookies.set('addChildActive');
       } else if (this.renderToken == 2) {

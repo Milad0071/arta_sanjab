@@ -134,6 +134,7 @@ export default {
           })
           .catch((err) => {
             this.$swal("مشکلی پیش آمد!", err.message, "error");
+            this.$router.push({ name: "SignupLogin" });
           });
     },
     setJalaliDate() {

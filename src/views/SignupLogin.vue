@@ -161,12 +161,6 @@ export default {
       dialog: false,
     };
   },
-  mounted() {
-    // this.userType = true;
-    // document.getElementById("userLoginBtn").style.color = "white";
-    // document.getElementById("userLoginBtn").style.backgroundColor = "#f68100";
-    // document.getElementById("userLoginBtn").style.fontWeight = "bold";
-  },
   watch: {
     userPhoneNum(newVal) {
       this.userPhoneNum = this.toFarsiNumber(newVal);
@@ -305,23 +299,45 @@ export default {
         })
           .then((response) => {
             if (response.status == 201) {
-              this.$cookies.set("userToken", response.data.access);
-              this.$cookies.set('userEntered', true);
-              this.$cookies.set('showBars');
-              this.$emit("reset-app");
-              this.$router.push({ name: "Home" });
-              this.dialog = false;
-              this.verificationBtnLoading = false;
+              if (response.data.is_admin == true) {
+                this.$cookies.set("userToken", response.data.access);
+                this.$cookies.set('userEntered', true);
+                // if (this.$cookies.get("userToken")) {
+                  this.$emit("reset-app");
+                  this.$router.push({ name: "adminDashboard" });
+                  this.dialog = false;
+                  this.verificationBtnLoading = false;
+                // }
+              } else {
+                this.$cookies.set("userToken", response.data.access);
+                this.$cookies.set('userEntered', true);
+                this.$cookies.set('showBars');
+                if (this.$cookies.get("userEntered") == true || this.$cookies.get("userEntered") == 'true') {
+                  this.$emit("reset-app");
+                  this.$router.push({ name: "Home" });
+                  this.dialog = false;
+                  this.verificationBtnLoading = false;
+                }
+              }
             } else if (response.status == 200) {
-              if (response.is_registered == false) {
+              if (response.data.is_admin == true) {
+                this.$cookies.set("userToken", response.data.access);
+                this.$cookies.set('userEntered', true);
+                this.$emit("reset-app");
+                this.$router.push({ name: "adminDashboard" });
                 this.dialog = false;
-                this.$swal("مشکلی پیش آمد، لطفا مجدد تلاش نمایید!", "error");
                 this.verificationBtnLoading = false;
               } else {
-                this.dialog = false;
-                this.verificationBtnLoading = false;
-                this.$cookies.set('showBars');
-                this.$router.push({ name: "ParentsDetails" });
+                if (response.is_registered == false) {
+                  this.dialog = false;
+                  this.$swal("مشکلی پیش آمد، لطفا مجدد تلاش نمایید!", "error");
+                  this.verificationBtnLoading = false;
+                } else {
+                  this.dialog = false;
+                  this.verificationBtnLoading = false;
+                  this.$cookies.set('showBars');
+                  this.$router.push({ name: "ParentsDetails" });
+                }
               }
             } else {
               this.$swal("مشکلی پیش آمد، لطفا مجدد تلاش نمایید!", "error");

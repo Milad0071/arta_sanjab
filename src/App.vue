@@ -45,7 +45,6 @@ export default {
   mounted() {
     //code for stopping browser back button
     window.onpopstate = (event) => {
-      console.log(event)
       if (
         event.state.forward == "/quiz-page"
       ) {
@@ -76,7 +75,7 @@ export default {
     },
     showBars() {
       setTimeout(() => {
-        if (this.$route.name === 'SignupLogin' || this.$route.name === 'ParentsDetails' ||  this.$route.name === 'quizPage') {
+        if (this.$route.name === 'SignupLogin' || this.$route.name === 'ParentsDetails' || this.$route.name === 'quizPage') {
           this.show = false;
           this.showAdmin = false;
         } else if (this.$route.name === 'adminDashboard') {

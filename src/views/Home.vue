@@ -150,7 +150,6 @@ export default {
         axios({
           method: "GET",
           url: `dashboard/?session=${this.$cookies.get('sessionId')}`,
-          header: "application/json",
           headers: {
             Authorization: `Bearer ${this.$cookies.get("userToken")}`,
             'Content-Type': 'application/json'
@@ -200,11 +199,13 @@ export default {
               }
             } else {
               this.$swal("مشکلی پیش آمد!", response.message, "error");
+              this.$router.push({ name: "SignupLogin" });
             }
             
           })
           .catch((err) => {
             this.$swal("مشکلی پیش آمد!", err.message, "error");
+            this.$router.push({ name: "SignupLogin" });
           });
       }
     },
@@ -229,7 +230,8 @@ export default {
             this.$router.push({ name: "courseShop" });
           })
           .catch((err) => {
-            this.$swal(err.response.data.message, "", "error");
+            this.$swal("مشکلی پیش آمد!", err.message, "error");
+            this.$router.push({ name: "SignupLogin" });
           });
     }
   }

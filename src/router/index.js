@@ -8,6 +8,7 @@ const routes = [
     name: "SignupLogin",
     component: () => import('@/views/SignupLogin.vue'),
     meta: {
+      login: false,
       hideNavbar: true,
       adminNavbar: false,
     }
@@ -20,6 +21,7 @@ const routes = [
     },
     component: () => import('@/views/Home.vue'),
     meta: {
+      login: true,
       hideNavbar: false,
       adminNavbar: false,
     }
@@ -32,6 +34,7 @@ const routes = [
     },
     component: () => import('@/views/newChild.vue'),
     meta: {
+      login: true,
       hideNavbar: false,
       adminNavbar: false,
     }
@@ -44,6 +47,7 @@ const routes = [
     },
     component: () => import('@/views/ParentsDetails.vue'),
     meta: {
+      login: false,
       hideNavbar: true,
       adminNavbar: false,
     }
@@ -53,6 +57,7 @@ const routes = [
     name: "courseShop",
     component: () => import('@/views/CourseShop.vue'),
     meta: {
+      login: true,
       hideNavbar: false,
       adminNavbar: false,
     }
@@ -62,6 +67,7 @@ const routes = [
     name: "PlayerComp",
     component: () => import('@/views/PlayerComponent.vue'),
     meta: {
+      login: true,
       hideNavbar: false,
       adminNavbar: false,
     }
@@ -71,6 +77,7 @@ const routes = [
     name: "quizPage",
     component: () => import('@/views/QuizPage.vue'),
     meta: {
+      login: true,
       hideNavbar: true,
       adminNavbar: false,
     }
@@ -80,6 +87,7 @@ const routes = [
     name: "adminDashboard",
     component: () => import('@/views/AdminDashboard.vue'),
     meta: {
+      login: true,
       hideNavbar: false,
       adminNavbar: true,
     }
@@ -96,20 +104,34 @@ const { cookies } = useCookies();
 
 router.beforeEach((to, from, next) => {
   //conditions for showing right item in navigationDrawer component
-  if (to.name == "Home") {
-    cookies.set('homeActive');
-    cookies.remove('addChildActive');
-    cookies.remove('parentsDetailsActive');
-  } else if (to.name == "AddChild") {
-    cookies.set('addChildActive');
-    cookies.remove('homeActive');
-    cookies.remove('parentsDetailsActive');
-  } else if (to.name == "ParentsDetails") {
-    cookies.set('parentsDetailsActive');
-    cookies.remove('homeActive');
-    cookies.remove('addChildActive');
+  if (to.meta.login == true) {
+    if (cookies.get('userEntered') == true || cookies.get('userEntered') == 'true') {
+      if (to.name == "Home") {
+        cookies.set('homeActive');
+        cookies.remove('addChildActive');
+        cookies.remove('parentsDetailsActive');
+      } else if (to.name == "AddChild") {
+        cookies.set('addChildActive');
+        cookies.remove('homeActive');
+        cookies.remove('parentsDetailsActive');
+      } else if (to.name == "ParentsDetails") {
+        cookies.set('parentsDetailsActive');
+        cookies.remove('homeActive');
+        cookies.remove('addChildActive');
+      }
+      return next();
+    } else {
+      alert('توکن شما منقضی شده است، مجددا وارد شوید!')
+      return next({ path: '/' });
+    }
+  } else {
+    if (to.name == "SignupLogin") {
+      cookies.remove("userToken");
+      cookies.set('userEntered', false);
+    }
+    return next();
   }
-  return next();
+  
   // if (to.meta.login) {
   //   // if (isActive == true) {
   //   //   alert("ابتدا باید وارد شوید")
