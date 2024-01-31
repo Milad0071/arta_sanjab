@@ -106,7 +106,6 @@ router.beforeEach((to, from, next) => {
   //conditions for showing right item in navigationDrawer component
   if (to.meta.login == true) {
     if (cookies.get('userEntered') == true || cookies.get('userEntered') == 'true') {
-      console.log('login true')
       if (to.name == "Home") {
         cookies.set('homeActive');
         cookies.remove('addChildActive');
@@ -135,29 +134,21 @@ router.beforeEach((to, from, next) => {
     }
   } else {
     if (to.name == "SignupLogin") {
-      if (cookies.get('userEntered') == 'false' || cookies.set('userEntered') == false) {
-        console.log('userEntered false')
-        // cookies.remove("userToken");
-        // cookies.set('userEntered', false);
+      if (cookies.get('userEntered') == 'false' || cookies.get('userEntered') == false) {
         return next();
       } else {
-        console.log('userEntered true')
-        cookies.set('userEntered', true)
-        return next({ name: 'Home'});
+        if (cookies.get("userToken") == undefined || cookies.get("userToken") == null || cookies.get("userToken") == '' || cookies.get("userToken") == true || cookies.get("userToken") == 'true') {
+          cookies.set("userEntered", false);
+          return next()
+        } else {
+          console.log(cookies.get('userEntered'))
+          console.log(cookies.get("userToken"))
+          cookies.set("userEntered", true);
+          return next({ name: 'Home'});
+        }
       }
     }
   }
-  
-  // if (to.meta.login) {
-  //   // if (isActive == true) {
-  //   //   alert("ابتدا باید وارد شوید")
-  //   // } else {
-  //   //   alert("شما فعال نیستید!")
-  //   // }
-  //   return next({ path: '/' });
-  // } else {
-  //   return next();
-  // }
 });
 
 export default router

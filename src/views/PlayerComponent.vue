@@ -103,6 +103,7 @@ export default {
         },
       })
         .then((response) => {
+          console.log(response, 'my courses api')
           for (let i = 0; i < response.data.length; i++) {
             this.courseId = response.data[i].id;
             this.$cookies.set("courseId", this.courseId);
@@ -140,6 +141,7 @@ export default {
         },
       })
         .then((response) => {
+          console.log(response, 'my course api')
           for (let i = 0; i < response.data.length; i++) {
             this.item = response.data[i];
             this.videoArray.push({
@@ -202,9 +204,7 @@ export default {
     makeDone(videoId, objectId) {
       axios({
         method: "GET",
-        url: `courses/content/${
-          this.courseId
-        }/${videoId}/${objectId}/?session=${this.$cookies.get("sessionId")}`,
+        url: `courses/content/${this.courseId}/${videoId}/${objectId}/?session=${this.$cookies.get("sessionId")}`,
         header: "application/json",
         headers: {
           Authorization: `Bearer ${this.$cookies.get("userToken")}`,
