@@ -656,6 +656,9 @@ export default {
     },
     backToHome() {
       this.$emit("reset-app");
+      if (this.$cookies.get('firstTimeParentDetails')) {
+        this.$cookies.remove('firstTimeParentDetails');
+      }
       this.$router.push({ name: "Home" });
     },
     emptyCheck(itemArray) {
@@ -777,9 +780,10 @@ export default {
               if (response.status == 201) {
                 this.$cookies.set("userToken", response.data.access);
                 this.$cookies.set('userEntered', true);
-                if (this.$cookies.get('showBars')) {
-                  this.$emit("reset-app");
+                if (this.$cookies.get('firstTimeParentDetails')) {
+                  this.$cookies.remove('firstTimeParentDetails');
                 }
+                this.$emit("reset-app");
                 this.$router.push({ path: "/add-child" });
               } else {
                 this.$swal("مشکلی پیش آمد، لطفا مجددا تلاش نمایید!", "error");

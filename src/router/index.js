@@ -47,7 +47,7 @@ const routes = [
     },
     component: () => import('@/views/ParentsDetails.vue'),
     meta: {
-      login: false,
+      login: true,
       hideNavbar: true,
       adminNavbar: false,
     }
@@ -106,6 +106,7 @@ router.beforeEach((to, from, next) => {
   //conditions for showing right item in navigationDrawer component
   if (to.meta.login == true) {
     if (cookies.get('userEntered') == true || cookies.get('userEntered') == 'true') {
+      console.log('login true')
       if (to.name == "Home") {
         cookies.set('homeActive');
         cookies.remove('addChildActive');
@@ -120,16 +121,31 @@ router.beforeEach((to, from, next) => {
         cookies.remove('addChildActive');
       }
       return next();
+    } else if (to.name == "ParentsDetails") {
+      if (cookies.get('firstTimeParentDetails')) {
+        cookies.remove('firstTimeParentDetails');
+        return next();
+      } else {
+        alert('توکن شما منقضی شده است، مجددا وارد شوید!')
+        return next({ path: '/' });
+      }
     } else {
       alert('توکن شما منقضی شده است، مجددا وارد شوید!')
       return next({ path: '/' });
     }
   } else {
     if (to.name == "SignupLogin") {
-      cookies.remove("userToken");
-      cookies.set('userEntered', false);
+      if (cookies.get('userEntered') == 'false' || cookies.set('userEntered') == false) {
+        console.log('userEntered false')
+        // cookies.remove("userToken");
+        // cookies.set('userEntered', false);
+        return next();
+      } else {
+        console.log('userEntered true')
+        cookies.set('userEntered', true)
+        return next({ name: 'Home'});
+      }
     }
-    return next();
   }
   
   // if (to.meta.login) {

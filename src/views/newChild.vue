@@ -7,6 +7,7 @@
           <ChildrenTable
           :key="componentKey"
           @clicked="openDialog"
+          :tableType="tableType"
           :children="children"
           :hasChild="hasChild"
           >
@@ -246,6 +247,7 @@ export default {
   emits: ['reset-app'],
   data: () => {
     return {
+      tableType: 'children',
       componentKey: 0,
       childrenCount: 0,
       hasChild: true,

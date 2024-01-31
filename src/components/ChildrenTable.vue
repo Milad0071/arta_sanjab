@@ -65,7 +65,8 @@ export default {
     }
   },
   created() {
-    this.getData();
+    this.getCildrenData();
+    
   },
   methods: {
     toFarsiNumber(n) {
@@ -82,7 +83,7 @@ export default {
       }
       return n;
     },
-    getData() {
+    getCildrenData() {
       this.childrenArray = this.children;
       this.hasChildBoolean = this.hasChild;
       if (this.childrenArray.length === 0) {
@@ -100,6 +101,9 @@ export default {
           this.childrenArray[i].childAgeCat = 'بازه ۱۵-۱۲ سال';
         }
       }
+    },
+    getUsersData() {
+
     },
     sendEmit() {
       this.$emit("clicked");

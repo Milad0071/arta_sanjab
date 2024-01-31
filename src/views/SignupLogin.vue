@@ -336,6 +336,7 @@ export default {
                   this.dialog = false;
                   this.verificationBtnLoading = false;
                   this.$cookies.set('showBars');
+                  this.$cookies.set('firstTimeParentDetails');
                   this.$router.push({ name: "ParentsDetails" });
                 }
               }
