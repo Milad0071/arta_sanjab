@@ -8,7 +8,7 @@
           <th class="text-right font-weight-bold">بازه سنی دوره</th>
           <th class="text-right font-weight-bold">قیمت دوره</th>
           <th class="text-right font-weight-bold">نام کودک</th>
-          <th class="text-right font-weight-bold">نام خانوادگی کودم</th>
+          <th class="text-right font-weight-bold">نام خانوادگی کودک</th>
           <th class="text-right font-weight-bold">کد ملی کودک</th>
           <th class="text-right font-weight-bold">کد ملی والد</th>
         </tr>
