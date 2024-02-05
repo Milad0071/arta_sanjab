@@ -103,7 +103,6 @@ export default {
         },
       })
         .then((response) => {
-          console.log(response, 'my courses api')
           for (let i = 0; i < response.data.length; i++) {
             this.courseId = response.data[i].id;
             this.$cookies.set("courseId", this.courseId);
@@ -125,7 +124,9 @@ export default {
         })
         .catch((err) => {
           this.$swal("مشکلی پیش آمد!", err.message, "error");
-          this.$router.push({ name: "SignupLogin" });
+          if (err.response.status == 401) {
+            this.$router.push({ name: "SignupLogin" });
+          }
         });
     },
     getContent(id) {
@@ -162,7 +163,9 @@ export default {
         })
         .catch((err) => {
           this.$swal("مشکلی پیش آمد!", err.message, "error");
-          this.$router.push({ name: "SignupLogin" });
+          if (err.response.status == 401) {
+            this.$router.push({ name: "SignupLogin" });
+          }
         });
     },
     removeQuestions() {
@@ -192,7 +195,9 @@ export default {
         })
         .catch((err) => {
           this.$swal("مشکلی پیش آمد!", err.message, "error");
-          this.$router.push({ name: "SignupLogin" });
+          if (err.response.status == 401) {
+            this.$router.push({ name: "SignupLogin" });
+          }
         });
       // }
     },
@@ -214,7 +219,9 @@ export default {
         .then(() => {})
         .catch((err) => {
           this.$swal("مشکلی پیش آمد!", err.message, "error");
-          this.$router.push({ name: "SignupLogin" });
+          if (err.response.status == 401) {
+            this.$router.push({ name: "SignupLogin" });
+          }
         });
     },
   },

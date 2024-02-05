@@ -133,7 +133,9 @@ export default {
         })
         .catch((err) => {
           this.$swal("مشکلی پیش آمد!", err.message, "error");
-          this.$router.push({ name: "SignupLogin" });
+          if (err.response.status == 401) {
+            this.$router.push({ name: "SignupLogin" });
+          }
         });
       //get courses that have been purchased before
       axios({
@@ -162,8 +164,12 @@ export default {
           }
         })
         .catch((err) => {
-          this.$swal("مشکلی پیش آمد!", err.message, "error");
-          this.$router.push({ name: "SignupLogin" });
+          this.$swal("مشکلی پیش آمد!", err.message, "error")
+          console.log(err.response.status)
+          if (err.response.status == 401) {
+            this.$router.push({ name: "SignupLogin" });
+          }
+          
         });
     },
     buyCourse(id) {
@@ -188,12 +194,20 @@ export default {
               this.$router.push({ name: "PlayerComp" });
             } else {
               this.$swal("مشکلی پیش آمد!", response.message, "error");
-              this.$router.push({ name: "SignupLogin" });
+              if (response.status == 401) {
+                this.$router.push({ name: "SignupLogin" });
+              }
             }
           })
           .catch((err) => {
-            this.$swal("مشکلی پیش آمد!", err.message, "error");
-            this.$router.push({ name: "SignupLogin" });
+            this.$swal("مشکلی پیش آمد!", err.message, "error").then((result) => {
+              if (result.isConfirmed) {
+                if (err.response.status == 401) {
+                  this.$router.push({ name: "SignupLogin" });
+                }
+              }
+          });
+            
           });
       // }
     },

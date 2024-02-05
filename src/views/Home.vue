@@ -199,13 +199,17 @@ export default {
               }
             } else {
               this.$swal("مشکلی پیش آمد!", response.message, "error");
-              this.$router.push({ name: "SignupLogin" });
+              if (response.status == 401) {
+                this.$router.push({ name: "SignupLogin" });
+              }
             }
             
           })
           .catch((err) => {
             this.$swal("مشکلی پیش آمد!", err.message, "error");
-            this.$router.push({ name: "SignupLogin" });
+            if (err.response.status == 401) {
+              this.$router.push({ name: "SignupLogin" });
+            }
           });
       }
     },
@@ -231,7 +235,9 @@ export default {
           })
           .catch((err) => {
             this.$swal("مشکلی پیش آمد!", err.message, "error");
-            this.$router.push({ name: "SignupLogin" });
+            if (err.response.status == 401) {
+              this.$router.push({ name: "SignupLogin" });
+            }
           });
     }
   }

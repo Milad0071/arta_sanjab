@@ -117,6 +117,7 @@ export default {
         this.$cookies.remove('parentsDetailsActive');
         this.$router.push({ name: "ParentsDetails" });
       } else if (id == 2) {
+        console.log('its me')
         this.$emit("rerender-drawer", 3);
         this.$cookies.remove('addChildActive');
         this.$cookies.remove('parentsDetailsActive');

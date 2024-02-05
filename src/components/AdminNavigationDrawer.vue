@@ -20,7 +20,6 @@
           :active="homeActive"
           value="home"
           @click="goTo(1)"
-          
         >
           <Home id="homeIconTag" style="width: 30px" />
           <p
@@ -32,22 +31,22 @@
           </p>
         </v-list-item>
         <v-list-item
-        :active="addChildActive"
+        :active="coursesListActive"
         
-        class="newChildItem"
-        value="addChild"
+        class="coursesListItem"
+        value="coursesList"
         @click="goTo(2)"
         >
-          <AddChild id="addChildIconTag" style="width: 30px" />
+          <CoursesList id="coursesListIconTag" style="width: 30px" />
           <p
-            id="newChildText"
+            id="coursesListText"
             style="color: rgb(160, 168, 176); font-weight: bold"
             class="mr-3"
           >
             دوره‌ها
           </p>
         </v-list-item>
-        <v-menu
+        <!-- <v-menu
           open-on-hover
         >
           <template v-slot:activator="{ props }">
@@ -67,16 +66,16 @@
               <v-list-item-title>{{ item.title }}</v-list-item-title>
             </v-list-item>
           </v-list>
-        </v-menu>
+        </v-menu> -->
         <v-list-item
-        :active="parentsDetailsActive"
-        class="parentsDetailsItem"
-        value="parentsDetails"
+        :active="registeredListActive"
+        class="registeredListItem"
+        value="registeredList"
         @click="goTo(3)"
         >
-          <ParentsDetailsIcon id="parentsDetailsIconTag" style="width: 30px" />
+          <RegisteredList id="registeredListIconTag" style="width: 30px" />
           <p
-            id="parentsDetailsText"
+            id="registeredListText"
             style="color: rgb(160, 168, 176); font-weight: bold"
             class="mr-3"
           >
@@ -84,14 +83,14 @@
           </p>
         </v-list-item>
         <v-list-item
-        :active="coursesShopActive"
-        class="coursesShop"
-        value="coursesShop"
+        :active="financeProcessActive"
+        class="financeProcess"
+        value="financeProcess"
         @click="goTo(4)"
         >
-          <coursesShopIcon id="coursesShopIconTag" style="width: 30px"></coursesShopIcon>
+          <FinanceProcess id="financeProcessIconTag" style="width: 30px" />
           <p
-            id="coursesShopText"
+            id="financeProcessText"
             style="color: rgb(160, 168, 176); font-weight: bold"
             class="mr-3"
           >
@@ -103,156 +102,170 @@
   </v-locale-provider>
 </template>
 <script>
+import Home from "./../assets/svgIcons/homeIcon.vue";
+import CoursesList from "./../assets/svgIcons/CoursesListIcon.vue";
+import RegisteredList from "./../assets/svgIcons/RegisteredListIcon.vue";
+import FinanceProcess from './../assets/svgIcons/FinanceProcessIcon.vue';
 
 export default {
+  props: { pageNum: Number, renderToken: Number },
+  components: { Home, CoursesList, RegisteredList, FinanceProcess },
   data: () => ({
     activeKey: 1,
     homeActive: false,
-    addChildActive: false,
-    parentsDetailsActive: false,
-    coursesShopActive: false,
+    coursesListActive: false,
+    registeredListActive: false,
+    financeProcessActive: false,
   }),
   mounted() {
     this.showChosenPage();
   },
   methods: {
     showChosenPage() {
-      //highligh the chosen page name
+      console.log(this.renderToken)
+      // highligh the chosen page name
       if (this.renderToken == 1) {
-        this.$cookies.set('addChildActive');
+        this.$cookies.set('coursesListActive', true);
       } else if (this.renderToken == 2) {
-        this.$cookies.set('parentsDetailsActive');
+        this.$cookies.set('registeredListActive', true);
       } else if (this.renderToken == 3) {
-        this.$cookies.set('coursesShopActive');
+        this.$cookies.set('financeProcessActive', true);
       }
-      if (this.pageNum == 1 && this.$cookies.get('homeActive')) {
+      if (this.pageNum == 1 && (this.$cookies.get('adminHomeActive') == 'true' || this.$cookies.get('adminHomeActive') == true)) {
         this.homeActive = true;
-        this.addChildActive = false;
-        this.parentsDetailsActive = false;
+        this.coursesListActive = false;
+        this.registeredListActive = false;
         document.getElementById("homeText").classList.add("chosenLink");
         document.getElementById("homeIconTag").classList.add("chosenIcon");
-        document.getElementById("newChildText").classList.remove("chosenLink");
-        document.getElementById("addChildIconTag").classList.remove("chosenIcon");
-        document.getElementById("parentsDetailsText").classList.remove("chosenLink");
-        document.getElementById("parentsDetailsIconTag").classList.remove("chosenIcon");
-        document.getElementById("coursesShopText").classList.remove("chosenLink");
-        document.getElementById("coursesShopIconTag").classList.remove("chosenIcon");
+        document.getElementById("coursesListText").classList.remove("chosenLink");
+        document.getElementById("coursesListIconTag").classList.remove("chosenIcon");
+        document.getElementById("registeredListText").classList.remove("chosenLink");
+        document.getElementById("registeredListIconTag").classList.remove("chosenIcon");
+        document.getElementById("financeProcessText").classList.remove("chosenLink");
+        document.getElementById("financeProcessIconTag").classList.remove("chosenIcon");
       }
-      if (this.renderToken == 1 || this.$cookies.get('addChildActive')) {
+      if (this.renderToken == 1 || this.$cookies.get('coursesListActive') == 'true' || this.$cookies.get('coursesListActive') == true) {
         this.homeActive = false;
-        this.addChildActive = true;
-        this.parentsDetailsActive = false;
-        this.coursesShopActive = false;
+        this.coursesListActive = true;
+        this.registeredListActive = false;
+        this.financeProcessActive = false;
         document.getElementById("homeText").classList.remove("chosenLink");
         document.getElementById("homeIconTag").classList.remove("chosenIcon");
-        document.getElementById("newChildText").classList.add("chosenLink");
-        document.getElementById("addChildIconTag").classList.add("chosenIcon");
-        document.getElementById("parentsDetailsText").classList.remove("chosenLink");
-        document.getElementById("parentsDetailsIconTag").classList.remove("chosenIcon");
-        document.getElementById("coursesShopText").classList.remove("chosenLink");
-        document.getElementById("coursesShopIconTag").classList.remove("chosenIcon");
-      } else if (this.renderToken == 2 || this.$cookies.get('parentsDetailsActive')) {
+        document.getElementById("coursesListText").classList.add("chosenLink");
+        document.getElementById("coursesListIconTag").classList.add("chosenIcon");
+        document.getElementById("registeredListText").classList.remove("chosenLink");
+        document.getElementById("registeredListIconTag").classList.remove("chosenIcon");
+        document.getElementById("financeProcessText").classList.remove("chosenLink");
+        document.getElementById("financeProcessIconTag").classList.remove("chosenIcon");
+      } else if (this.renderToken == 2 || this.$cookies.get('registeredListActive') == 'true' || this.$cookies.get('registeredListActive') == true) {
         this.homeActive = false;
-        this.addChildActive = false;
-        this.coursesShopActive = false;
-        this.parentsDetailsActive = true;
+        this.coursesListActive = false;
+        this.financeProcessActive = false;
+        this.registeredListActive = true;
         document.getElementById("homeText").classList.remove("chosenLink");
         document.getElementById("homeIconTag").classList.remove("chosenIcon");
-        document.getElementById("newChildText").classList.remove("chosenLink");
-        document.getElementById("addChildIconTag").classList.remove("chosenIcon");
-        document.getElementById("coursesShopText").classList.remove("chosenLink");
-        document.getElementById("coursesShopIconTag").classList.remove("chosenIcon");
-        document.getElementById("parentsDetailsText").classList.add("chosenLink");
-        document.getElementById("parentsDetailsIconTag").classList.add("chosenIcon");
-      } else if (this.renderToken == 3 || this.$cookies.get('coursesShopActive')) {
+        document.getElementById("coursesListText").classList.remove("chosenLink");
+        document.getElementById("coursesListIconTag").classList.remove("chosenIcon");
+        document.getElementById("financeProcessText").classList.remove("chosenLink");
+        document.getElementById("financeProcessIconTag").classList.remove("chosenIcon");
+        document.getElementById("registeredListText").classList.add("chosenLink");
+        document.getElementById("registeredListIconTag").classList.add("chosenIcon");
+      } else if (this.renderToken == 3 || this.$cookies.get('financeProcessActive') == 'true' || this.$cookies.get('financeProcessActive') == true) {
         this.homeActive = false;
-        this.addChildActive = false;
-        this.parentsDetailsActive = false;
-        this.coursesShopActive = true;
+        this.coursesListActive = false;
+        this.registeredListActive = false;
+        this.financeProcessActive = true;
         document.getElementById("homeText").classList.remove("chosenLink");
         document.getElementById("homeIconTag").classList.remove("chosenIcon");
-        document.getElementById("newChildText").classList.remove("chosenLink");
-        document.getElementById("addChildIconTag").classList.remove("chosenIcon");
-        document.getElementById("parentsDetailsText").classList.remove("chosenLink");
-        document.getElementById("parentsDetailsIconTag").classList.remove("chosenIcon");
-        document.getElementById("coursesShopText").classList.add("chosenLink");
-        document.getElementById("coursesShopIconTag").classList.add("chosenIcon");
+        document.getElementById("coursesListText").classList.remove("chosenLink");
+        document.getElementById("coursesListIconTag").classList.remove("chosenIcon");
+        document.getElementById("registeredListText").classList.remove("chosenLink");
+        document.getElementById("registeredListIconTag").classList.remove("chosenIcon");
+        document.getElementById("financeProcessText").classList.add("chosenLink");
+        document.getElementById("financeProcessIconTag").classList.add("chosenIcon");
       }
     },
     changeDecoration(num) {
       this.homeActive = null;
-      this.addChildActive = null;
-      this.parentsDetailsActive = null;
-      this.coursesShopActive = null;
+      this.coursesListActive = null;
+      this.registeredListActive = null;
+      this.financeProcessActive = null;
       if (num == 1) {
-        this.$cookies.remove('addChildActive');
-        this.$cookies.remove('parentsDetailsActive');
-        this.$cookies.remove('coursesShopActive');
+        this.$cookies.remove('coursesListActive');
+        this.$cookies.remove('registeredListActive');
+        this.$cookies.remove('financeProcessActive');
         document.getElementById("homeText").classList.add("chosenLink");
         document.getElementById("homeIconTag").classList.add("chosenIcon");
-        document.getElementById("newChildText").classList.remove("chosenLink");
-        document.getElementById("addChildIconTag").classList.remove("chosenIcon");
-        document.getElementById("parentsDetailsText").classList.remove("chosenLink");
-        document.getElementById("parentsDetailsIconTag").classList.remove("chosenIcon");
-        document.getElementById("coursesShopText").classList.remove("chosenLink");
-        document.getElementById("coursesShopIconTag").classList.remove("chosenIcon");
+        document.getElementById("coursesListText").classList.remove("chosenLink");
+        document.getElementById("coursesListIconTag").classList.remove("chosenIcon");
+        document.getElementById("registeredListText").classList.remove("chosenLink");
+        document.getElementById("registeredListIconTag").classList.remove("chosenIcon");
+        document.getElementById("financeProcessText").classList.remove("chosenLink");
+        document.getElementById("financeProcessIconTag").classList.remove("chosenIcon");
       } else if (num == 2) {
-        this.$cookies.set('addChildActive');
-        this.$cookies.remove('parentsDetailsActive');
-        this.$cookies.remove('coursesShopActive');
-        document.getElementById("newChildText").classList.add("chosenLink");
-        document.getElementById("addChildIconTag").classList.add("chosenIcon");
+        this.$cookies.set('coursesListActive', true);
+        this.$cookies.remove('registeredListActive');
+        this.$cookies.remove('financeProcessActive');
+        document.getElementById("coursesListText").classList.add("chosenLink");
+        document.getElementById("coursesListIconTag").classList.add("chosenIcon");
         document.getElementById("homeText").classList.remove("chosenLink");
         document.getElementById("homeIconTag").classList.remove("chosenIcon");
-        document.getElementById("parentsDetailsText").classList.remove("chosenLink");
-        document.getElementById("parentsDetailsIconTag").classList.remove("chosenIcon");
-        document.getElementById("coursesShopText").classList.remove("chosenLink");
-        document.getElementById("coursesShopIconTag").classList.remove("chosenIcon");
+        document.getElementById("registeredListText").classList.remove("chosenLink");
+        document.getElementById("registeredListIconTag").classList.remove("chosenIcon");
+        document.getElementById("financeProcessText").classList.remove("chosenLink");
+        document.getElementById("financeProcessIconTag").classList.remove("chosenIcon");
       } else if (num == 3) {
-        this.$cookies.set('parentsDetailsActive');
-        this.$cookies.remove('addChildActive');
-        this.$cookies.remove('coursesShopActive');
-        document.getElementById("newChildText").classList.remove("chosenLink");
-        document.getElementById("addChildIconTag").classList.remove("chosenIcon");
+        this.$cookies.set('registeredListActive', true);
+        this.$cookies.remove('coursesListActive');
+        this.$cookies.remove('financeProcessActive');
+        document.getElementById("coursesListText").classList.remove("chosenLink");
+        document.getElementById("coursesListIconTag").classList.remove("chosenIcon");
         document.getElementById("homeText").classList.remove("chosenLink");
         document.getElementById("homeIconTag").classList.remove("chosenIcon");
-        document.getElementById("parentsDetailsText").classList.add("chosenLink");
-        document.getElementById("parentsDetailsIconTag").classList.add("chosenIcon");
-        document.getElementById("coursesShopText").classList.remove("chosenLink");
-        document.getElementById("coursesShopIconTag").classList.remove("chosenIcon");
+        document.getElementById("registeredListText").classList.add("chosenLink");
+        document.getElementById("registeredListIconTag").classList.add("chosenIcon");
+        document.getElementById("financeProcessText").classList.remove("chosenLink");
+        document.getElementById("financeProcessIconTag").classList.remove("chosenIcon");
         
       }
       else if (num == 4) {
-        this.$cookies.set('coursesShopActive');
-        this.$cookies.remove('addChildActive');
-        this.$cookies.remove('parentsDetailsActive');
-        document.getElementById("newChildText").classList.remove("chosenLink");
-        document.getElementById("addChildIconTag").classList.remove("chosenIcon");
+        this.$cookies.set('financeProcessActive', true);
+        this.$cookies.remove('coursesListActive');
+        this.$cookies.remove('registeredListActive');
+        document.getElementById("coursesListText").classList.remove("chosenLink");
+        document.getElementById("coursesListIconTag").classList.remove("chosenIcon");
         document.getElementById("homeText").classList.remove("chosenLink");
         document.getElementById("homeIconTag").classList.remove("chosenIcon");
-        document.getElementById("parentsDetailsText").classList.remove("chosenLink");
-        document.getElementById("parentsDetailsIconTag").classList.remove("chosenIcon");
-        document.getElementById("coursesShopText").classList.add("chosenLink");
-        document.getElementById("coursesShopIconTag").classList.add("chosenIcon");
+        document.getElementById("registeredListText").classList.remove("chosenLink");
+        document.getElementById("registeredListIconTag").classList.remove("chosenIcon");
+        document.getElementById("financeProcessText").classList.add("chosenLink");
+        document.getElementById("financeProcessIconTag").classList.add("chosenIcon");
       }
       
     },
     goTo(numPage) {
       this.changeDecoration(numPage);
       if (numPage == 1) {
-        this.$router.push({ name: "Home" });
-      } else if (numPage == 2) {
-        this.$router.push({ name: "AddChild" });
-      } else if (numPage == 3) {
-        this.$router.push({ name: "ParentsDetails" });
-      } else if (numPage == 4) {
-        this.$router.push({ name: "courseShop" });
+        this.$router.push({ name: "adminDashboard" });
       }
+      // else if (numPage == 2) {
+      //   this.$router.push({ name: "AddChild" });
+      // } else if (numPage == 3) {
+      //   this.$router.push({ name: "ParentsDetails" });
+      // } else if (numPage == 4) {
+      //   this.$router.push({ name: "courseShop" });
+      // }
     },
   },
 }
 </script>
 <style scoped>
+.chosenLink {
+  color: rgb(94, 89, 255) !important;
+}
+.chosenIcon {
+  stroke: rgb(94, 89, 255) !important;
+}
 .logoPart {
   width: 100%;
   display: flex;
@@ -270,16 +283,16 @@ export default {
 .homeItem:hover #homeIconTag {
   stroke: rgb(94, 89, 255) !important;
 }
-.newChildItem:hover p {
+.coursesListItem:hover p {
   color: rgb(94, 89, 255) !important;
 }
-.newChildItem:hover #addChildIconTag {
+.coursesListItem:hover #addChildIconTag {
   stroke: rgb(94, 89, 255) !important;
 }
-.parentsDetailsItem:hover p {
+.registeredListItem:hover p {
   color: rgb(94, 89, 255) !important;
 }
-.parentsDetailsItem:hover #parentsDetailsIconTag {
+.registeredListItem:hover #parentsDetailsIconTag {
   stroke: rgb(94, 89, 255) !important;
 }
 

@@ -365,7 +365,9 @@ export default {
         })
         .catch((err) => {
           this.$swal("مشکلی پیش آمد!", err.message, "error");
-          this.$router.push({ name: "SignupLogin" });
+          if (err.response.status == 401) {
+            this.$router.push({ name: "SignupLogin" });
+          }
         });
     },
     closeFunc() {
@@ -441,12 +443,16 @@ export default {
               this.dialog = false;
             } else {
               this.$swal("مشکلی پیش آمد، لطفا مجددا تلاش نمایید!", "error");
-              this.$router.push({ name: "SignupLogin" });
+              if (response.status == 401) {
+                this.$router.push({ name: "SignupLogin" });
+              }
             }
           })
           .catch((err) => {
             this.$swal("مشکلی پیش آمد!", err.message, "error");
-            this.$router.push({ name: "SignupLogin" });
+            if (err.response.status == 401) {
+              this.$router.push({ name: "SignupLogin" });
+            }
           });
       }
     },
@@ -456,13 +462,13 @@ export default {
       this.$router.push({ name: "Home" });
     },
     stopAllChars(e) {
-      if(e.key.match(/^[a-zA-Zا-ی]*$/) && !(e.key == 'Backspace'))
+      if(e.key.match(/^[a-zA-Zا-ی]*$/) && !(e.key == 'Backspace') && !(e.key == 'Tab'))
       {
         e.preventDefault();
       }
     },
     stopEnglishChars(e) {
-      if(e.key.match(/^[a-zA-Z0-9۰-۹]*$/) && !(e.key == 'Backspace'))
+      if(e.key.match(/^[a-zA-Z0-9۰-۹]*$/) && !(e.key == 'Backspace') && !(e.key == 'Tab'))
       {
         e.preventDefault();
       }

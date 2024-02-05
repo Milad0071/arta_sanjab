@@ -104,13 +104,13 @@ export default {
     showChosenPage() {
       //highligh the chosen page name
       if (this.renderToken == 1) {
-        this.$cookies.set('addChildActive');
+        this.$cookies.set('addChildActive', true);
       } else if (this.renderToken == 2) {
-        this.$cookies.set('parentsDetailsActive');
+        this.$cookies.set('parentsDetailsActive', true);
       } else if (this.renderToken == 3) {
-        this.$cookies.set('coursesShopActive');
+        this.$cookies.set('coursesShopActive', true);
       }
-      if (this.pageNum == 1 && this.$cookies.get('homeActive')) {
+      if (this.pageNum == 1 && (this.$cookies.get('homeActive') == 'true' || this.$cookies.get('homeActive') == true)) {
         this.homeActive = true;
         this.addChildActive = false;
         this.parentsDetailsActive = false;
@@ -123,7 +123,7 @@ export default {
         document.getElementById("coursesShopText").classList.remove("chosenLink");
         document.getElementById("coursesShopIconTag").classList.remove("chosenIcon");
       }
-      if (this.renderToken == 1 || this.$cookies.get('addChildActive')) {
+      if (this.renderToken == 1 || this.$cookies.get('addChildActive') == 'true' || this.$cookies.get('addChildActive') == true) {
         this.homeActive = false;
         this.addChildActive = true;
         this.parentsDetailsActive = false;
@@ -136,7 +136,7 @@ export default {
         document.getElementById("parentsDetailsIconTag").classList.remove("chosenIcon");
         document.getElementById("coursesShopText").classList.remove("chosenLink");
         document.getElementById("coursesShopIconTag").classList.remove("chosenIcon");
-      } else if (this.renderToken == 2 || this.$cookies.get('parentsDetailsActive')) {
+      } else if (this.renderToken == 2 || this.$cookies.get('parentsDetailsActive')  == 'true' || this.$cookies.get('parentsDetailsActive') == true) {
         this.homeActive = false;
         this.addChildActive = false;
         this.coursesShopActive = false;
@@ -149,7 +149,7 @@ export default {
         document.getElementById("coursesShopIconTag").classList.remove("chosenIcon");
         document.getElementById("parentsDetailsText").classList.add("chosenLink");
         document.getElementById("parentsDetailsIconTag").classList.add("chosenIcon");
-      } else if (this.renderToken == 3 || this.$cookies.get('coursesShopActive')) {
+      } else if (this.renderToken == 3 || this.$cookies.get('coursesShopActive') == 'true' && this.$cookies.get('coursesShopActive') == true) {
         this.homeActive = false;
         this.addChildActive = false;
         this.parentsDetailsActive = false;
@@ -182,7 +182,7 @@ export default {
         document.getElementById("coursesShopText").classList.remove("chosenLink");
         document.getElementById("coursesShopIconTag").classList.remove("chosenIcon");
       } else if (num == 2) {
-        this.$cookies.set('addChildActive');
+        this.$cookies.set('addChildActive',true);
         this.$cookies.remove('parentsDetailsActive');
         this.$cookies.remove('coursesShopActive');
         document.getElementById("newChildText").classList.add("chosenLink");
@@ -194,7 +194,7 @@ export default {
         document.getElementById("coursesShopText").classList.remove("chosenLink");
         document.getElementById("coursesShopIconTag").classList.remove("chosenIcon");
       } else if (num == 3) {
-        this.$cookies.set('parentsDetailsActive');
+        this.$cookies.set('parentsDetailsActive', true);
         this.$cookies.remove('addChildActive');
         this.$cookies.remove('coursesShopActive');
         document.getElementById("newChildText").classList.remove("chosenLink");
@@ -208,7 +208,7 @@ export default {
         
       }
       else if (num == 4) {
-        this.$cookies.set('coursesShopActive');
+        this.$cookies.set('coursesShopActive', true);
         this.$cookies.remove('addChildActive');
         this.$cookies.remove('parentsDetailsActive');
         document.getElementById("newChildText").classList.remove("chosenLink");

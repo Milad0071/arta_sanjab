@@ -85,16 +85,6 @@ export default {
     items: [
       {
         id: 1,
-        title: "تکمیل اطلاعات والدین",
-        icon: 'mdi-account-details-outline',
-      },
-      {
-        id: 2,
-        title: "خرید دوره",
-        icon: 'mdi-basket-plus-outline',
-      },
-      {
-        id: 3,
         title: "خروج از حساب",
         icon: 'mdi-logout-variant',
       },
@@ -110,22 +100,11 @@ export default {
   methods: {
     goToItem(id) {
       if (id == 1) {
-        this.$emit("rerender-drawer", 2);
-        this.$cookies.remove('addChildActive');
-        this.$cookies.remove('parentsDetailsActive');
-        this.$router.push({ name: "ParentsDetails" });
-      } else if (id == 2) {
-        this.$emit("rerender-drawer", 3);
-        this.$cookies.remove('addChildActive');
-        this.$cookies.remove('parentsDetailsActive');
-        this.$cookies.remove('coursesShopActive');
-        this.$router.push({ name: "courseShop" });
-      } else if (id == 3) {
         this.$cookies.remove('addChildActive');
         this.$cookies.remove('parentsDetailsActive');
         this.$cookies.remove('coursesShopActive');
         this.$cookies.remove("userToken");
-        this.$cookies.set('userEntered', false);
+        this.$cookies.set('adminEntered', false);
         this.$router.push({ name: "SignupLogin" });
       }
     }

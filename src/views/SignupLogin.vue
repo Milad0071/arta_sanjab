@@ -202,26 +202,6 @@ export default {
       }
       return n;
     },
-    // goToUserForm() {
-    //   this.userType = true;
-    //   document.getElementById("userLoginBtn").style.color = "white";
-    //   document.getElementById("userLoginBtn").style.backgroundColor = "#f68100";
-    //   document.getElementById("userLoginBtn").style.fontWeight = "bold";
-    //   document.getElementById("adminLoginBtn").style.color = "#f68100";
-    //   document.getElementById("adminLoginBtn").style.backgroundColor = "white";
-    //   document.getElementById("adminLoginBtn").style.fontWeight = "";
-      
-    // },
-    goToAdminForm() {
-      // this.userType = false;
-      // document.getElementById("adminLoginBtn").style.color = "white";
-      // document.getElementById("adminLoginBtn").style.backgroundColor = "#f68100";
-      // document.getElementById("adminLoginBtn").style.fontWeight = "bold";
-      // document.getElementById("userLoginBtn").style.color = "#f68100";
-      // document.getElementById("userLoginBtn").style.backgroundColor = "white";
-      // document.getElementById("userLoginBtn").style.fontWeight = "";
-      this.$swal("در دست توسعه", "", "info");
-    },
     emptyCheck(phoneNum) {
       if (phoneNum == null || phoneNum == "") {
         this.userPhoneNumError = true;
@@ -240,11 +220,6 @@ export default {
       this.sendAgin = false;
       userPhoneNum = this.toEngNumber(userPhoneNum);
       if (this.emptyCheck(userPhoneNum) === true) {
-        // if (userType == '1' && this.userPhoneNum == '۰۹۱۳۳۰۹۱۴۷۸') {
-        //   this.$cookies.set('admin');
-        //   this.phoneBtnLoading = false;
-        //   this.$router.push({ name: "adminDashboard" });
-        // } else {}
         var bodyFormData = new FormData();
         JSON.stringify(bodyFormData.append("phone_number", userPhoneNum));
           axios({
@@ -282,13 +257,13 @@ export default {
         }, 1000)
       } else {
         this.startCountDown = false
-        this.sendAgin = true;
+        this.sendAgain = true;
       }
     },
-    validateCode(recivedCode) {
+    validateCode(otpCode) {
       this.verificationBtnLoading = true;
       var bodyFormData = new FormData();
-      JSON.stringify(bodyFormData.append("code", recivedCode));
+      JSON.stringify(bodyFormData.append("code", otpCode));
         axios({
           method: "POST",
           url: `account/phone-verification/?session=${this.$cookies.get('sessionId')}`,
@@ -301,7 +276,7 @@ export default {
             if (response.status == 201) {
               if (response.data.is_admin == true) {
                 this.$cookies.set("userToken", response.data.access);
-                this.$cookies.set('userEntered', true);
+                this.$cookies.set('adminEntered', true);
                 // if (this.$cookies.get("userToken")) {
                   this.$emit("reset-app");
                   this.$router.push({ name: "adminDashboard" });
@@ -321,8 +296,9 @@ export default {
               }
             } else if (response.status == 200) {
               if (response.data.is_admin == true) {
+                this.$cookies.set('is_admin');
                 this.$cookies.set("userToken", response.data.access);
-                this.$cookies.set('userEntered', true);
+                this.$cookies.set('adminEntered', true);
                 this.$emit("reset-app");
                 this.$router.push({ name: "adminDashboard" });
                 this.dialog = false;
@@ -371,7 +347,7 @@ export default {
 .mainBody {
   background-image: url('./../assets/kidsTalent.jpg');
   background-size: cover;
-  height: 100%;
+  height: 100vh !important;
 }
 .mainLogSignBody {
   display: flex;

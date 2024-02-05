@@ -92,6 +92,36 @@ const routes = [
       adminNavbar: true,
     }
   },
+  {
+    path: '/admin-courses',
+    name: "adminCourses",
+    component: () => import('@/views/AdminCourses.vue'),
+    meta: {
+      login: true,
+      hideNavbar: false,
+      adminNavbar: true,
+    }
+  },
+  {
+    path: '/admin-registered',
+    name: "adminRegistered",
+    component: () => import('@/views/AdminRegistered.vue'),
+    meta: {
+      login: true,
+      hideNavbar: false,
+      adminNavbar: true,
+    }
+  },
+  {
+    path: '/admin-finance',
+    name: "adminFinance",
+    component: () => import('@/views/AdminFinance.vue'),
+    meta: {
+      login: true,
+      hideNavbar: false,
+      adminNavbar: true,
+    }
+  },
   
 ]
 
@@ -105,17 +135,19 @@ const { cookies } = useCookies();
 router.beforeEach((to, from, next) => {
   //conditions for showing right item in navigationDrawer component
   if (to.meta.login == true) {
+    console.log('hi login true')
     if (cookies.get('userEntered') == true || cookies.get('userEntered') == 'true') {
+      console.log(cookies.get('userEntered'), to.name)
       if (to.name == "Home") {
-        cookies.set('homeActive');
+        cookies.set('homeActive', true);
         cookies.remove('addChildActive');
         cookies.remove('parentsDetailsActive');
       } else if (to.name == "AddChild") {
-        cookies.set('addChildActive');
+        cookies.set('addChildActive',true);
         cookies.remove('homeActive');
         cookies.remove('parentsDetailsActive');
       } else if (to.name == "ParentsDetails") {
-        cookies.set('parentsDetailsActive');
+        cookies.set('parentsDetailsActive', true);
         cookies.remove('homeActive');
         cookies.remove('addChildActive');
       }
@@ -128,23 +160,57 @@ router.beforeEach((to, from, next) => {
         alert('توکن شما منقضی شده است، مجددا وارد شوید!')
         return next({ path: '/' });
       }
+    } else if (cookies.get('adminEntered') == true || cookies.get('adminEntered') == 'true') {
+      if (to.name == "adminDashboard") {
+        cookies.set('adminHomeActive', true);
+        cookies.remove('coursesListActive');
+        cookies.remove('registeredListActive');
+        cookies.remove('financeProcessActive');
+      } else if (to.name == "adminCourses") {
+        cookies.set('coursesListActive', true);
+        cookies.remove('adminHomeActive');
+        cookies.remove('registeredListActive');
+        cookies.remove('financeProcessActive');
+      } else if (to.name == "adminRegistered") {
+        cookies.set('registeredListActive', true);
+        cookies.remove('adminHomeActive');
+        cookies.remove('coursesListActive');
+        cookies.remove('financeProcessActive');
+      }
+      else if (to.name == "adminFinance") {
+        cookies.set('financeProcessActive', true);
+        cookies.remove('adminHomeActive');
+        cookies.remove('coursesListActive');
+        cookies.remove('registeredListActive');
+      }
+      return next();
     } else {
       alert('توکن شما منقضی شده است، مجددا وارد شوید!')
       return next({ path: '/' });
     }
   } else {
     if (to.name == "SignupLogin") {
-      if (cookies.get('userEntered') == 'false' || cookies.get('userEntered') == false) {
+      console.log(cookies.get('userEntered'), 'userEntered')
+      console.log(cookies.get('adminEntered'), 'adminEntered')
+      console.log(cookies.get('userToken'), 'userToken')
+      if ((cookies.get('userEntered') == 'false' && cookies.get('adminEntered') == 'false') || 
+      (cookies.get('userEntered') == 'false' && cookies.get('adminEntered') == null)) {
         return next();
-      } else {
-        if (cookies.get("userToken") == undefined || cookies.get("userToken") == null || cookies.get("userToken") == '' || cookies.get("userToken") == true || cookies.get("userToken") == 'true') {
+      } else if (cookies.get('userEntered') == 'true' && cookies.get('adminEntered') == 'false') {
+        if (cookies.get("userToken") == undefined || cookies.get("userToken") == null || cookies.get("userToken") == '') {
           cookies.set("userEntered", false);
           return next()
         } else {
-          console.log(cookies.get('userEntered'))
-          console.log(cookies.get("userToken"))
           cookies.set("userEntered", true);
-          return next({ name: 'Home'});
+          return next({ name: 'Home' });
+        }
+      } else if (cookies.get('adminEntered') == 'true' && cookies.get('userEntered') == 'false') {
+        if (cookies.get("userToken") == undefined || cookies.get("userToken") == null || cookies.get("userToken") == '') {
+          cookies.set("adminEntered", false);
+          return next();
+        } else {
+          cookies.set("adminEntered", true);
+          return next({ name: 'adminDashboard' });
         }
       }
     }

@@ -179,7 +179,9 @@ export default {
         })
         .catch((err) => {
           this.$swal("مشکلی پیش آمد!", err.message, "error");
-          this.$router.push({ name: "SignupLogin" });
+          if (err.response.status == 401) {
+            this.$router.push({ name: "SignupLogin" });
+          }
         });
       // this.questionsArray = questions.questionsFile.questions;
       this.totalPages = Math.ceil(this.questionsArray.length / this.pageSize);
