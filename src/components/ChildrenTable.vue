@@ -45,6 +45,9 @@
           <td>{{ item.childEducation }}</td>
           <td>{{ item.childSchoolStudy }}</td>
           <td>{{ item.childWhichChild }}</td>
+          <td>
+
+          </td>
         </tr>
       </tbody>
       <div v-else class="text-center">
@@ -112,6 +115,19 @@ export default {
 }
 </script>
 <style scoped>
+.flex_class {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+.flex_column_class {
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
 .tableClass {
   width: 100%;
   display: flex;
