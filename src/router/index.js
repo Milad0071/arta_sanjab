@@ -135,9 +135,7 @@ const { cookies } = useCookies();
 router.beforeEach((to, from, next) => {
   //conditions for showing right item in navigationDrawer component
   if (to.meta.login == true) {
-    console.log('hi login true')
     if (cookies.get('userEntered') == true || cookies.get('userEntered') == 'true') {
-      console.log(cookies.get('userEntered'), to.name)
       if (to.name == "Home") {
         cookies.set('homeActive', true);
         cookies.remove('addChildActive');
@@ -190,9 +188,6 @@ router.beforeEach((to, from, next) => {
     }
   } else {
     if (to.name == "SignupLogin") {
-      console.log(cookies.get('userEntered'), 'userEntered')
-      console.log(cookies.get('adminEntered'), 'adminEntered')
-      console.log(cookies.get('userToken'), 'userToken')
       if ((cookies.get('userEntered') == 'false' && cookies.get('adminEntered') == 'false') || 
       (cookies.get('userEntered') == 'false' && cookies.get('adminEntered') == null)) {
         return next();

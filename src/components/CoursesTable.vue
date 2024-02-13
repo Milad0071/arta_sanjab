@@ -11,6 +11,8 @@
           <th class="text-right font-weight-bold">نام خانوادگی کودم</th>
           <th class="text-right font-weight-bold">کد ملی کودک</th>
           <th class="text-right font-weight-bold">کد ملی والد</th>
+          <th class="text-right font-weight-bold">وضعیت دوره</th>
+          <th class="text-right font-weight-bold">فارغ‌التحصیلی</th>
         </tr>
       </thead>
       <tbody v-if="hasCourseBoolean == true">
@@ -23,6 +25,8 @@
           <td>{{ item.child_user.last_name }}</td>
           <td>{{ item.child }}</td>
           <td>{{ item.child_user.parent }}</td>
+          <td>{{ item.is_active }}</td>
+          <td>{{ item.is_graduated }}</td>
         </tr>
       </tbody>
       <div v-else class="text-center">
@@ -49,20 +53,21 @@ export default {
   methods: {
     toFarsiNumber(n) {
       // n = parseInt(n);
-      if (n.length == 0) {
-        return;
-      }
-      n = n.toString();
-      var englishNumbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"],
-          persianNumbers = ["۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹", "۰"];
+      if (n != null) {
+        if (n.length == 0) {
+          return;
+        }
+        n = n.toString();
+        var englishNumbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"],
+            persianNumbers = ["۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹", "۰"];
 
-      for (var i = 0, numbersLen = englishNumbers.length; i < numbersLen; i++) {
-          n = n.replace(new RegExp(englishNumbers[i], "g"), persianNumbers[i]);
+        for (var i = 0, numbersLen = englishNumbers.length; i < numbersLen; i++) {
+            n = n.replace(new RegExp(englishNumbers[i], "g"), persianNumbers[i]);
+        }
+        return n;
       }
-      return n;
     },
     getData() {
-      console.log(this.courses)
       this.coursesArray = this.courses;
       this.hasCourseBoolean = this.hasCourse;
       if (this.coursesArray.length === 0) {
@@ -74,8 +79,18 @@ export default {
         this.coursesArray[i].child_user.grade = this.toFarsiNumber(this.coursesArray[i].child_user.grade);
         this.coursesArray[i].child_user.national_code = this.toFarsiNumber(this.coursesArray[i].child_user.national_code);
         this.coursesArray[i].child_user.parent = this.toFarsiNumber(this.coursesArray[i].child_user.parent);
-        this.coursesArray[i].child_user.parent = this.toFarsiNumber(this.coursesArray[i].child_user.parent);
+        if (this.coursesArray[i].is_active == true) {
+          this.coursesArray[i].is_active = 'در حال برگزاری';
+        } else {
+          this.coursesArray[i].is_active = 'پایان یافته';
+        }
+        if (this.coursesArray[i].is_graduated == true) {
+          this.coursesArray[i].is_graduated = 'بله';
+        } else {
+          this.coursesArray[i].is_graduated = 'خیر';
+        }
       }
+      console.log(this.coursesArray)
     },
     sendEmit() {
       this.$emit("clicked");

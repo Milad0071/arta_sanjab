@@ -32,7 +32,7 @@
         </v-list-item>
         <v-list-item
         :active="coursesListActive"
-        
+        disabled
         class="coursesListItem"
         value="coursesList"
         @click="goTo(2)"
@@ -69,6 +69,7 @@
         </v-menu> -->
         <v-list-item
         :active="registeredListActive"
+        disabled
         class="registeredListItem"
         value="registeredList"
         @click="goTo(3)"
@@ -84,6 +85,7 @@
         </v-list-item>
         <v-list-item
         :active="financeProcessActive"
+        disabled
         class="financeProcess"
         value="financeProcess"
         @click="goTo(4)"

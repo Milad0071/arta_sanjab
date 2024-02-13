@@ -58,6 +58,7 @@ export default {
     this.getAdminData();
     this.getUsersData();
     this.getRegisteredCourses();
+    this.$emit("reset-app");
   },
   mounted() {
     if (this.usersArray.length === 0) {
@@ -84,11 +85,13 @@ export default {
             this.$cookies.set("currentUserRole", "مدیر");
             this.$emit("rerender-drawer", 3);
           } else {
+            console.log('1')
             this.$swal("مشکلی پیش آمد!", response.message, "error");
             this.$router.push({ name: "SignupLogin" });
           }
         })
         .catch((err) => {
+          console.log('2')
           this.$swal("مشکلی پیش آمد!", err.message, "error");
           if (err.response.status == 401) {
             this.$router.push({ name: "SignupLogin" });
@@ -126,10 +129,11 @@ export default {
           this.userComponentKey += 1;
         })
         .catch((err) => {
+          console.log('3')
           this.$swal("مشکلی پیش آمد!", err.message, "error");
-          if (err.response.status == 401) {
+          // if (err.response.status == 401) {
             this.$router.push({ name: "SignupLogin" });
-          }
+          // }
         });
     },
     getRegisteredCourses() {
@@ -143,6 +147,7 @@ export default {
         },
       })
         .then((response) => {
+          console.log(response, '4')
           for (let i = 0; i < response.data.length; i++) {
             var data = response.data[i];
             if (data.child_user.type == 1) {
@@ -167,10 +172,11 @@ export default {
           this.courseComponentKey += 1;
         })
         .catch((err) => {
+          console.log('4', err)
           this.$swal("مشکلی پیش آمد!", err.message, "error");
-          if (err.response.status == 401) {
+          // if (err.response.status == 401) {
             this.$router.push({ name: "SignupLogin" });
-          }
+          // }
         });
     },
   },

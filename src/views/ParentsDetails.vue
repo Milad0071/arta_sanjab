@@ -924,6 +924,7 @@ export default {
 }
 .vpd-input-group input:not(.vpd-is-editable) {
   border-radius: 7px 0px 0px 7px;
+  width: 100% !important;
 }
 .vpd-icon-btn {
   padding: 0 15px;
