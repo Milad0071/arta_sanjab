@@ -2,12 +2,12 @@
   <v-app style="margin-right: 20%; font-family: danaRegular !important">
     <v-locale-provider rtl>
       <v-container class="flex_column_class">
-        <!-- courses section -->
-        <div class="tableSections">
+        <!-- users section -->
+        <div class="tableSections" style="margin-top: 10%">
           <div class="upperTableSection">
             <div class="titlePart">
               <div class="titleShape"></div>
-              <h2>اطلاعات دوره‌های خریداری شده</h2>
+              <h2>اطلاعات کاربران</h2>
             </div>
             <div class="filter_part">
               <v-select
@@ -15,7 +15,7 @@
                 density="comfortable"
                 class="input_1"
                 variant="plain"
-                label="فیلتر دوره‌ها"
+                label="فیلتر کاربران"
                 placeholder="نوع فیلتر را انتخاب نمایید"
                 item-text="title"
                 item-value="value"
@@ -33,15 +33,15 @@
               </v-text-field>
             </div>
           </div>
-          <CoursesTable
+          <UsersTable
             class="componentsClass"
-            :key="courseComponentKey"
-            :courses="coursesArray"
-            :hasCourse="hasCourse"
+            :key="userComponentKey"
+            :users="usersArray"
+            :hasUser="hasUser"
             :search="search"
             :filter="filterValue"
           >
-          </CoursesTable>
+          </UsersTable>
         </div>
       </v-container>
     </v-locale-provider>
@@ -49,34 +49,30 @@
 </template>
 <script>
 import axios from "./../axios.js";
-import CoursesTable from "./../components/CoursesTable.vue";
+import UsersTable from "./../components/UsersTable.vue";
 
 export default {
-  components: { CoursesTable },
   emits: ["admin-rerender-drawer", "reset-app"],
+  components: { UsersTable },
   data: () => {
     return {
-      filterValue: 1,
       search: "",
-      hasCourse: true,
-      courseComponentKey: 0,
-      coursesArray: [],
+      filterValue: 1,
+      hasUser: true,
+      userComponentKey: 0,
+      usersArray: [],
       filterList: [
         {
           value: 1,
-          title: "همه دوره‌ها",
+          title: "همه کاربران",
         },
         {
           value: 2,
-          title: "دوره‌های در حال برگزاری",
+          title: "مدیران",
         },
         {
           value: 3,
-          title: "دوره‌های پایان یافته",
-        },
-        {
-          value: 4,
-          title: "دوره‌های ناتمام",
+          title: "کاربران عادی",
         },
       ],
     };
@@ -90,12 +86,12 @@ export default {
     },
   },
   created() {
-    this.getRegisteredCourses();
-    this.$emit("admin-rerender-drawer", 1);
+    this.getUsersData();
+    this.$emit("admin-rerender-drawer", 2);
   },
   mounted() {
-    if (this.coursesArray.length === 0) {
-      this.hasCourse = false;
+    if (this.usersArray.length === 0) {
+      this.hasUser = false;
     }
   },
   methods: {
@@ -119,42 +115,24 @@ export default {
         return n;
       }
     },
-    getRegisteredCourses() {
+    getUsersData() {
       axios({
         method: "GET",
-        url: `admin-dashboard/registered-courses/`,
-        header: "application/json",
+        url: `admin-dashboard/users/`,
         headers: {
           Authorization: `Bearer ${this.$cookies.get("userToken")}`,
           "Content-Type": "application/json",
         },
       })
         .then((response) => {
-          for (let i = 0; i < response.data.length; i++) {
-            var data = response.data[i];
-            if (data.child_user.type == 1) {
-              data.child_user.type = "۴-۷ سال";
-            } else if (data.child_user.type == 2) {
-              data.child_user.type = "۸-۱۱ سال";
-            } else if (data.child_user.type == 3) {
-              data.child_user.type = "۱۲-۱۵ سال";
-            }
-            if (data.course.type == 1) {
-              data.course.type = "۴-۷ سال";
-            } else if (data.course.type == 2) {
-              data.course.type = "۸-۱۱ سال";
-            } else if (data.course.type == 3) {
-              data.course.type = "۱۲-۱۵ سال";
-            }
-          }
           if (response.data.length > 0) {
-            this.hasCourse = true;
+            this.hasUser = true;
           }
-          this.coursesArray = response.data;
-          this.courseComponentKey += 1;
+          this.usersArray = response.data;
+          this.userComponentKey += 1;
         })
         .catch((err) => {
-          console.log("4", err);
+          console.log("3");
           this.$swal("مشکلی پیش آمد!", err.message, "error");
           if (err.response.status == 401) {
             this.$cookies.set('userEntered', false);
@@ -182,7 +160,7 @@ export default {
 }
 .tableSections {
   width: 100% !important;
-  margin: 10% 5% 5% 5%;
+  margin: 0% 5% 5% 5%;
   padding: 10px;
   border: 1px solid #525355;
   border-radius: 7px;
@@ -213,9 +191,10 @@ export default {
   padding: 0% 1%;
 }
 .searchContainer {
-  width: 30%;
+  width: 40%;
 }
 .input_1 {
+  width: 100%;
   padding-top: 0 !important;
   max-height: 50px;
   padding-right: 10px;
@@ -226,13 +205,7 @@ export default {
   font-family: danaRegular !important;
 }
 .componentsClass {
+  height: 100%;
   background-color: transparent !important;
-  margin-top: -0%;
-}
-</style>
-<style>
-.v-application__wrap {
-  /* min-height: 0% !important; */
-  margin-top: 0px;
 }
 </style>

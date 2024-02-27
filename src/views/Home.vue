@@ -5,16 +5,6 @@
       <div class="mainPart">
         <!-- desctop contents -->
         <div class="logoPart">
-          <v-btn
-            color="#525355"
-            class="text-none changeRoleBtn"
-            size="large"
-            min-width="200"
-            variant="outlined"
-            @click="showModalFunc()"
-          >
-            تغییر نقش
-          </v-btn>
           <v-img
             src="./../assets/sanjabTextLogo.png"
             alt="mainLogo"
@@ -22,89 +12,105 @@
           ></v-img>
         </div>
         <!-- child form dialog -->
-          <v-dialog v-model="dialog" persistent width="auto" style="z-index: 1 !important;">
-            <v-card class="mainCard text-center mx-auto ma-4 pa-4" style="right: 20%;" min-width="1020">
-              <!-- close cross icon -->
-              <div class="closeCross" @click="this.dialog = false">
-                <v-btn
-                  class="ma-2"
-                  color="#f68100"
-                  icon="mdi-close"
-                ></v-btn>
+        <v-dialog
+          v-model="dialogValue"
+          persistent
+          width="auto"
+          style="z-index: 1 !important"
+        >
+          <v-card
+            class="mainCard text-center mx-auto ma-4 pa-4"
+            style="right: 20%"
+            min-width="1020"
+          >
+            <!-- close cross icon -->
+            <div class="closeCross" @click="this.dialogValue = false">
+              <v-btn class="ma-2" color="#f68100" icon="mdi-close"></v-btn>
+            </div>
+            <!-- back icon -->
+            <div class="backIcon">
+              <v-btn
+                v-if="show == 2 || show == 3"
+                class="ma-2"
+                color="orange-darken-2"
+                @click="backFunc(show)"
+              >
+                بازگشت
+                <v-icon end icon="mdi-arrow-left"></v-icon>
+              </v-btn>
+            </div>
+            <!-- text part -->
+            <h3 v-if="show == 1" class="fontClass mb-5">
+              لطفا انتخاب کنید تحت عنوان چه نقشی مایل به ادامه مراحل هستید:
+            </h3>
+            <h3 v-if="show == 2" class="fontClass mb-5">
+              لطفا مشخص کنید به عنوان کدام یک از والدین مایل به ادامه مراحل
+              هستید:
+            </h3>
+            <h3 v-if="show == 3" class="fontClass mb-5">
+              لطفا نام کودک را انتخاب نمایید:
+            </h3>
+            <!-- choose role part -->
+            <div v-if="show == 1" class="flex_class">
+              <div class="parentsPart flex_column_class mt-7" @click="goTo(1)">
+                <v-img
+                  width="300"
+                  :aspect-ratio="1"
+                  src="./../assets/parents.png"
+                  cover
+                ></v-img>
+                <h2 class="fontClass">والدین</h2>
               </div>
-              <!-- back icon -->
-              <div class="backIcon">
-                <v-btn
-                  v-if="show == 2 || show == 3"
-                  class="ma-2"
-                  color="orange-darken-2"
-                  @click="backFunc(show)"
-                >
-                  بازگشت  
-                  <v-icon
-                    end
-                    icon="mdi-arrow-left"
-                  ></v-icon>
-                </v-btn>
+              <div class="childPart flex_column_class mt-7" @click="goTo(3)">
+                <v-img
+                  width="300"
+                  :aspect-ratio="1"
+                  src="./../assets/children.png"
+                ></v-img>
+                <h2 class="fontClass">کودک</h2>
               </div>
-              <!-- text part -->
-              <h3 v-if="show == 1" class="fontClass mb-5">لطفا انتخاب کنید تحت عنوان چه نقشی مایل به ادامه مراحل هستید:</h3>
-              <h3 v-if="show == 2" class="fontClass mb-5">لطفا مشخص کنید به عنوان کدام یک از والدین مایل به ادامه مراحل هستید:</h3>
-              <h3 v-if="show == 3" class="fontClass mb-5">لطفا نام کودک را انتخاب نمایید:</h3>
-              <!-- choose role part -->
-              <div v-if="show == 1" class="flex_class">
-                <div class="parentsPart flex_column_class mt-7" @click="goTo(1)">
-                  <v-img
-                    width="300"
-                    :aspect-ratio="1"
-                    src="./../assets/parents.png"
-                    cover
-                  ></v-img>
-                  <h2 class="fontClass">والدین</h2>
-                </div>
-                <div class="childPart flex_column_class mt-7" @click="goTo(3)">
-                  <v-img
-                    width="300"
-                    :aspect-ratio="1"
-                    src="./../assets/children.png"
-                    
-                  ></v-img>
-                  <h2 class="fontClass">کودک</h2>
-                </div>
+            </div>
+            <!-- choose child -->
+            <div v-if="show == 3" class="chooseChildContainer">
+              <div
+                class="choseChild mt-2"
+                v-for="(child, index) in children"
+                :key="index"
+                @click="chooseCourse(child.first_name, child.national_code)"
+              >
+                <h2>{{ child.first_name }}</h2>
+                <h2>{{ child.last_name }}</h2>
+                <h2>{{ child.type }}</h2>
               </div>
-              <!-- choose child -->
-              <div v-if="show == 3" class="chooseChildContainer">
-                <div class="choseChild mt-2" v-for="(child, index) in children" :key="index" @click="chooseCourse(child.first_name, child.national_code)">
-                  <h2>{{ child.first_name }}</h2>
-                  <h2>{{ child.last_name }}</h2>
-                  <h2>{{ child.type }}</h2>
-                </div>
-              </div>
-            </v-card>
-          </v-dialog>
+            </div>
+          </v-card>
+        </v-dialog>
       </div>
     </v-locale-provider>
   </v-app>
 </template>
 <script>
-import axios from './../axios.js';
+import axios from "./../axios.js";
 
 export default {
-  emits: ['rerender-drawer', 'reset-app'],
+  emits: ["user-rerender-drawer", "reset-app"],
+  props: { dialog: Boolean },
   data: () => {
     return {
       parentsData: null,
       show: 1,
-      dialog: false,
       children: [],
-    }
+      dialogValue: false,
+    };
   },
   created() {
-    this.$cookies.remove('currentUserName');
-    this.$cookies.remove('currentUserRole');
-    if (this.$cookies.get('showModal')) {
+    this.dialogValue = this.dialog;
+    this.$emit("user-rerender-drawer", 0);
+    this.$cookies.remove("currentUserName");
+    this.$cookies.remove("currentUserRole");
+    if (this.$cookies.get("showModal")) {
       this.getData();
-      this.dialog = true;
+      this.dialogValue = false;
     }
   },
   methods: {
@@ -113,15 +119,12 @@ export default {
         this.show = 1;
       }
     },
-    showModalFunc() {
-      this.getData();
-      this.dialog = true;
-    },
+
     goTo(num) {
       if (num == 1) {
         //parents choosed
         this.show = 1;
-        this.dialog = false;
+        this.dialogValue = false;
         this.getData(1);
       } else if (num == 2) {
         //nothing yet
@@ -130,45 +133,46 @@ export default {
         if (this.children.length > 0) {
           this.show = 3;
         } else {
-          this.$swal('هنوز اطلاعات کودک را وارد نکرده‌اید!', "", 'warning').then((result) => {
+          this.$swal(
+            "هنوز اطلاعات کودک را وارد نکرده‌اید!",
+            "",
+            "warning"
+          ).then((result) => {
             if (result.isConfirmed) {
-              this.$emit("rerender-drawer", 1);
-              this.$cookies.remove('addChildActive');
-              this.$cookies.remove('parentsDetailsActive');
-              this.$cookies.remove('coursesShopActive');
+              this.$emit("user-rerender-drawer", 1);
+              this.$cookies.remove("addChildActive");
+              this.$cookies.remove("parentsDetailsActive");
+              this.$cookies.remove("coursesShopActive");
               // this.$emit("reset-app");
               this.$router.push({ path: "/add-child" });
             }
           });
-          
         }
-        
       }
     },
     getData(perm) {
       if (perm == 1) {
         axios({
           method: "GET",
-          url: `dashboard/?session=${this.$cookies.get('sessionId')}`,
+          url: `dashboard/?session=${this.$cookies.get("sessionId")}`,
           headers: {
             Authorization: `Bearer ${this.$cookies.get("userToken")}`,
-            'Content-Type': 'application/json'
+            "Content-Type": "application/json",
           },
         })
           .then((response) => {
             if (response.status == 200) {
-              this.$cookies.set('currentUserName', response.data.first_name);
-              this.$cookies.set('currentUserRole', 'والد');
-              this.$emit("rerender-drawer", 3);
-              this.$cookies.remove('addChildActive');
-              this.$cookies.remove('parentsDetailsActive');
-              this.$cookies.remove('coursesShopActive');
+              this.$cookies.set("currentUserName", response.data.first_name);
+              this.$cookies.set("currentUserRole", "والد");
+              this.$emit("user-rerender-drawer", 3);
+              this.$cookies.remove("addChildActive");
+              this.$cookies.remove("parentsDetailsActive");
+              this.$cookies.remove("coursesShopActive");
               // this.$emit("reset-app");
               this.$router.push({ name: "courseShop" });
             } else {
               this.$swal("مشکلی پیش آمد!", response.message, "error");
             }
-            
           })
           .catch((err) => {
             this.$swal("مشکلی پیش آمد!", err.message, "error");
@@ -176,71 +180,78 @@ export default {
       } else {
         axios({
           method: "GET",
-          url: `dashboard/?session=${this.$cookies.get('sessionId')}`,
+          url: `dashboard/?session=${this.$cookies.get("sessionId")}`,
           header: "application/json",
           headers: {
             Authorization: `Bearer ${this.$cookies.get("userToken")}`,
-            'Content-Type': 'application/json'
+            "Content-Type": "application/json",
           },
         })
           .then((response) => {
             if (response.status == 200) {
-              this.$cookies.set('currentUserName', response.data.first_name);
-              this.$cookies.set('currentUserRole', 'والد');
+              this.$cookies.set("currentUserName", response.data.first_name);
+              this.$cookies.set("currentUserRole", "والد");
               this.children = response.data.children;
               for (let i = 0; i < this.children.length; i++) {
                 if (this.children[i].type == 1) {
-                  this.children[i].type = '۴-۷ سال';
+                  this.children[i].type = "۴-۷ سال";
                 } else if (this.children[i].type == 2) {
-                  this.children[i].type = '۸-۱۱ سال';
+                  this.children[i].type = "۸-۱۱ سال";
                 } else {
-                  this.children[i].type = '۱۲-۱۵ سال';
+                  this.children[i].type = "۱۲-۱۵ سال";
                 }
               }
             } else {
               this.$swal("مشکلی پیش آمد!", response.message, "error");
               if (response.status == 401) {
+                this.$cookies.set("userEntered", false);
+                this.$cookies.set("adminEntered", false);
                 this.$router.push({ name: "SignupLogin" });
               }
             }
-            
           })
           .catch((err) => {
             this.$swal("مشکلی پیش آمد!", err.message, "error");
             if (err.response.status == 401) {
+              this.$cookies.set("userEntered", false);
+              this.$cookies.set("adminEntered", false);
               this.$router.push({ name: "SignupLogin" });
             }
           });
       }
     },
     chooseCourse(first_name, nCOde) {
-      this.$cookies.set('currentUserName', first_name);
-      this.$cookies.set('currentUserRole', 'فرزند');
-      this.$cookies.set('childNationalCode', nCOde);
-        axios({
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${this.$cookies.get("userToken")}`,
-            'Content-Type': 'application/json',
-          },
-          url: `dashboard/change-child-user/${nCOde}/?session=${this.$cookies.get('sessionId')}`,
+      this.$cookies.set("currentUserName", first_name);
+      this.$cookies.set("currentUserRole", "فرزند");
+      this.$cookies.set("childNationalCode", nCOde);
+      axios({
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${this.$cookies.get("userToken")}`,
+          "Content-Type": "application/json",
+        },
+        url: `dashboard/change-child-user/${nCOde}/?session=${this.$cookies.get(
+          "sessionId"
+        )}`,
+      })
+        .then(() => {
+          this.$emit("user-rerender-drawer", 3);
+          this.$cookies.remove("addChildActive");
+          this.$cookies.remove("parentsDetailsActive");
+          this.$cookies.remove("coursesShopActive");
+          // this.$emit("reset-app");
+          this.$router.push({ name: "courseShop" });
         })
-          .then(() => {
-            this.$emit("rerender-drawer", 3);
-            this.$cookies.remove('addChildActive');
-            this.$cookies.remove('parentsDetailsActive');
-            this.$cookies.remove('coursesShopActive');
-            // this.$emit("reset-app");
-            this.$router.push({ name: "courseShop" });
-          })
-          .catch((err) => {
-            this.$swal("مشکلی پیش آمد!", err.message, "error");
-            if (err.response.status == 401) {
-              this.$router.push({ name: "SignupLogin" });
-            }
-          });
-    }
-  }
+        .catch((err) => {
+          this.$swal("مشکلی پیش آمد!", err.message, "error");
+          if (err.response.status == 401) {
+            this.$cookies.set("userEntered", false);
+            this.$cookies.set("adminEntered", false);
+            this.$router.push({ name: "SignupLogin" });
+          }
+        });
+    },
+  },
 };
 </script>
 <style scoped>
@@ -258,22 +269,25 @@ export default {
   align-items: center;
 }
 .fontClass {
-  font-family: iranSansRegular !important;
+  font-family: danaRegular !important;
 }
 .appClass {
-  font-family: iranSansRegular !important;
+  font-family: danaRegular !important;
   width: 100%;
-  height: 100%;
+  height: 60%;
 }
 .mainPart {
-  font-family: iranSansRegular !important;
-  width: 80%;
-  height: 91.8%;
+  font-family: danaRegular !important;
+  width: 100%;
+  height: 91.3%;
   margin-top: 3.85%;
   margin-left: 0px;
   display: flex;
   justify-content: center;
   align-items: center;
+  background-color: #f4f5f6;
+  border-radius: 0px, 60px, 0px, 0px;
+  margin-left: 0% !important;
 }
 .logoPart {
   width: 80%;
@@ -300,20 +314,8 @@ export default {
   left: 0;
 }
 
-.changeRoleBtn {
-  font-weight: bold;
-  color: #f68100;
-  width: 500px;
-  height: 50px;
-}
-.changeRoleBtn:hover {
-  border: none;
-  color: white !important;
-  background-color: #f68100;
-  font-weight: bold;
-}
 .parentsPart {
-  font-family: iranSansRegular !important;
+  font-family: danaRegular !important;
 }
 .parentsPart:hover {
   background-color: #f68100 !important;
@@ -321,7 +323,7 @@ export default {
   cursor: pointer;
 }
 .childPart {
-  font-family: iranSansRegular !important;
+  font-family: danaRegular !important;
 }
 .childPart:hover {
   background-color: #f68100 !important;

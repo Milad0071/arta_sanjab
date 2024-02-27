@@ -1,21 +1,27 @@
 <template>
-  <v-app style="margin-right: 20%; font-family: iranSansRegular !important">
+  <v-app style="margin-right: 20%; font-family: danaRegular !important">
     <v-locale-provider rtl>
       <v-container class="flex_column_class">
         <div style="width: 100%">
           <!-- children table -->
           <ChildrenTable
-          :key="componentKey"
-          @clicked="openDialog"
-          :tableType="tableType"
-          :children="children"
-          :hasChild="hasChild"
+            :key="componentKey"
+            @clicked="openDialog"
+            :tableType="tableType"
+            :children="children"
+            :hasChild="hasChild"
           >
           </ChildrenTable>
           <!-- guidance part -->
           <div class="btnContainer flex_column_class">
-            <h3>در صورت وارد کردن اطلاعات تمامی فرزندان، لطفا روی کلید زیر کلیک کنید تا به مرحله ثبت‌نام دوره فرزند هدایت شوید.</h3>
-            <p>(در صورت غیر فعال بودن کلید، لطفا ابتدا اطلاعات فرزندان خود را وارد نمایید!)</p>
+            <h3>
+              در صورت وارد کردن اطلاعات تمامی فرزندان، لطفا روی کلید زیر کلیک
+              کنید تا به مرحله ثبت‌نام دوره فرزند هدایت شوید.
+            </h3>
+            <p>
+              (در صورت غیر فعال بودن کلید، لطفا ابتدا اطلاعات فرزندان خود را
+              وارد نمایید!)
+            </p>
             <v-btn
               v-if="children.length > 0"
               color="#525355"
@@ -23,9 +29,9 @@
               size="large"
               min-width="200"
               variant="outlined"
-              @click="goToDesctop()"
+              @click="goToDesktop()"
             >
-            ثبت‌نام دوره فرزند
+              ثبت‌نام دوره فرزند
             </v-btn>
             <v-btn
               v-else
@@ -40,8 +46,17 @@
             </v-btn>
           </div>
           <!-- child form dialog -->
-          <v-dialog v-model="dialog" persistent width="auto" style="z-index: 1 !important;">
-            <v-card class="text-center mx-auto ma-4" style="right: 20%;" min-width="1020">
+          <v-dialog
+            v-model="dialog"
+            persistent
+            width="auto"
+            style="z-index: 1 !important"
+          >
+            <v-card
+              class="text-center mx-auto ma-4"
+              style="right: 20%"
+              min-width="1020"
+            >
               <div class="titlePart">
                 <div class="titleShape"></div>
                 <h2>فرم ثبت فرزند</h2>
@@ -239,15 +254,15 @@
 </template>
 <script>
 import DatePicker from "vue3-persian-datetime-picker";
-import ChildrenTable from './../components/ChildrenTable.vue';
-import axios from './../axios.js';
+import ChildrenTable from "./../components/ChildrenTable.vue";
+import axios from "./../axios.js";
 
 export default {
   components: { DatePicker, ChildrenTable },
-  emits: ['reset-app'],
+  emits: ["reset-app", "user-rerender-drawer"],
   data: () => {
     return {
-      tableType: 'children',
+      tableType: "children",
       componentKey: 0,
       childrenCount: 0,
       hasChild: true,
@@ -265,15 +280,15 @@ export default {
       ageCategories: [
         {
           value: 1,
-          title: 'بازه ۷-۴ سال',
+          title: "بازه ۷-۴ سال",
         },
         {
           value: 2,
-          title: 'بازه ۱۱-۸ سال',
+          title: "بازه ۱۱-۸ سال",
         },
         {
           value: 3,
-          title: 'بازه ۱۵-۱۲ سال',
+          title: "بازه ۱۵-۱۲ سال",
         },
       ],
       parentsData: null,
@@ -299,7 +314,7 @@ export default {
       }
     },
     userNationalCode(newVal) {
-      // this.userNationalCode = this.toFarsiNumber(newVal);
+      this.userNationalCode = this.toFarsiNumber(newVal);
       if (newVal.length > 0) {
         this.userNationalCodeError = false;
       }
@@ -325,10 +340,11 @@ export default {
       }
     },
   },
-  created() { 
+  created() {
     this.getData();
+    this.$emit("user-rerender-drawer", 3);
   },
-  
+
   mounted() {
     if (this.children.length === 0) {
       this.hasChild = false;
@@ -344,7 +360,7 @@ export default {
         url: "account/child-register/",
         headers: {
           Authorization: `Bearer ${this.$cookies.get("userToken")}`,
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
       })
         .then((response) => {
@@ -353,12 +369,12 @@ export default {
               childName: response.data[i].first_name,
               childLastName: response.data[i].last_name,
               childnCode: response.data[i].national_code,
-              childBirthDay: '۱۴۰۲/۱۰/۱۲',
+              childBirthDay: "۱۴۰۲/۱۰/۱۲",
               childAgeCat: response.data[i].type,
               childEducation: response.data[i].grade,
               childSchoolStudy: response.data[i].school_address,
-              childWhichChild: 'دوم',
-            })
+              childWhichChild: "دوم",
+            });
           }
           this.hasChild = true;
           this.componentKey += 1;
@@ -366,19 +382,21 @@ export default {
         .catch((err) => {
           this.$swal("مشکلی پیش آمد!", err.message, "error");
           if (err.response.status == 401) {
+            this.$cookies.set('userEntered', false);
+            this.$cookies.set('adminEntered', false);
             this.$router.push({ name: "SignupLogin" });
           }
         });
     },
     closeFunc() {
       this.dialog = false;
-      this.userName = '';
-      this.userLastName = '';
-      this.userNationalCode = '';
-      this.userBirthDay = '';
-      this.userEdjucation = '';
-      this.userSchoolStudy = '';
-      this.whichChild = '';
+      this.userName = "";
+      this.userLastName = "";
+      this.userNationalCode = "";
+      this.userBirthDay = "";
+      this.userEdjucation = "";
+      this.userSchoolStudy = "";
+      this.whichChild = "";
       this.userNameError = false;
       this.userLastNameError = false;
       this.userNationalCodeError = false;
@@ -396,6 +414,7 @@ export default {
       userSchoolStudy,
       whichChild
     ) {
+      userNationalCode = this.toEnglishNumber(userNationalCode);
       this.children.push({
         childName: userName,
         childLastName: userLastName,
@@ -405,7 +424,7 @@ export default {
         childEducation: userEdjucation,
         childSchoolStudy: userSchoolStudy,
         childWhichChild: whichChild,
-      })
+      });
       let itemArray = [
         userName,
         userLastName,
@@ -413,8 +432,8 @@ export default {
         userAgeCat,
         userEdjucation,
         userSchoolStudy,
-        whichChild
-      ]
+        whichChild,
+      ];
       if (this.emptyCheck(itemArray) == true) {
         // userBirthDay = this.convertToGerigorian(userBirthDay);
 
@@ -429,8 +448,8 @@ export default {
         axios({
           method: "POST",
           headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${this.$cookies.get("userToken")}`
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${this.$cookies.get("userToken")}`,
           },
           url: "account/child-register/",
           data: bodyFormData,
@@ -444,6 +463,8 @@ export default {
             } else {
               this.$swal("مشکلی پیش آمد، لطفا مجددا تلاش نمایید!", "error");
               if (response.status == 401) {
+                this.$cookies.set('userEntered', false);
+                this.$cookies.set('adminEntered', false);
                 this.$router.push({ name: "SignupLogin" });
               }
             }
@@ -451,25 +472,33 @@ export default {
           .catch((err) => {
             this.$swal("مشکلی پیش آمد!", err.message, "error");
             if (err.response.status == 401) {
+              this.$cookies.set('userEntered', false);
+              this.$cookies.set('adminEntered', false);
               this.$router.push({ name: "SignupLogin" });
             }
           });
       }
     },
-    goToDesctop() {
-      this.$cookies.set('showModal');
+    goToDesktop() {
+      this.$cookies.set("showModal");
       this.$emit("reset-app");
       this.$router.push({ name: "Home" });
     },
     stopAllChars(e) {
-      if(e.key.match(/^[a-zA-Zا-ی]*$/) && !(e.key == 'Backspace') && !(e.key == 'Tab'))
-      {
+      if (
+        e.key.match(/^[a-zA-Zا-ی]*$/) &&
+        !(e.key == "Backspace") &&
+        !(e.key == "Tab")
+      ) {
         e.preventDefault();
       }
     },
     stopEnglishChars(e) {
-      if(e.key.match(/^[a-zA-Z0-9۰-۹]*$/) && !(e.key == 'Backspace') && !(e.key == 'Tab'))
-      {
+      if (
+        e.key.match(/^[a-zA-Z0-9۰-۹]*$/) &&
+        !(e.key == "Backspace") &&
+        !(e.key == "Tab")
+      ) {
         e.preventDefault();
       }
     },
@@ -479,10 +508,24 @@ export default {
       }
       n = n.toString();
       var englishNumbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"],
-          persianNumbers = ["۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹", "۰"];
+        persianNumbers = ["۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹", "۰"];
 
       for (var i = 0, numbersLen = englishNumbers.length; i < numbersLen; i++) {
-          n = n.replace(new RegExp(englishNumbers[i], "g"), persianNumbers[i]);
+        n = n.replace(new RegExp(englishNumbers[i], "g"), persianNumbers[i]);
+      }
+      return n;
+    },
+    toEnglishNumber(n) {
+      // n = parseInt(n);
+      if (n.length == 0) {
+        return;
+      }
+      n = n.toString();
+      var englishNumbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"],
+        persianNumbers = ["۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹", "۰"];
+
+      for (var i = 0, numbersLen = persianNumbers.length; i < numbersLen; i++) {
+        n = n.replace(new RegExp(persianNumbers[i], "g"), englishNumbers[i]);
       }
       return n;
     },
@@ -575,7 +618,7 @@ export default {
             this.userLastNameError = true;
           } else if (i == 2) {
             this.userNationalCodeError = true;
-          }  else if (i == 3) {
+          } else if (i == 3) {
             this.userAgeCat = true;
           } else if (i == 4) {
             this.userEdjucation = true;
@@ -584,15 +627,16 @@ export default {
           } else if (i == 6) {
             this.whichChild = true;
           }
-
         }
       }
       if (emptyCheck == true) {
-        this.$swal("لطفا فیلدهای خالی رو پر کنید!", "", "warning").then((result) => {
-          if (result.isConfirmed) {
-            this.dialog = true;
+        this.$swal("لطفا فیلدهای خالی رو پر کنید!", "", "warning").then(
+          (result) => {
+            if (result.isConfirmed) {
+              this.dialog = true;
+            }
           }
-        });
+        );
         this.dialog = true;
         return false;
       } else {
@@ -647,7 +691,7 @@ export default {
 .titlePart {
   display: flex;
   margin-top: 10px;
-  font-family: iranSansRegular !important;
+  font-family: danaRegular !important;
 }
 .titlePart h2 {
   margin-right: 10px;
@@ -663,7 +707,7 @@ export default {
   grid-template-columns: repeat(2, minmax(350px, 1fr));
   justify-items: center;
   padding-top: 0%;
-  font-family: iranSansRegular !important;
+  font-family: danaRegular !important;
 }
 .input_part {
   display: flex;
@@ -684,8 +728,8 @@ export default {
 </style>
 <style>
 @font-face {
-  font-family: iranSansRegular;
-  src: url("./../assets/fonts/IRANSansX-Regular.ttf");
+  font-family: danaRegular;
+  src: url("./assets/fonts/Dana-Regular.ttf");
 }
 .vpd-input-group {
   min-height: 50px;

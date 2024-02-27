@@ -1,5 +1,5 @@
 <template>
-  <v-locale-provider style="font-family: iranSansRegular !important;" rtl>
+  <v-locale-provider style="font-family: danaRegular !important;" rtl>
     <v-app-bar class="mainBar" block :elevation="1" scroll-threshold="0">
       <div class="contentBar">
         <!-- notification bell -->
@@ -14,7 +14,7 @@
             <v-list style="width: 200px;">
               <v-list-item v-for="(item, index) in items_2" :key="index" :value="index">
                 <v-list-item-title>
-                  <p style="font-family: iranSansRegular !important;">
+                  <p style="font-family: danaRegular !important;">
                     {{ item.title }}
                   </p>
                 </v-list-item-title>
@@ -77,9 +77,10 @@
   </v-locale-provider>
 </template>
 <script>
+import axios from "./../axios.js";
 
 export default {
-  emits: ['rerender-drawer'],
+  emits: ['admin-rerender-drawer'],
   data: () => ({
     currentUserName: null,
     items: [
@@ -100,12 +101,47 @@ export default {
   methods: {
     goToItem(id) {
       if (id == 1) {
-        this.$cookies.remove('addChildActive');
-        this.$cookies.remove('parentsDetailsActive');
-        this.$cookies.remove('coursesShopActive');
-        this.$cookies.remove("userToken");
-        this.$cookies.set('adminEntered', false);
-        this.$router.push({ name: "SignupLogin" });
+        var bodyFormData = new FormData();
+        JSON.stringify(bodyFormData.append("token", this.$cookies.get("userRefreshToken")));
+        axios({
+        method: "POST",
+        url: `account/logout/`,
+        headers: {
+          "content-type": "application/json",
+          Authorization: `Bearer ${this.$cookies.get("userToken")}`,
+        },
+        data: bodyFormData,
+      })
+        .then((response) => {
+            if (response.status == 200) {
+              this.$cookies.remove("addChildActive");
+              this.$cookies.remove("parentsDetailsActive");
+              this.$cookies.remove("coursesShopActive");
+              this.$cookies.remove("userToken");
+              this.$cookies.set("userEntered", false);
+              this.$cookies.remove("userToken");
+              this.$cookies.remove("userRefreshToken");
+              this.$router.push({ name: "SignupLogin" });
+            } else if (response.status == 401 || response.status == 403) {
+              this.$cookies.set("userEntered", false);
+              this.$cookies.set("adminEntered", false);
+              this.$router.push({ name: "SignupLogin" });
+              this.$swal("مشکلی پیش آمد!", response.message, "error");
+              this.verificationBtnLoading = false;
+            } else {
+              this.$swal("مشکلی پیش آمد، لطفا مجدد تلاش نمایید!", "error");
+              this.verificationBtnLoading = false;
+            }
+          })
+          .catch((err) => {
+            if (err.request.status == 401 || err.request.status == 403) {
+              this.$cookies.set("userEntered", false);
+              this.$cookies.set("adminEntered", false);
+              this.$router.push({ name: "SignupLogin" });
+              this.$swal("مشکلی پیش آمد!", err.message, "error");
+              this.verificationBtnLoading = false;
+            }
+          });
       }
     }
   },

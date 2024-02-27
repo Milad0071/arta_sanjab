@@ -9,8 +9,8 @@
           </div>
           <div v-if="showCourses == true" class="cardClass1 flex_class">
             <v-card
-              class="mx-auto my-12 "
-              style="border: 1px solid #6d6e71;"
+              class="mx-auto my-12"
+              style="border: 1px solid #6d6e71"
               min-width="374"
               elevation="24"
               v-for="(course, index) in courses"
@@ -26,11 +26,12 @@
               </v-card-item>
               <v-card-text>
                 <div>{{ course.description }}</div>
-                <div>قیمت: {{ course.price }}ریال </div>
+                <div>قیمت: {{ course.price }}ریال</div>
               </v-card-text>
               <v-divider class="mx-4 mb-1"></v-divider>
               <v-card-actions class="btnLocation">
                 <v-btn
+                  :loading="buyCourseLoading"
                   class="text-none buyBtn"
                   color="#f68100"
                   variant="outlined"
@@ -42,9 +43,7 @@
               </v-card-actions>
             </v-card>
           </div>
-          <div v-else>
-            دوره متناسب با این کاربر وجود ندارد.
-          </div>
+          <div v-else>دوره متناسب با این کاربر وجود ندارد.</div>
         </div>
         <div class="coursesContainer flex_column_class mt-4 mb-4">
           <div class="titlePart">
@@ -53,8 +52,8 @@
           </div>
           <div v-if="showPurchasedCourses == true" class="cardClass flex_class">
             <v-card
-              class="mx-auto my-12 "
-              style="border: 1px solid #6d6e71;"
+              class="mx-auto my-12"
+              style="border: 1px solid #6d6e71"
               min-width="374"
               elevation="24"
               v-for="(course, index) in purchasedCourses"
@@ -75,6 +74,7 @@
               <v-divider class="mx-4 mb-1"></v-divider>
               <v-card-actions class="btnLocation">
                 <v-btn
+                  :loading="continueCourseBtnLoading"
                   class="text-none buyBtn"
                   color="#f68100"
                   variant="outlined"
@@ -86,39 +86,40 @@
               </v-card-actions>
             </v-card>
           </div>
-          <div v-else>
-            دوره متناسب با این کاربر وجود ندارد.
-          </div>
+          <div v-else>دوره متناسب با این کاربر وجود ندارد.</div>
         </div>
-
       </div>
     </v-locale-provider>
   </v-app>
 </template>
 <script>
-import axios from './../axios.js';
+import axios from "./../axios.js";
 
 export default {
+  emits: ["reset-app", 'user-rerender-drawer'],
   data: () => {
     return {
       showCourses: true,
       showPurchasedCourses: true,
+      buyCourseLoading: false,
+      continueCourseBtnLoading: false,
       courses: [],
       purchasedCourses: [],
-    }
+    };
   },
   created() {
     this.getData();
+    this.$emit("user-rerender-drawer", 3);
   },
   methods: {
     getData() {
       //get courses that can be purchased
       axios({
         method: "GET",
-        url: `courses/list/?session=${this.$cookies.get('sessionId')}`,
+        url: `courses/list/?session=${this.$cookies.get("sessionId")}`,
         headers: {
           Authorization: `Bearer ${this.$cookies.get("userToken")}`,
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
       })
         .then((response) => {
@@ -127,23 +128,25 @@ export default {
               id: response.data[i].id,
               name: response.data[i].name,
               description: response.data[i].description,
-              price: response.data[i].price
-            })
+              price: response.data[i].price,
+            });
           }
         })
         .catch((err) => {
           this.$swal("مشکلی پیش آمد!", err.message, "error");
           if (err.response.status == 401) {
+            this.$cookies.set('userEntered', false);
+            this.$cookies.set('adminEntered', false);
             this.$router.push({ name: "SignupLogin" });
           }
         });
-      //get courses that have been purchased before
+      //get courses that have been purchased
       axios({
         method: "GET",
-        url: `dashboard/my-courses/?session=${this.$cookies.get('sessionId')}`,
+        url: `dashboard/my-courses/?session=${this.$cookies.get("sessionId")}`,
         headers: {
           Authorization: `Bearer ${this.$cookies.get("userToken")}`,
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
       })
         .then((response) => {
@@ -155,7 +158,7 @@ export default {
               price: response.data[i].course.price,
               startDate: response.data[i].created_at,
               expireDate: response.data[i].expire_at,
-            })
+            });
           }
           if (this.purchasedCourses.length > 0) {
             this.showPurchasedCourses = true;
@@ -164,58 +167,89 @@ export default {
           }
         })
         .catch((err) => {
-          this.$swal("مشکلی پیش آمد!", err.message, "error")
-          console.log(err.response.status)
+          this.$swal("مشکلی پیش آمد!", err.message, "error");
+          console.log(err.response.status);
           if (err.response.status == 401) {
+            this.$cookies.set('userEntered', false);
+            this.$cookies.set('adminEntered', false);
             this.$router.push({ name: "SignupLogin" });
           }
-          
         });
     },
     buyCourse(id) {
-      console.log(id)
+      this.buyCourseLoading = true;
       id = parseInt(id);
       var bodyFormData = new FormData();
-      JSON.stringify(bodyFormData.append("course", id)); 
-      JSON.stringify(bodyFormData.append("session_id", this.$cookies.get('sessionId')));
+      JSON.stringify(bodyFormData.append("course", id));
+      JSON.stringify(
+        bodyFormData.append("session_id", this.$cookies.get("sessionId"))
+      );
       // if (this.$cookies.get('stay')) {
-        axios({
-          method: "POST",
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${this.$cookies.get("userToken")}`,
-          },
-          url: `courses/create/?session=${this.$cookies.get('sessionId')}`,
-          data: bodyFormData,
-        })
-          .then((response) => {
-            console.log(response)
-            if (response.status == 201) {
-              this.$router.push({ name: "PlayerComp" });
+      axios({
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.$cookies.get("userToken")}`,
+        },
+        url: `courses/create/?session=${this.$cookies.get("sessionId")}`,
+        data: bodyFormData,
+      })
+        .then((response) => {
+          this.buyCourseLoading = false;
+          if (response.status == 201) {
+            this.buyCourseLoading = false;
+            this.courses = [];
+            this.getData();
+            this.$emit("reset-app");
+            this.$swal("خرید موفق!", "دوره با موفقیت خریداری شد!", "success");
+          } else {
+            this.buyCourseLoading = false;
+            if (response.status == 403) {
+              this.buyCourseLoading = false;
+              this.$swal(
+                "عدم امکان خرید!",
+                "شما قبلا این دوره را خریداری نموده‌اید!",
+                "warning"
+              ).then(() => {
+                this.buyCourseLoading = false;
+              });
             } else {
+              this.buyCourseLoading = false;
               this.$swal("مشکلی پیش آمد!", response.message, "error");
               if (response.status == 401) {
+                this.$cookies.set('userEntered', false);
+                this.$cookies.set('adminEntered', false);
                 this.$router.push({ name: "SignupLogin" });
               }
             }
-          })
-          .catch((err) => {
-            this.$swal("مشکلی پیش آمد!", err.message, "error").then((result) => {
-              if (result.isConfirmed) {
-                if (err.response.status == 401) {
-                  this.$router.push({ name: "SignupLogin" });
-                }
-              }
-          });
-            
-          });
+          }
+        })
+        .catch((err) => {
+          this.buyCourseLoading = false;
+          if (err.request.status == 403) {
+            this.$swal(
+              "عدم امکان خرید!",
+              "شما قبلا این دوره را خریداری نموده‌اید!",
+              "warning"
+            );
+          } else {
+            this.$swal("مشکلی پیش آمد!", err.message, "error");
+            if (err.request.status == 401) {
+              this.$cookies.set('userEntered', false);
+              this.$cookies.set('adminEntered', false);
+              this.$router.push({ name: "SignupLogin" });
+            }
+          }
+        });
       // }
     },
     goToCourse() {
+      this.continueCourseBtnLoading = true;
       this.$router.push({ name: "PlayerComp" });
+      this.continueCourseBtnLoading = false;
     },
-  }
-}
+  },
+};
 </script>
 <style scoped>
 .flex_class {

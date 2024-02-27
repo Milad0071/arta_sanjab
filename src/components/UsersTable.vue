@@ -1,5 +1,5 @@
 <template>
-  <v-app style="font-family: iranSansRegular !important">
+  <v-app style="font-family: danaRegular !important">
     <v-table class="tableClass" density="compact">
       <thead>
         <tr>
@@ -8,16 +8,22 @@
           <th class="text-right font-weight-bold">نام خانوادگی</th>
           <th class="text-right font-weight-bold">کد ملی</th>
           <th class="text-right font-weight-bold">شماره تماس</th>
+          <th class="text-right font-weight-bold">نوع کاربری</th>
           <th>عملیات</th>
         </tr>
       </thead>
       <tbody v-if="hasUserBoolean == true">
-        <tr v-for="(item, index) in usersArray" :key="index">
+        <tr
+          v-if="searchList.length > 0"
+          v-for="(item, index) in searchList"
+          :key="index"
+        >
           <td>{{ this.toFarsiNumber(index + 1) }}</td>
           <td>{{ item.first_name }}</td>
           <td>{{ item.last_name }}</td>
           <td>{{ item.national_code }}</td>
           <td>{{ item.phone_number }}</td>
+          <td>{{ item.type }}</td>
           <td>
             <div class="flex_class" style="justify-content: flex-start">
               <!-- see details icon -->
@@ -63,6 +69,9 @@
             </div>
           </td>
         </tr>
+        <div v-else class="text-center">
+          <p>کاربری یافت نشد!</p>
+        </div>
       </tbody>
       <div v-else class="text-center">
         <p>کاربری وجود ندارد!</p>
@@ -73,16 +82,20 @@
       v-model="openUserDetailsDialog"
       persistent
       width="auto"
-      style="z-index: 1 !important; font-family: iranSansRegular !important"
+      style="z-index: 1 !important; font-family: danaRegular !important"
     >
-      <v-card class="detailsCard text-center mx-auto ma-4" style="right: 20%">
+      <v-card
+        class="detailsCard text-center mx-auto ma-4"
+        style="right: 20%; margin-top: 5% !important"
+      >
         <!-- dialog title -->
         <div class="titlePart">
           <div class="titleShape"></div>
           <h2>اطلاعات کاربر</h2>
         </div>
         <!-- inputs section -->
-        <div class="py-12 px-8 inputContainer">
+        <!-- <div class="py-12 px-8 inputContainer"></div> -->
+        <div class="inputContainer">
           <div class="input_part">
             <!-- user name -->
             <v-text-field
@@ -339,7 +352,7 @@ import DatePicker from "vue3-persian-datetime-picker";
 
 export default {
   emits: ["clicked"],
-  props: { users: Array, hasUser: Boolean },
+  props: { users: Array, hasUser: Boolean, search: String, filter: Number },
   components: { DatePicker },
   data: () => {
     return {
@@ -380,6 +393,62 @@ export default {
       userGirls: "0",
     };
   },
+  computed: {
+    searchList() {
+      console.log(this.search);
+      console.log(this.filter);
+      if (this.search) {
+        return this.usersArray.filter((item) => {
+          if (this.filter == 1) {
+            return (
+              item.first_name.includes(this.search) ||
+              item.last_name.includes(this.search) ||
+              item.national_code.includes(this.search) ||
+              item.phone_number.includes(this.search)
+            );
+          } else if (this.filter == 2) {
+            return (
+              (item.first_name.includes(this.search) ||
+                item.last_name.includes(this.search) ||
+                item.national_code.includes(this.search) ||
+                item.phone_number.includes(this.search)) &&
+              item.type.includes("مدیر")
+            );
+          } else if (this.filter == 3) {
+            return (
+              (item.first_name.includes(this.search) ||
+                item.last_name.includes(this.search) ||
+                item.national_code.includes(this.search) ||
+                item.phone_number.includes(this.search)) &&
+              item.type.includes("کاربر")
+            );
+          }
+        });
+      } else {
+        console.log(this.filter);
+        if (this.filter == 2) {
+          return this.usersArray.filter((item) => {
+            return item.type.includes("مدیر");
+          });
+        } else if (this.filter == 3) {
+          return this.usersArray.filter((item) => {
+            return item.type.includes("کاربر");
+          });
+        } else {
+          return this.usersArray;
+        }
+      }
+    },
+    filterList() {
+      if (this.filter) {
+        return this.usersArray.filter((item) => {
+          return item.type.includes(this.filter);
+        });
+      } else {
+        return this.usersArray;
+      }
+    },
+  },
   created() {
     this.getData();
   },
@@ -418,8 +487,27 @@ export default {
       }
       return n;
     },
+    stopAllChars(e) {
+      if (
+        e.key.match(/^[a-zA-Zا-ی]*$/) &&
+        !(e.key == "Backspace") &&
+        !(e.key == "Tab")
+      ) {
+        e.preventDefault();
+      }
+    },
+    stopEnglishChars(e) {
+      if (
+        e.key.match(/^[a-zA-Z0-9۰-۹]*$/) &&
+        !(e.key == "Backspace") &&
+        !(e.key == "Tab")
+      ) {
+        e.preventDefault();
+      }
+    },
     getData() {
       this.usersArray = this.users;
+      console.log(this.usersArray);
       this.hasUserBoolean = this.hasUser;
       if (this.usersArray.length === 0) {
         this.hasUserBoolean = false;
@@ -437,10 +525,18 @@ export default {
         this.usersArray[i].phone_number = this.toFarsiNumber(
           this.usersArray[i].phone_number
         );
+        if (this.usersArray[i].type == 1 || this.usersArray[i].type == 2) {
+          this.usersArray[i].type = "کاربر";
+        } else if (this.usersArray[i].type == 3) {
+          this.usersArray[i].type = "مدیر";
+        } else if (this.usersArray[i].type == 4) {
+          this.usersArray[i].type = "مدیر ارشد";
+        }
       }
     },
     getUserData(nCode) {
-      // nCode = this.toEnglishNumber(nCode);
+      nCode = this.toEnglishNumber(nCode);
+      console.log(nCode);
       axios({
         method: "GET",
         url: `admin-dashboard/user/${nCode}`,
@@ -451,69 +547,84 @@ export default {
         },
       })
         .then((response) => {
+          console.log(response);
           this.userData = response.data;
-          if (this.userData.type == 1) {
-            this.userData.type = "پدر";
-          } else if (this.userData.type == 2) {
-            this.userData.type = "مادر";
+          if (this.userData.type != 3 && this.userData.type != 4) {
+            if (this.userData.type == 1) {
+              this.userData.type = "پدر";
+            } else if (this.userData.type == 2) {
+              this.userData.type = "مادر";
+            }
+
+            if (this.userData.children[0].type == 1) {
+              this.userData.children[0].type = "۴-۷ سال";
+            } else if (this.userData.children[0].type == 2) {
+              this.userData.children[0].type = "۸-۱۱ سال";
+            } else if (this.userData[0].children.type == 3) {
+              this.userData.children[0].type = "۱۲-۱۵ سال";
+            }
+            this.userData.national_code = this.toFarsiNumber(
+              this.userData.national_code
+            );
+            this.userData.phone_number = this.toFarsiNumber(
+              this.userData.phone_number
+            );
+            this.userData.children[0].birth_date = this.toFarsiNumber(
+              this.userData.children[0].birth_date
+            );
+            this.userData.children[0].grade = this.toFarsiNumber(
+              this.userData.children[0].grade
+            );
+            this.userData.children[0].national_code = this.toFarsiNumber(
+              this.userData.children[0].national_code
+            );
+            this.userData.children[0].parent = this.toFarsiNumber(
+              this.userData.children[0].parent
+            );
+            this.userData.user_profile.Regional_Municipality =
+              this.toFarsiNumber(
+                this.userData.user_profile.Regional_Municipality
+              );
+            this.userData.user_profile.address = this.toFarsiNumber(
+              this.userData.user_profile.address
+            );
+            this.userData.user_profile.birth_date = this.toFarsiNumber(
+              this.userData.user_profile.birth_date
+            );
+            this.userData.user_profile.boys = this.toFarsiNumber(
+              this.userData.user_profile.boys
+            );
+            this.userData.user_profile.girls = this.toFarsiNumber(
+              this.userData.user_profile.girls
+            );
+            this.userData.user_profile.postal_code = this.toFarsiNumber(
+              this.userData.user_profile.postal_code
+            );
+            this.userData.user_profile.telephone = this.toFarsiNumber(
+              this.userData.user_profile.telephone
+            );
+          } else {
+            if (this.userData.type == 3) {
+              this.userData.type = "مدیر";
+            } else if (this.userData.type == 4) {
+              this.userData.type = "مدیر ارشد";
+            }
           }
-          if (this.userData.children[0].type == 1) {
-            this.userData.children[0].type = "۴-۷ سال";
-          } else if (this.userData.children[0].type == 2) {
-            this.userData.children[0].type = "۸-۱۱ سال";
-          } else if (this.userData[0].children.type == 3) {
-            this.userData.children[0].type = "۱۲-۱۵ سال";
-          }
-          this.userData.national_code = this.toFarsiNumber(
-            this.userData.national_code
-          );
-          this.userData.phone_number = this.toFarsiNumber(
-            this.userData.phone_number
-          );
-          this.userData.children[0].birth_date = this.toFarsiNumber(
-            this.userData.children[0].birth_date
-          );
-          this.userData.children[0].grade = this.toFarsiNumber(
-            this.userData.children[0].grade
-          );
-          this.userData.children[0].national_code = this.toFarsiNumber(
-            this.userData.children[0].national_code
-          );
-          this.userData.children[0].parent = this.toFarsiNumber(
-            this.userData.children[0].parent
-          );
-          this.userData.user_profile.Regional_Municipality = this.toFarsiNumber(
-            this.userData.user_profile.Regional_Municipality
-          );
-          this.userData.user_profile.address = this.toFarsiNumber(
-            this.userData.user_profile.address
-          );
-          this.userData.user_profile.birth_date = this.toFarsiNumber(
-            this.userData.user_profile.birth_date
-          );
-          this.userData.user_profile.boys = this.toFarsiNumber(
-            this.userData.user_profile.boys
-          );
-          this.userData.user_profile.girls = this.toFarsiNumber(
-            this.userData.user_profile.girls
-          );
-          this.userData.user_profile.postal_code = this.toFarsiNumber(
-            this.userData.user_profile.postal_code
-          );
-          this.userData.user_profile.telephone = this.toFarsiNumber(
-            this.userData.user_profile.telephone
-          );
           this.insertData();
         })
         .catch((err) => {
           console.log("4", err);
           this.$swal("مشکلی پیش آمد!", err.message, "error");
-          // if (err.response.status == 401) {
-          this.$router.push({ name: "SignupLogin" });
-          // }
+          if (err.response.status == 401) {
+            this.$cookies.set('userEntered', false);
+            this.$cookies.set('adminEntered', false);
+            this.$router.push({ name: "SignupLogin" });
+          }
         });
     },
     openDialog(type, nCode) {
+      nCode = this.toEnglishNumber(nCode);
+      console.log(typeof nCode);
       this.openUserDetailsDialog = true;
       this.getUserData(nCode);
       this.changeEditability(type);
@@ -700,6 +811,8 @@ export default {
             } else {
               this.$swal("مشکلی پیش آمد!", "", "error");
               if (response.status == 401) {
+                this.$cookies.set('userEntered', false);
+                this.$cookies.set('adminEntered', false);
                 this.$router.push({ name: "SignupLogin" });
               }
             }
@@ -707,6 +820,8 @@ export default {
           .catch((err) => {
             this.$swal("مشکلی پیش آمد!", err.message, "error");
             if (err.response.status == 401) {
+              this.$cookies.set('userEntered', false);
+              this.$cookies.set('adminEntered', false);
               this.$router.push({ name: "SignupLogin" });
             }
           });
@@ -734,24 +849,6 @@ export default {
       this.userGirls = "";
       this.updateData = [];
     },
-    stopAllChars(e) {
-      if (
-        e.key.match(/^[a-zA-Zا-ی]*$/) &&
-        !(e.key == "Backspace") &&
-        !(e.key == "Tab")
-      ) {
-        e.preventDefault();
-      }
-    },
-    stopEnglishChars(e) {
-      if (
-        e.key.match(/^[a-zA-Z0-9۰-۹]*$/) &&
-        !(e.key == "Backspace") &&
-        !(e.key == "Tab")
-      ) {
-        e.preventDefault();
-      }
-    },
   },
 };
 </script>
@@ -776,7 +873,7 @@ export default {
   color: #373739;
   background-color: hsl(31, 100%, 48%, 0.5);
   border-radius: 7px;
-  margin-top: 10%;
+  margin-top: 3%;
 }
 .submitBtn {
   font-weight: bold;
@@ -817,7 +914,7 @@ export default {
 .titlePart {
   display: flex;
   margin-top: 10px;
-  font-family: iranSansRegular !important;
+  font-family: danaRegular !important;
 }
 .titlePart h2 {
   margin-right: 10px;
@@ -833,14 +930,14 @@ export default {
   grid-template-columns: repeat(3, minmax(350px, 1fr));
   justify-items: center;
   padding-top: 0%;
-  font-family: iranSansRegular !important;
+  font-family: danaRegular !important;
 }
 .input_part {
   display: flex;
   flex-direction: column;
-  width: 100%;
-  padding: 0% 10%;
-  margin-top: 5%;
+  width: 45vh;
+  padding: 0% 8%;
+  margin-top: 4%;
 }
 .input_1 {
   padding-top: 0 !important;
@@ -859,7 +956,7 @@ export default {
 }
 .btnContainer {
   width: 100%;
-  margin-top: 10%;
+  margin-top: 12%;
 }
 .textareaClass {
   border-radius: 7px;
@@ -873,8 +970,8 @@ export default {
   min-height: 0% !important;
 }
 @font-face {
-  font-family: iranSansRegular;
-  src: url("./../assets/fonts/IRANSansX-Regular.ttf");
+  font-family: danaRegular;
+  src: url("./assets/fonts/Dana-Regular.ttf");
 }
 .vpd-input-group {
   min-height: 50px;

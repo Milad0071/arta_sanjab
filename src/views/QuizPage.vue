@@ -135,6 +135,8 @@ export default {
           .catch((err) => {
             this.$swal("مشکلی پیش آمد!", err.message, "error");
             if (err.response.status == 401) {
+              this.$cookies.set('userEntered', false);
+              this.$cookies.set('adminEntered', false);
               this.$router.push({ name: "SignupLogin" });
             }
           });

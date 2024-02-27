@@ -17,7 +17,7 @@ const routes = [
     path: '/home',
     name: "Home",
     props: {
-      pageNum: true,
+      dialog: false,
     },
     component: () => import('@/views/Home.vue'),
     meta: {
@@ -29,9 +29,6 @@ const routes = [
   {
     path: '/add-child',
     name: "AddChild",
-    props: {
-      pageNum: true,
-    },
     component: () => import('@/views/newChild.vue'),
     meta: {
       login: true,
@@ -42,9 +39,6 @@ const routes = [
   {
     path: '/parents-details',
     name: "ParentsDetails",
-    props: {
-      pageNum: true,
-    },
     component: () => import('@/views/ParentsDetails.vue'),
     meta: {
       login: true,
@@ -103,9 +97,19 @@ const routes = [
     }
   },
   {
-    path: '/admin-registered',
-    name: "adminRegistered",
-    component: () => import('@/views/AdminRegistered.vue'),
+    path: '/admin-users',
+    name: "adminUsers",
+    component: () => import('@/views/adminUsers.vue'),
+    meta: {
+      login: true,
+      hideNavbar: false,
+      adminNavbar: true,
+    }
+  },
+  {
+    path: '/admin-registers',
+    name: "adminRegisters",
+    component: () => import('@/views/AdminRegisters.vue'),
     meta: {
       login: true,
       hideNavbar: false,

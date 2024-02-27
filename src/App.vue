@@ -3,34 +3,35 @@
     <div :key="resetKey">
       <!-- admin nav bars -->
       <AppBarAdmin
-        :key="userComponentKeyBar"
-        @rerender-drawer="forceRender"
+        :key="adminComponentKeyBar"
+        @admin-rerender-drawer="adminForceRender"
         v-if="$route.meta.adminNavbar && showAdmin == true"
       />
       <DrawerAdmin
-        :key="userComponentKeyDrawer"
+        :key="adminComponentKeyDrawer"
         :adminRenderToken="adminRenderToken"
-        :pageNum="pageNum"
         v-if="$route.meta.adminNavbar && showAdmin == true"
       />
       <!-- user nav bars -->
       <AppBar
-        :key="adminComponentKeyBar"
-        @rerender-drawer="forceRender"
+        :key="userComponentKeyBar"
+        @user-rerender-drawer="userForceRender"
+        @dialog="getDialog"
         v-if="!$route.meta.hideNavbar && show == true"
       />
       <Drawer
-        :key="adminComponentKeyDrawer"
+        :key="userComponentKeyDrawer"
         :renderToken="renderToken"
-        :pageNum="pageNum"
         v-if="!$route.meta.hideNavbar && show == true"
       />
     </div>
 
     <router-view
       @reset-app="forceReset"
-      @rerender-drawer="forceRender"
-      @user-type="userType"
+      @user-rerender-drawer="userForceRender"
+      @admin-rerender-drawer="adminForceRender"
+      :dialog="dialog"
+      :key="homeResetKey"
     />
   </v-app>
 </template>
@@ -46,11 +47,12 @@ export default {
     return {
       show: false,
       showAdmin: false,
-      pageNum: 1,
+      dialog: false,
       userComponentKeyBar: 0,
       userComponentKeyDrawer: 0,
       adminComponentKeyBar: 0,
       adminComponentKeyDrawer: 0,
+      homeResetKey: 0,
       resetKey: 0,
       renderToken: 0,
       adminRenderToken: 0,
@@ -77,18 +79,19 @@ export default {
     };
   },
   methods: {
-    forceRender(n) {
+    userForceRender(n) {
       this.renderToken = n;
-      this.$cookies.set("addChildActive", 1);
       this.userComponentKeyBar += 1;
       this.userComponentKeyDrawer += 1;
-      // this.adminComponentKeyBar += 1;
-      // this.adminComponentKeyDrawer += 1;
+      this.show = true;
+      this.showAdmin = false;
     },
     adminForceRender(n) {
       this.adminRenderToken = n;
       this.adminComponentKeyBar += 1;
       this.adminComponentKeyDrawer += 1;
+      this.show = false;
+      this.showAdmin = true;
     },
     forceReset() {
       this.resetKey += 1;
@@ -110,7 +113,11 @@ export default {
         ) {
           this.show = false;
           this.showAdmin = false;
-        } else if (this.$route.name === "adminDashboard") {
+        } else if (
+          this.$route.name === "adminDashboard" ||
+          this.$route.name === "adminCourses" ||
+          this.$route.name === "adminUsers"
+        ) {
           this.show = false;
           this.showAdmin = true;
         } else {
@@ -119,18 +126,22 @@ export default {
         }
       }, 300);
     },
+    getDialog(n) {
+      this.dialog = n;
+      this.homeResetKey += 1;
+    },
   },
 };
 </script>
 <style scoped>
 @font-face {
-  font-family: iranSansRegular;
-  src: url("./assets/fonts/IRANSansX-Regular.ttf");
+  font-family: danaRegular;
+  src: url("./assets/fonts/Dana-Regular.ttf");
 }
 .mainApp {
   display: flex;
   flex-flow: column;
-  font-family: iranSansRegular !important;
+  font-family: danaRegular !important;
 }
 </style>
 <style>

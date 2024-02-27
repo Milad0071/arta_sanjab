@@ -31,11 +31,10 @@
           </p>
         </v-list-item>
         <v-list-item
-        :active="coursesListActive"
-        disabled
-        class="coursesListItem"
-        value="coursesList"
-        @click="goTo(2)"
+          :active="coursesListActive"
+          class="coursesListItem"
+          value="coursesList"
+          @click="goTo(2)"
         >
           <CoursesList id="coursesListIconTag" style="width: 30px" />
           <p
@@ -44,6 +43,21 @@
             class="mr-3"
           >
             دوره‌ها
+          </p>
+        </v-list-item>
+        <v-list-item
+          :active="usersListActive"
+          class="usersListItem"
+          value="usersList"
+          @click="goTo(3)"
+        >
+          <UsersManagement id="usersListIconTag" style="width: 30px" />
+          <p
+            id="usersListText"
+            style="color: rgb(160, 168, 176); font-weight: bold"
+            class="mr-3"
+          >
+            مدیریت کاربران
           </p>
         </v-list-item>
         <!-- <v-menu
@@ -68,15 +82,15 @@
           </v-list>
         </v-menu> -->
         <v-list-item
-        :active="registeredListActive"
-        disabled
-        class="registeredListItem"
-        value="registeredList"
-        @click="goTo(3)"
+          :active="usersListActive"
+          disabled
+          class="registeredListItem"
+          value="registeredList"
+          @click="goTo(4)"
         >
-          <RegisteredList id="registeredListIconTag" style="width: 30px" />
+          <RegisteredList id="usersListIconTag" style="width: 30px" />
           <p
-            id="registeredListText"
+            id="usersListText"
             style="color: rgb(160, 168, 176); font-weight: bold"
             class="mr-3"
           >
@@ -84,11 +98,11 @@
           </p>
         </v-list-item>
         <v-list-item
-        :active="financeProcessActive"
-        disabled
-        class="financeProcess"
-        value="financeProcess"
-        @click="goTo(4)"
+          :active="financeProcessActive"
+          disabled
+          class="financeProcess"
+          value="financeProcess"
+          @click="goTo(5)"
         >
           <FinanceProcess id="financeProcessIconTag" style="width: 30px" />
           <p
@@ -106,17 +120,24 @@
 <script>
 import Home from "./../assets/svgIcons/homeIcon.vue";
 import CoursesList from "./../assets/svgIcons/CoursesListIcon.vue";
+import UsersManagement from "./../assets/svgIcons/UsersManagement.vue";
 import RegisteredList from "./../assets/svgIcons/RegisteredListIcon.vue";
-import FinanceProcess from './../assets/svgIcons/FinanceProcessIcon.vue';
+import FinanceProcess from "./../assets/svgIcons/FinanceProcessIcon.vue";
 
 export default {
-  props: { pageNum: Number, renderToken: Number },
-  components: { Home, CoursesList, RegisteredList, FinanceProcess },
+  props: { adminRenderToken: Number },
+  components: {
+    Home,
+    CoursesList,
+    RegisteredList,
+    FinanceProcess,
+    UsersManagement,
+  },
   data: () => ({
     activeKey: 1,
     homeActive: false,
     coursesListActive: false,
-    registeredListActive: false,
+    usersListActive: false,
     financeProcessActive: false,
   }),
   mounted() {
@@ -124,142 +145,235 @@ export default {
   },
   methods: {
     showChosenPage() {
-      console.log(this.renderToken)
       // highligh the chosen page name
-      if (this.renderToken == 1) {
-        this.$cookies.set('coursesListActive', true);
-      } else if (this.renderToken == 2) {
-        this.$cookies.set('registeredListActive', true);
-      } else if (this.renderToken == 3) {
-        this.$cookies.set('financeProcessActive', true);
+      if (this.adminRenderToken == 1) {
+        this.$cookies.set("coursesListActive", true);
+      } else if (this.adminRenderToken == 2) {
+        this.$cookies.set("usersListActive", true);
       }
-      if (this.pageNum == 1 && (this.$cookies.get('adminHomeActive') == 'true' || this.$cookies.get('adminHomeActive') == true)) {
+      // else if (this.adminRenderToken == 3) {
+      //   this.$cookies.set("financeProcessActive", true);
+      // }
+      if (
+        this.adminRenderToken == 0 &&
+        (this.$cookies.get("adminHomeActive") == "true" ||
+          this.$cookies.get("adminHomeActive") == true)
+      ) {
         this.homeActive = true;
         this.coursesListActive = false;
-        this.registeredListActive = false;
+        this.usersListActive = false;
         document.getElementById("homeText").classList.add("chosenLink");
         document.getElementById("homeIconTag").classList.add("chosenIcon");
-        document.getElementById("coursesListText").classList.remove("chosenLink");
-        document.getElementById("coursesListIconTag").classList.remove("chosenIcon");
-        document.getElementById("registeredListText").classList.remove("chosenLink");
-        document.getElementById("registeredListIconTag").classList.remove("chosenIcon");
-        document.getElementById("financeProcessText").classList.remove("chosenLink");
-        document.getElementById("financeProcessIconTag").classList.remove("chosenIcon");
+        document
+          .getElementById("coursesListText")
+          .classList.remove("chosenLink");
+        document
+          .getElementById("coursesListIconTag")
+          .classList.remove("chosenIcon");
+        document.getElementById("usersListText").classList.remove("chosenLink");
+        document
+          .getElementById("usersListIconTag")
+          .classList.remove("chosenIcon");
+        // document
+        //   .getElementById("financeProcessText")
+        //   .classList.remove("chosenLink");
+        // document
+        //   .getElementById("financeProcessIconTag")
+        //   .classList.remove("chosenIcon");
       }
-      if (this.renderToken == 1 || this.$cookies.get('coursesListActive') == 'true' || this.$cookies.get('coursesListActive') == true) {
+      if (
+        this.adminRenderToken == 1 ||
+        this.$cookies.get("coursesListActive") == "true" ||
+        this.$cookies.get("coursesListActive") == true
+      ) {
         this.homeActive = false;
         this.coursesListActive = true;
-        this.registeredListActive = false;
-        this.financeProcessActive = false;
+        this.usersListActive = false;
+        // this.financeProcessActive = false;
         document.getElementById("homeText").classList.remove("chosenLink");
         document.getElementById("homeIconTag").classList.remove("chosenIcon");
         document.getElementById("coursesListText").classList.add("chosenLink");
-        document.getElementById("coursesListIconTag").classList.add("chosenIcon");
-        document.getElementById("registeredListText").classList.remove("chosenLink");
-        document.getElementById("registeredListIconTag").classList.remove("chosenIcon");
-        document.getElementById("financeProcessText").classList.remove("chosenLink");
-        document.getElementById("financeProcessIconTag").classList.remove("chosenIcon");
-      } else if (this.renderToken == 2 || this.$cookies.get('registeredListActive') == 'true' || this.$cookies.get('registeredListActive') == true) {
+        document
+          .getElementById("coursesListIconTag")
+          .classList.add("chosenIcon");
+        document.getElementById("usersListText").classList.remove("chosenLink");
+        document
+          .getElementById("usersListIconTag")
+          .classList.remove("chosenIcon");
+        // document
+        //   .getElementById("financeProcessText")
+        //   .classList.remove("chosenLink");
+        // document
+        //   .getElementById("financeProcessIconTag")
+        //   .classList.remove("chosenIcon");
+      } else if (
+        this.adminRenderToken == 2 ||
+        this.$cookies.get("usersListActive") == "true" ||
+        this.$cookies.get("usersListActive") == true
+      ) {
         this.homeActive = false;
         this.coursesListActive = false;
-        this.financeProcessActive = false;
-        this.registeredListActive = true;
+        // this.financeProcessActive = false;
+        this.usersListActive = true;
         document.getElementById("homeText").classList.remove("chosenLink");
         document.getElementById("homeIconTag").classList.remove("chosenIcon");
-        document.getElementById("coursesListText").classList.remove("chosenLink");
-        document.getElementById("coursesListIconTag").classList.remove("chosenIcon");
-        document.getElementById("financeProcessText").classList.remove("chosenLink");
-        document.getElementById("financeProcessIconTag").classList.remove("chosenIcon");
-        document.getElementById("registeredListText").classList.add("chosenLink");
-        document.getElementById("registeredListIconTag").classList.add("chosenIcon");
-      } else if (this.renderToken == 3 || this.$cookies.get('financeProcessActive') == 'true' || this.$cookies.get('financeProcessActive') == true) {
-        this.homeActive = false;
-        this.coursesListActive = false;
-        this.registeredListActive = false;
-        this.financeProcessActive = true;
-        document.getElementById("homeText").classList.remove("chosenLink");
-        document.getElementById("homeIconTag").classList.remove("chosenIcon");
-        document.getElementById("coursesListText").classList.remove("chosenLink");
-        document.getElementById("coursesListIconTag").classList.remove("chosenIcon");
-        document.getElementById("registeredListText").classList.remove("chosenLink");
-        document.getElementById("registeredListIconTag").classList.remove("chosenIcon");
-        document.getElementById("financeProcessText").classList.add("chosenLink");
-        document.getElementById("financeProcessIconTag").classList.add("chosenIcon");
+        document
+          .getElementById("coursesListText")
+          .classList.remove("chosenLink");
+        document
+          .getElementById("coursesListIconTag")
+          .classList.remove("chosenIcon");
+        // document
+        //   .getElementById("financeProcessText")
+        //   .classList.remove("chosenLink");
+        // document
+        //   .getElementById("financeProcessIconTag")
+        //   .classList.remove("chosenIcon");
+        document.getElementById("usersListText").classList.add("chosenLink");
+        document.getElementById("usersListIconTag").classList.add("chosenIcon");
       }
+      // else if (
+      //   this.renderToken == 3 ||
+      //   this.$cookies.get("financeProcessActive") == "true" ||
+      //   this.$cookies.get("financeProcessActive") == true
+      // ) {
+      //   this.homeActive = false;
+      //   this.coursesListActive = false;
+      //   this.usersListActive = false;
+      //   this.financeProcessActive = true;
+      //   document.getElementById("homeText").classList.remove("chosenLink");
+      //   document.getElementById("homeIconTag").classList.remove("chosenIcon");
+      //   document
+      //     .getElementById("coursesListText")
+      //     .classList.remove("chosenLink");
+      //   document
+      //     .getElementById("coursesListIconTag")
+      //     .classList.remove("chosenIcon");
+      //   document
+      //     .getElementById("usersListText")
+      //     .classList.remove("chosenLink");
+      //   document
+      //     .getElementById("usersListIconTag")
+      //     .classList.remove("chosenIcon");
+      //   document
+      //     .getElementById("financeProcessText")
+      //     .classList.add("chosenLink");
+      //   document
+      //     .getElementById("financeProcessIconTag")
+      //     .classList.add("chosenIcon");
+      // }
     },
     changeDecoration(num) {
       this.homeActive = null;
       this.coursesListActive = null;
-      this.registeredListActive = null;
-      this.financeProcessActive = null;
+      this.usersListActive = null;
+      // this.financeProcessActive = null;
       if (num == 1) {
-        this.$cookies.remove('coursesListActive');
-        this.$cookies.remove('registeredListActive');
-        this.$cookies.remove('financeProcessActive');
+        this.$cookies.remove("coursesListActive");
+        this.$cookies.remove("usersListActive");
+        // this.$cookies.remove("financeProcessActive");
         document.getElementById("homeText").classList.add("chosenLink");
         document.getElementById("homeIconTag").classList.add("chosenIcon");
-        document.getElementById("coursesListText").classList.remove("chosenLink");
-        document.getElementById("coursesListIconTag").classList.remove("chosenIcon");
-        document.getElementById("registeredListText").classList.remove("chosenLink");
-        document.getElementById("registeredListIconTag").classList.remove("chosenIcon");
-        document.getElementById("financeProcessText").classList.remove("chosenLink");
-        document.getElementById("financeProcessIconTag").classList.remove("chosenIcon");
+        document
+          .getElementById("coursesListText")
+          .classList.remove("chosenLink");
+        document
+          .getElementById("coursesListIconTag")
+          .classList.remove("chosenIcon");
+        document.getElementById("usersListText").classList.remove("chosenLink");
+        document
+          .getElementById("usersListIconTag")
+          .classList.remove("chosenIcon");
+        // document
+        //   .getElementById("financeProcessText")
+        //   .classList.remove("chosenLink");
+        // document
+        //   .getElementById("financeProcessIconTag")
+        //   .classList.remove("chosenIcon");
       } else if (num == 2) {
-        this.$cookies.set('coursesListActive', true);
-        this.$cookies.remove('registeredListActive');
-        this.$cookies.remove('financeProcessActive');
+        this.$cookies.set("coursesListActive", true);
+        this.$cookies.remove("usersListActive");
+        // this.$cookies.remove("financeProcessActive");
         document.getElementById("coursesListText").classList.add("chosenLink");
-        document.getElementById("coursesListIconTag").classList.add("chosenIcon");
+        document
+          .getElementById("coursesListIconTag")
+          .classList.add("chosenIcon");
         document.getElementById("homeText").classList.remove("chosenLink");
         document.getElementById("homeIconTag").classList.remove("chosenIcon");
-        document.getElementById("registeredListText").classList.remove("chosenLink");
-        document.getElementById("registeredListIconTag").classList.remove("chosenIcon");
-        document.getElementById("financeProcessText").classList.remove("chosenLink");
-        document.getElementById("financeProcessIconTag").classList.remove("chosenIcon");
+        document.getElementById("usersListText").classList.remove("chosenLink");
+        document
+          .getElementById("usersListIconTag")
+          .classList.remove("chosenIcon");
+        // document
+        //   .getElementById("financeProcessText")
+        //   .classList.remove("chosenLink");
+        // document
+        //   .getElementById("financeProcessIconTag")
+        //   .classList.remove("chosenIcon");
       } else if (num == 3) {
-        this.$cookies.set('registeredListActive', true);
-        this.$cookies.remove('coursesListActive');
-        this.$cookies.remove('financeProcessActive');
-        document.getElementById("coursesListText").classList.remove("chosenLink");
-        document.getElementById("coursesListIconTag").classList.remove("chosenIcon");
+        this.$cookies.set("usersListActive", true);
+        this.$cookies.remove("coursesListActive");
+        // this.$cookies.remove("financeProcessActive");
+        document
+          .getElementById("coursesListText")
+          .classList.remove("chosenLink");
+        document
+          .getElementById("coursesListIconTag")
+          .classList.remove("chosenIcon");
         document.getElementById("homeText").classList.remove("chosenLink");
         document.getElementById("homeIconTag").classList.remove("chosenIcon");
-        document.getElementById("registeredListText").classList.add("chosenLink");
-        document.getElementById("registeredListIconTag").classList.add("chosenIcon");
-        document.getElementById("financeProcessText").classList.remove("chosenLink");
-        document.getElementById("financeProcessIconTag").classList.remove("chosenIcon");
-        
+        document.getElementById("usersListText").classList.add("chosenLink");
+        document.getElementById("usersListIconTag").classList.add("chosenIcon");
+        // document
+        //   .getElementById("financeProcessText")
+        //   .classList.remove("chosenLink");
+        // document
+        //   .getElementById("financeProcessIconTag")
+        //   .classList.remove("chosenIcon");
       }
-      else if (num == 4) {
-        this.$cookies.set('financeProcessActive', true);
-        this.$cookies.remove('coursesListActive');
-        this.$cookies.remove('registeredListActive');
-        document.getElementById("coursesListText").classList.remove("chosenLink");
-        document.getElementById("coursesListIconTag").classList.remove("chosenIcon");
-        document.getElementById("homeText").classList.remove("chosenLink");
-        document.getElementById("homeIconTag").classList.remove("chosenIcon");
-        document.getElementById("registeredListText").classList.remove("chosenLink");
-        document.getElementById("registeredListIconTag").classList.remove("chosenIcon");
-        document.getElementById("financeProcessText").classList.add("chosenLink");
-        document.getElementById("financeProcessIconTag").classList.add("chosenIcon");
-      }
-      
+      // else if (num == 4) {
+      //   this.$cookies.set("financeProcessActive", true);
+      //   this.$cookies.remove("coursesListActive");
+      //   this.$cookies.remove("usersListActive");
+      //   document
+      //     .getElementById("coursesListText")
+      //     .classList.remove("chosenLink");
+      //   document
+      //     .getElementById("coursesListIconTag")
+      //     .classList.remove("chosenIcon");
+      //   document.getElementById("homeText").classList.remove("chosenLink");
+      //   document.getElementById("homeIconTag").classList.remove("chosenIcon");
+      //   document
+      //     .getElementById("usersListText")
+      //     .classList.remove("chosenLink");
+      //   document
+      //     .getElementById("usersListIconTag")
+      //     .classList.remove("chosenIcon");
+      //   document
+      //     .getElementById("financeProcessText")
+      //     .classList.add("chosenLink");
+      //   document
+      //     .getElementById("financeProcessIconTag")
+      //     .classList.add("chosenIcon");
+      // }
     },
     goTo(numPage) {
       this.changeDecoration(numPage);
       if (numPage == 1) {
         this.$router.push({ name: "adminDashboard" });
+      } else if (numPage == 2) {
+        this.$router.push({ name: "adminCourses" });
+      } else if (numPage == 3) {
+        this.$router.push({ name: "adminUsers" });
       }
-      // else if (numPage == 2) {
-      //   this.$router.push({ name: "AddChild" });
-      // } else if (numPage == 3) {
-      //   this.$router.push({ name: "ParentsDetails" });
-      // } else if (numPage == 4) {
-      //   this.$router.push({ name: "courseShop" });
+      // else if (numPage == 4) {
+      //   this.$router.push({ name: "adminRegisters" });
+      // } else if (numPage == 5) {
+      //   this.$router.push({ name: "adminFinance" });
       // }
     },
   },
-}
+};
 </script>
 <style scoped>
 .chosenLink {
@@ -297,12 +411,11 @@ export default {
 .registeredListItem:hover #parentsDetailsIconTag {
   stroke: rgb(94, 89, 255) !important;
 }
-
 </style>
 <style>
 @font-face {
-    font-family: iranSansRegular;
-    src: url('./../assets/fonts/IRANSansX-Regular.ttf');
+  font-family: danaRegular;
+  src: url("./assets/fonts/Dana-Regular.ttf");
 }
 .homeItem > .v-list-item-title {
   font-size: 18px !important;

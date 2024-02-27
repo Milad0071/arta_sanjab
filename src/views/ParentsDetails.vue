@@ -3,8 +3,8 @@
     <v-locale-provider rtl>
       <div class="mainContainer">
         <div class="titlePart">
-            <div class="titleShape"></div>
-            <h2>تکمیل اطلاعات والدین</h2>
+          <div class="titleShape"></div>
+          <h2>تکمیل اطلاعات والدین</h2>
         </div>
         <v-btn
           color="#525355"
@@ -13,16 +13,13 @@
           variant="outlined"
           @click="backToHome()"
         >
-          بازگشت به داشبورد  
-          <v-icon
-            end
-            icon="mdi-arrow-left"
-          ></v-icon>
+          بازگشت به داشبورد
+          <v-icon end icon="mdi-arrow-left"></v-icon>
         </v-btn>
         <div class="topText flex_class">
           <p>لطفا اطلاعات خود را به طور کامل وارد نمایید:</p>
         </div>
-        
+
         <div class="inputContainer row">
           <div class="input_part">
             <!-- reletive input -->
@@ -391,17 +388,17 @@
   </v-app>
 </template>
 <script>
-import axios from './../axios.js';
+import axios from "./../axios.js";
 import DatePicker from "vue3-persian-datetime-picker";
 
 export default {
   components: { DatePicker },
   props: {
     numPage: {
-      type: Number
+      type: Number,
     },
   },
-  emits: ['reset-app'],
+  emits: ["reset-app"],
   data() {
     return {
       userNameError: false,
@@ -425,7 +422,7 @@ export default {
       userNationalityError: false,
       userReletivity: null,
       userNationality: null,
-      otp: '',
+      otp: "",
       userName: "",
       userLastName: "",
       userFatherName: "",
@@ -444,21 +441,21 @@ export default {
       userReletivesList: [
         {
           value: 1,
-          title: 'پدر',
+          title: "پدر",
         },
         {
           value: 2,
-          title: 'مادر',
+          title: "مادر",
         },
       ],
       userNationalitArray: [
         {
           value: 1,
-          title: 'ایرانی',
+          title: "ایرانی",
         },
         {
           value: 2,
-          title: 'اتباع خارجه',
+          title: "اتباع خارجه",
         },
       ],
     };
@@ -494,7 +491,6 @@ export default {
       if (newVal.length > 0) {
         this.userNationalCodeError = false;
         this.userCitizenCodeError == false;
-        
       }
     },
     userBirthDay(newVal) {
@@ -553,14 +549,20 @@ export default {
   },
   methods: {
     stopAllChars(e) {
-      if(e.key.match(/^[a-zA-Zا-ی]*$/) && !(e.key == 'Backspace') && !(e.key == 'Tab'))
-      {
+      if (
+        e.key.match(/^[a-zA-Zا-ی]*$/) &&
+        !(e.key == "Backspace") &&
+        !(e.key == "Tab")
+      ) {
         e.preventDefault();
       }
     },
     stopEnglishChars(e) {
-      if(e.key.match(/^[a-zA-Z0-9۰-۹]*$/) && !(e.key == 'Backspace') && !(e.key == 'Tab'))
-      {
+      if (
+        e.key.match(/^[a-zA-Z0-9۰-۹]*$/) &&
+        !(e.key == "Backspace") &&
+        !(e.key == "Tab")
+      ) {
         e.preventDefault();
       }
     },
@@ -570,10 +572,24 @@ export default {
       }
       n = n.toString();
       var englishNumbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"],
-          persianNumbers = ["۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹", "۰"];
+        persianNumbers = ["۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹", "۰"];
 
       for (var i = 0, numbersLen = englishNumbers.length; i < numbersLen; i++) {
-          n = n.replace(new RegExp(englishNumbers[i], "g"), persianNumbers[i]);
+        n = n.replace(new RegExp(englishNumbers[i], "g"), persianNumbers[i]);
+      }
+      return n;
+    },
+    toEnglishNumber(n) {
+      // n = parseInt(n);
+      if (n.length == 0) {
+        return;
+      }
+      n = n.toString();
+      var englishNumbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"],
+        persianNumbers = ["۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹", "۰"];
+
+      for (var i = 0, numbersLen = persianNumbers.length; i < numbersLen; i++) {
+        n = n.replace(new RegExp(persianNumbers[i], "g"), englishNumbers[i]);
       }
       return n;
     },
@@ -656,8 +672,9 @@ export default {
     },
     backToHome() {
       this.$emit("reset-app");
-      if (this.$cookies.get('firstTimeParentDetails')) {
-        this.$cookies.remove('firstTimeParentDetails');
+      this.$emit("user-rerender-drawer", 0);
+      if (this.$cookies.get("firstTimeParentDetails")) {
+        this.$cookies.remove("firstTimeParentDetails");
       }
       this.$router.push({ name: "Home" });
     },
@@ -677,10 +694,10 @@ export default {
           } else if (i == 4) {
             this.userNationalityError = true;
           } else if (i == 5) {
-            this.userNationalCodeError = true; 
-          }else if (i == 6) {
+            this.userNationalCodeError = true;
+          } else if (i == 6) {
             this.userBirthDayError = true;
-          }  else if (i == 7) {
+          } else if (i == 7) {
             this.userTelephoneError = true;
           } else if (i == 8) {
             this.userRegionalMunicipalityError = true;
@@ -736,13 +753,17 @@ export default {
         userJob,
         userAddress,
         userGirls,
-        userBoys
+        userBoys,
       ];
       if (this.emptyCheck(itemArray) == true) {
-        if ((this.userGirls == 0 && this.userBoys == 0)  || (this.userGirls == '0' && this.userBoys == '0')) {
-          this.$swal("مقدار فیلدهای فرزند نباید صفر باشد!",  "", 'warning');
+        if (
+          (this.userGirls == 0 && this.userBoys == 0) ||
+          (this.userGirls == "0" && this.userBoys == "0")
+        ) {
+          this.$swal("مقدار فیلدهای فرزند نباید صفر باشد!", "", "warning");
         } else {
           userReletivity = parseInt(userReletivity);
+          userNationalCode = this.toEnglishNumber(userNationalCode);
           var data = {
             type: userReletivity,
             first_name: userName,
@@ -761,33 +782,37 @@ export default {
               boys: userBoys,
               // nationality: userNationality,
               // birth_date: birthDay
-            }
-          }
+            },
+          };
           // JSON.stringify(bodyFormData.append("type", userReletivity));
           // JSON.stringify(bodyFormData.append("first_name", userName));
           // JSON.stringify(bodyFormData.append("last_name", userLastName));
-          // JSON.stringify(bodyFormData.append("national_code", userNationalCode)); 
+          // JSON.stringify(bodyFormData.append("national_code", userNationalCode));
           // JSON.stringify(bodyFormData.append("user_profile", userprofile));
           axios({
             method: "POST",
             headers: {
-              'Content-Type': 'application/json',
+              "Content-Type": "application/json",
             },
-            url: `account/user-register/?session=${this.$cookies.get('sessionId')}`,
+            url: `account/user-register/?session=${this.$cookies.get(
+              "sessionId"
+            )}`,
             data: JSON.stringify(data),
           })
             .then((response) => {
               if (response.status == 201) {
                 this.$cookies.set("userToken", response.data.access);
-                this.$cookies.set('userEntered', true);
-                if (this.$cookies.get('firstTimeParentDetails')) {
-                  this.$cookies.remove('firstTimeParentDetails');
+                this.$cookies.set("userEntered", true);
+                if (this.$cookies.get("firstTimeParentDetails")) {
+                  this.$cookies.remove("firstTimeParentDetails");
                 }
                 this.$emit("reset-app");
                 this.$router.push({ path: "/add-child" });
               } else {
                 this.$swal("مشکلی پیش آمد، لطفا مجددا تلاش نمایید!", "error");
                 if (response.status == 401) {
+                  this.$cookies.set('userEntered', false);
+                this.$cookies.set('adminEntered', false);
                   this.$router.push({ name: "SignupLogin" });
                 }
               }
@@ -795,11 +820,12 @@ export default {
             .catch((err) => {
               this.$swal("مشکلی پیش آمد!", err.message, "error");
               if (err.response.status == 401) {
+                this.$cookies.set('userEntered', false);
+                this.$cookies.set('adminEntered', false);
                 this.$router.push({ name: "SignupLogin" });
               }
             });
         }
-        
       }
     },
   },
@@ -836,7 +862,7 @@ export default {
   left: 1%;
   font-weight: bold;
   color: #6d6e71 !important;
-  width:12%;
+  width: 12%;
   margin-bottom: 3%;
 }
 .goHomeBtn:hover {
@@ -872,7 +898,7 @@ export default {
   border-radius: 7px;
   border: 2px solid white;
   box-shadow: 1px 0px 10px 0px #525355;
-  font-family: iranSansRegular !important;
+  font-family: danaRegular !important;
 }
 .input_children {
   width: 70px;
@@ -912,8 +938,8 @@ export default {
 </style>
 <style>
 @font-face {
-    font-family: iranSansRegular;
-    src: url('./../assets/fonts/IRANSansX-Regular.ttf');
+  font-family: danaRegular;
+  src: url("./assets/fonts/Dana-Regular.ttf");
 }
 .vpd-input-group {
   min-height: 50px;
