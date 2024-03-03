@@ -15,8 +15,15 @@
           <th class="text-right font-weight-bold">نام دوره</th>
           <th class="text-right font-weight-bold">بازه سنی دوره</th>
           <th class="text-right font-weight-bold">قیمت دوره</th>
+<<<<<<< HEAD
           <th class="text-right font-weight-bold">وضعیت دوره</th>
           <th class="text-right font-weight-bold">فارغ‌التحصیلی</th>
+=======
+          <th class="text-right font-weight-bold">نام کودک</th>
+          <th class="text-right font-weight-bold">نام خانوادگی کودک</th>
+          <th class="text-right font-weight-bold">کد ملی کودک</th>
+          <th class="text-right font-weight-bold">کد ملی والد</th>
+>>>>>>> 965a3b7fc6311edc8dfc8687a5e21ca73370c3f2
         </tr>
       </thead>
       <tbody v-if="hasCourseBoolean == true">

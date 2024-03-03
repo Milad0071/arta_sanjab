@@ -8,6 +8,7 @@
           <th class="text-right font-weight-bold">نام خانوادگی</th>
           <th class="text-right font-weight-bold">کد ملی</th>
           <th class="text-right font-weight-bold">شماره تماس</th>
+<<<<<<< HEAD
           <th class="text-right font-weight-bold">نوع کاربری</th>
           <th>عملیات</th>
         </tr>
@@ -18,11 +19,19 @@
           v-for="(item, index) in searchList"
           :key="index"
         >
+=======
+          <th class="text-right font-weight-bold">عملیات</th>
+        </tr>
+      </thead>
+      <tbody v-if="hasUserBoolean == true">
+        <tr v-for="(item, index) in usersArray" :key="index">
+>>>>>>> 965a3b7fc6311edc8dfc8687a5e21ca73370c3f2
           <td>{{ this.toFarsiNumber(index + 1) }}</td>
           <td>{{ item.first_name }}</td>
           <td>{{ item.last_name }}</td>
           <td>{{ item.national_code }}</td>
           <td>{{ item.phone_number }}</td>
+<<<<<<< HEAD
           <td>{{ item.type }}</td>
           <td>
             <div class="flex_class" style="justify-content: flex-start">
@@ -66,6 +75,48 @@
                   </v-btn>
                 </template>
               </v-tooltip>
+=======
+          <td>
+            <div
+              class="flex_class"
+              style="justify-content: flex-start !important"
+            >
+              <v-tooltip location="bottom" text="مشاهده جزئیات">
+                <template v-slot:activator="{ props }">
+                  <v-btn
+                    v-bind="props"
+                    class="iconCol"
+                    size="30px"
+                    color="green-darken-2"
+                    icon="mdi-eye"
+                  >
+                  </v-btn>
+                </template>
+              </v-tooltip>
+              <v-tooltip location="bottom" text="ویرایش کاربر">
+                <template v-slot:activator="{ props }">
+                  <v-btn
+                    v-bind="props"
+                    class="iconCol"
+                    size="30px"
+                    color="orange"
+                    icon="mdi-eye"
+                  >
+                  </v-btn>
+                </template>
+              </v-tooltip>
+              <v-btn
+                color="orange"
+                class="text-none editBtn mr-5"
+                style=""
+                size="small"
+                min-width="100"
+                variant="outlined"
+                @click="submitFunc()"
+              >
+                ویرایش اطلاعات
+              </v-btn>
+>>>>>>> 965a3b7fc6311edc8dfc8687a5e21ca73370c3f2
             </div>
           </td>
         </tr>
@@ -347,6 +398,7 @@
   </v-app>
 </template>
 <script>
+<<<<<<< HEAD
 import axios from "./../axios.js";
 import DatePicker from "vue3-persian-datetime-picker";
 
@@ -354,6 +406,11 @@ export default {
   emits: ["clicked"],
   props: { users: Array, hasUser: Boolean, search: String, filter: Number },
   components: { DatePicker },
+=======
+export default {
+  emits: ["clicked"],
+  props: { users: Array, hasUser: Boolean },
+>>>>>>> 965a3b7fc6311edc8dfc8687a5e21ca73370c3f2
   data: () => {
     return {
       userData: [],
@@ -371,6 +428,7 @@ export default {
       ],
       usersArray: null,
       hasUserBoolean: null,
+<<<<<<< HEAD
       show: true,
       inputSituation: false,
       openUserDetailsDialog: false,
@@ -448,6 +506,9 @@ export default {
         return this.usersArray;
       }
     },
+=======
+    };
+>>>>>>> 965a3b7fc6311edc8dfc8687a5e21ca73370c3f2
   },
   created() {
     this.getData();
@@ -482,8 +543,13 @@ export default {
       var englishNumbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"],
         persianNumbers = ["۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹", "۰"];
 
+<<<<<<< HEAD
       for (var i = 0, numbersLen = persianNumbers.length; i < numbersLen; i++) {
         n = n.replace(new RegExp(persianNumbers[i], "g"), englishNumbers[i]);
+=======
+      for (var i = 0, numbersLen = englishNumbers.length; i < numbersLen; i++) {
+        n = n.replace(new RegExp(englishNumbers[i], "g"), persianNumbers[i]);
+>>>>>>> 965a3b7fc6311edc8dfc8687a5e21ca73370c3f2
       }
       return n;
     },
@@ -525,6 +591,7 @@ export default {
         this.usersArray[i].phone_number = this.toFarsiNumber(
           this.usersArray[i].phone_number
         );
+<<<<<<< HEAD
         if (this.usersArray[i].type == 1 || this.usersArray[i].type == 2) {
           this.usersArray[i].type = "کاربر";
         } else if (this.usersArray[i].type == 3) {
@@ -848,6 +915,13 @@ export default {
       this.userBoys = "";
       this.userGirls = "";
       this.updateData = [];
+=======
+      }
+    },
+    getUsersData() {},
+    sendEmit() {
+      this.$emit("clicked");
+>>>>>>> 965a3b7fc6311edc8dfc8687a5e21ca73370c3f2
     },
   },
 };
@@ -877,6 +951,7 @@ export default {
 }
 .submitBtn {
   font-weight: bold;
+<<<<<<< HEAD
   color: #373739 !important;
   width: 26%;
 }
@@ -892,21 +967,36 @@ export default {
   width: 26%;
 }
 .editBtn:hover {
+=======
+  color: white !important;
+  width: 26%;
+}
+.submitBtn:hover {
+>>>>>>> 965a3b7fc6311edc8dfc8687a5e21ca73370c3f2
   border: none;
   color: white !important;
   background-color: #f68100;
   font-weight: bold;
 }
+<<<<<<< HEAD
 .closeBtn {
+=======
+.editBtn {
+>>>>>>> 965a3b7fc6311edc8dfc8687a5e21ca73370c3f2
   font-weight: bold;
   color: #373739 !important;
   width: 26%;
 }
+<<<<<<< HEAD
 .closeBtn:hover {
+=======
+.editBtn:hover {
+>>>>>>> 965a3b7fc6311edc8dfc8687a5e21ca73370c3f2
   border: none;
   color: white !important;
   background-color: #373739;
   font-weight: bold;
+<<<<<<< HEAD
 }
 .detailsCard {
   width: 150vh;
@@ -962,6 +1052,8 @@ export default {
   border-radius: 7px;
   border: 2px solid white;
   box-shadow: 1px 0px 10px 0px #525355;
+=======
+>>>>>>> 965a3b7fc6311edc8dfc8687a5e21ca73370c3f2
 }
 </style>
 
