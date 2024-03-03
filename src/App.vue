@@ -108,7 +108,6 @@ export default {
       setTimeout(() => {
         if (
           this.$route.name === "SignupLogin" ||
-          this.$route.name === "ParentsDetails" ||
           this.$route.name === "quizPage"
         ) {
           this.show = false;

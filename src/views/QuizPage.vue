@@ -176,7 +176,7 @@ export default {
   background-image: url("./../assets/quiz_background.jpg");
   background-size: cover;
   width: 100%;
-  height: 100%;
+  height: 100vh;
   padding: 1%;
 }
 .cardClass {

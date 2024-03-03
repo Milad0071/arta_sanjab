@@ -11,9 +11,9 @@
                 <SanjabLogo style="width: 100%; margin-bottom: 10%" />
                 <!-- title part -->
                 <div class="flex_column_class">
-                  <h2 style="color: #8a8b8d">ورود/ ثبت‌نام سنجاب</h2>
+                  <h2 style="color: #8a8b8d">ورود/ ثبت‌ نام سنجاب</h2>
                   <h3 class="mt-2" style="color: #8a8b8d">
-                    به سنجاب خوش اومدی! جهت ورود یا ثبت‌نام، شماره همراهتو وارد
+                    به سنجاب خوش اومدی! جهت ورود یا ثبت‌ نام، شماره همراهتو وارد
                     کن
                   </h3>
                 </div>
@@ -149,6 +149,11 @@ export default {
         this.userPhoneNumError = false;
       }
     },
+    otp(newVal) {
+      if (newVal.length == 4) {
+        this.validateCode(this.otp);
+      }
+    }
   },
   methods: {
     stopChars(e) {
@@ -193,6 +198,7 @@ export default {
       }
     },
     logninFunc(userPhoneNum) {
+      this.otp = "";
       this.shortTimer = 10;
       this.timer = 59;
       this.oneMin = false;
@@ -220,13 +226,20 @@ export default {
               this.showVerificationPart = true;
               this.$nextTick(() => this.$refs.focusMe.focus());
             } else {
+              console.log(response, 'then')
               this.$swal("مشکلی پیش آمد!", response.message, "error");
               this.phoneBtnLoading = false;
             }
           })
           .catch((err) => {
-            this.$swal("مشکلی پیش آمد!", err.message, "error");
             this.phoneBtnLoading = false;
+            if (err.request.status == 500) {
+              this.$swal("مشکلی پیش آمد!", "پس از ۲ دقیقه مجدد تلاش نمایید!", "error");
+            } else if (err.request.status == 429) {
+              this.$swal("ارسال درخواست بیش از حد به سرور!", "پس از دو دقیقه مجدد تلاش نمایید!", "error");
+            } else {
+              this.$swal("مشکلی پیش آمد!", "پس از دو دقیقه مجدد تلاش نمایید!", "error");
+            }
           });
       }
     },
@@ -282,6 +295,8 @@ export default {
               // if (this.$cookies.get("userToken")) {
               this.$emit("reset-app");
               this.$router.push({ name: "adminDashboard" });
+              this.$cookies.remove("currentUserName");
+              this.$cookies.remove("currentUserRole");
               this.showVerificationPart = false;
               this.verificationBtnLoading = false;
               // }
@@ -296,6 +311,8 @@ export default {
               ) {
                 this.$emit("reset-app");
                 this.$router.push({ name: "Home" });
+                this.$cookies.remove("currentUserName");
+                this.$cookies.remove("currentUserRole");
                 this.showVerificationPart = false;
                 this.verificationBtnLoading = false;
               }
@@ -307,6 +324,8 @@ export default {
               this.$cookies.set("adminEntered", true);
               this.$emit("reset-app");
               this.$router.push({ name: "adminDashboard" });
+              this.$cookies.remove("currentUserName");
+              this.$cookies.remove("currentUserRole");
               this.showVerificationPart = false;
               this.verificationBtnLoading = false;
             } else {
@@ -320,16 +339,32 @@ export default {
                 this.$cookies.set("showBars");
                 this.$cookies.set("firstTimeParentDetails");
                 this.$router.push({ name: "ParentsDetails" });
+                this.$cookies.remove("currentUserName");
+                this.$cookies.remove("currentUserRole");
               }
             }
           } else {
-            this.$swal("مشکلی پیش آمد، لطفا مجدد تلاش نمایید!", "error");
             this.verificationBtnLoading = false;
+            if (response.status == 403) {
+              this.$swal("کد اشتباه است!", "مجدد تلاش کنید", "error");
+            } else {
+              this.$swal("مشکلی پیش آمد!", "مجدد تلاش کنید", "error");
+            }
+            
+            
           }
         })
         .catch((err) => {
-          this.$swal("مشکلی پیش آمد!", err.message, "error");
           this.verificationBtnLoading = false;
+          if (err.request.status == 500) {
+            this.$swal("مشکلی پیش آمد!", "پس از ۲ دقیقه مجدد تلاش نمایید!", "error");
+          } else if (err.request.status == 429) {
+            this.$swal("ارسال درخواست بیش از حد به سرور!", "پس از دو دقیقه مجدد تلاش نمایید!", "error");
+          } else if (err.request.status == 403) {
+            this.$swal("کد اشتباه است!", "مجدد تلاش کنید", "error");
+          } else {
+            this.$swal("مشکلی پیش آمد!", "پس از دو دقیقه مجدد تلاش نمایید!", "error");
+          }
         });
     },
     changeNumFunc() {

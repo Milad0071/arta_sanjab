@@ -223,7 +223,7 @@ export default {
 }
 .mainContainer {
   width: 100%;
-  height: 100%;
+  height: 100vh;
   padding: 0%;
 }
 .pointsDiscription {

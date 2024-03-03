@@ -2,33 +2,20 @@
   <v-app>
     <v-locale-provider rtl>
       <div class="mainContainer">
+        <!-- title part -->
         <div class="titlePart">
           <div class="titleShape"></div>
-          <h2>تکمیل اطلاعات والدین</h2>
+          <h3>والد عزیز، لطفا فرم زیر را تکمیل نمایید</h3>
         </div>
-        <v-btn
-          color="#525355"
-          class="text-none goHomeBtn"
-          size="large"
-          variant="outlined"
-          @click="backToHome()"
-        >
-          بازگشت به داشبورد
-          <v-icon end icon="mdi-arrow-left"></v-icon>
-        </v-btn>
-        <div class="topText flex_class">
-          <p>لطفا اطلاعات خود را به طور کامل وارد نمایید:</p>
-        </div>
-
         <div class="inputContainer row">
           <div class="input_part">
             <!-- reletive input -->
+            <h4 class="loginText">نسبت</h4>
             <v-select
               :items="userReletivesList"
               density="comfortable"
               class="input_1"
               variant="plain"
-              label="نسبت"
               placeholder="نسبت خود با کودک را مشخص نمایید"
               item-text="title"
               item-value="value"
@@ -43,8 +30,8 @@
           </div>
           <div class="input_part">
             <!-- parent name -->
+            <h4 class="loginText">نام</h4>
             <v-text-field
-              label="نام"
               class="input_1"
               placeholder="نام خود را وارد کنید"
               variant="plain"
@@ -61,8 +48,8 @@
           </div>
           <div class="input_part">
             <!-- parent last name -->
+            <h4 class="loginText">نام خانوادگی</h4>
             <v-text-field
-              label="نام خانوادگی"
               class="input_1"
               variant="plain"
               placeholder="نام خانوادگی خود را وارد کنید"
@@ -78,8 +65,8 @@
             </p>
           </div>
           <div class="input_part">
+            <h4 class="loginText">نام پدر</h4>
             <v-text-field
-              label="نام پدر"
               class="input_1"
               variant="plain"
               placeholder="نام پدر خود را وارد کنید"
@@ -96,12 +83,12 @@
           </div>
           <div class="input_part">
             <!-- nationality input -->
+            <h4 class="loginText">ملیت</h4>
             <v-select
               :items="userNationalitArray"
               density="comfortable"
               class="input_1"
               variant="plain"
-              label="ملیت"
               placeholder="ملیت خود را مشخص نمایید"
               item-text="title"
               item-value="value"
@@ -116,8 +103,8 @@
           </div>
           <div v-if="userNationality == 1" class="input_part">
             <!-- national code input -->
+            <h4 class="loginText">کد ملی</h4>
             <v-text-field
-              label="کد ملی"
               class="ltrClass input_1"
               reverse
               variant="plain"
@@ -141,8 +128,8 @@
           </div>
           <div v-else-if="userNationality == 2" class="input_part">
             <!-- citizen code input -->
+            <h4 class="loginText">کد شهروندی</h4>
             <v-text-field
-              label="کد شهروندی"
               class="ltrClass input_1"
               reverse
               variant="plain"
@@ -160,11 +147,11 @@
           </div>
           <div class="input_part">
             <!-- Birth day field -->
+            <h4 class="loginText">تاریخ تولد</h4>
             <DatePicker
               format="jYYYY/jMM/jDD"
               simple
               class="datePickerClass"
-              label="تاریخ تولد"
               placeholder="1370/01/01"
               v-model="userBirthDay"
             />
@@ -177,8 +164,8 @@
           </div>
           <div class="input_part">
             <!-- Edjucation field -->
+            <h4 class="loginText">تحصیلات</h4>
             <v-text-field
-              label="تحصیلات"
               class="input_1"
               variant="plain"
               placeholder="عنوان تحصیلات خود را وارد کنید"
@@ -188,8 +175,8 @@
           </div>
           <div class="input_part">
             <!-- EdjucationStudy field -->
+            <h4 class="loginText">رشته تحصیلی</h4>
             <v-text-field
-              label="رشته تحصیلی"
               class="input_1"
               variant="plain"
               placeholder="رشته تحصیلی خود را وارد کنید"
@@ -200,8 +187,8 @@
           </div>
           <div class="input_part">
             <!-- Telephone field -->
+            <h4 class="loginText">تلفن ثابت</h4>
             <v-text-field
-              label="تلفن ثابت"
               class="ltrClass input_1"
               variant="plain"
               reverse
@@ -219,8 +206,8 @@
           </div>
           <div class="input_part">
             <!-- RegionalMunicipality field -->
+            <h4 class="loginText">منطقه شهرداری</h4>
             <v-text-field
-              label="منطقه شهرداری"
               class="ltrClass input_1"
               variant="plain"
               reverse
@@ -238,8 +225,8 @@
           </div>
           <div class="input_part">
             <!-- PostalCode field -->
+            <h4 class="loginText">کد پستی</h4>
             <v-text-field
-              label="کد پستی"
               class="ltrClass input_1"
               variant="plain"
               reverse
@@ -257,8 +244,8 @@
           </div>
           <div class="input_part">
             <!-- Job field -->
+            <h4 class="loginText">شغل</h4>
             <v-text-field
-              label="شغل"
               class="input_1"
               variant="plain"
               placeholder="شغل را وارد کنید"
@@ -275,14 +262,15 @@
           </div>
           <div class="input_part">
             <!-- Address field -->
+            <h4 class="loginText">آدرس</h4>
             <v-textarea
               class="textareaClass"
               clearable
               clear-icon="mdi-close-circle"
-              label="آدرس محل سکونت خود را وارد کنید:"
               rows="2"
               hide-details
               variant="plain"
+              placeholder="آدرس محل سکونت خود را وارد نمایید"
               v-on:keydown="stopEnglishChars($event)"
               v-model="userAddress"
             ></v-textarea>
@@ -295,11 +283,11 @@
           </div>
           <div class="input_part">
             <!-- children field -->
-            <p>تعداد فرزند</p>
+            <h4 class="loginText">تعداد فرزند</h4>
             <div class="flex_class">
-              <div class="girls">
+              <div class="flex_class">
+                <p class="childText">دختر</p>
                 <v-combobox
-                  label="دختر"
                   class="ltrClass input_children"
                   variant="plain"
                   v-on:keydown="stopAllChars($event)"
@@ -323,9 +311,9 @@
                   مقدار فیلد تعداد فرزندان دختر نباید صفر باشد!
                 </p>
               </div>
-              <div class="boys">
+              <div class="flex_class mr-5">
+                <h4 class="childText">پسر</h4>
                 <v-combobox
-                  label="پسر"
                   class="ltrClass input_children"
                   variant="plain"
                   v-on:keydown="stopAllChars($event)"
@@ -359,7 +347,7 @@
             size="large"
             min-width="200"
             variant="outlined"
-            @click="
+            @@click="
               signupFunc(
                 userReletivity,
                 userName,
@@ -380,7 +368,17 @@
               )
             "
           >
-            ثبت اطلاعات
+            ثبت
+          </v-btn>
+          <v-btn
+            color="#525355"
+            class="text-none closeBtn"
+            size="large"
+            min-width="200"
+            variant="outlined"
+            @click="backToHome()"
+          >
+            انصراف
           </v-btn>
         </div>
       </div>
@@ -422,7 +420,6 @@ export default {
       userNationalityError: false,
       userReletivity: null,
       userNationality: null,
-      otp: "",
       userName: "",
       userLastName: "",
       userFatherName: "",
@@ -721,6 +718,22 @@ export default {
         return true;
       }
     },
+    closeFunc() {
+      this.dialog = false;
+      this.userName = "";
+      this.userLastName = "";
+      this.userNationalCode = "";
+      this.userBirthDay = "";
+      this.userEdjucation = "";
+      this.userSchoolStudy = "";
+      this.whichChild = "";
+      this.userNameError = false;
+      this.userLastNameError = false;
+      this.userNationalCodeError = false;
+      this.userEdjucationError = false;
+      this.userSchoolStudyError = false;
+      this.whichChildError = false;
+    },
     signupFunc(
       userReletivity,
       userName,
@@ -811,8 +824,8 @@ export default {
               } else {
                 this.$swal("مشکلی پیش آمد، لطفا مجددا تلاش نمایید!", "error");
                 if (response.status == 401) {
-                  this.$cookies.set('userEntered', false);
-                this.$cookies.set('adminEntered', false);
+                  this.$cookies.set("userEntered", false);
+                  this.$cookies.set("adminEntered", false);
                   this.$router.push({ name: "SignupLogin" });
                 }
               }
@@ -820,8 +833,8 @@ export default {
             .catch((err) => {
               this.$swal("مشکلی پیش آمد!", err.message, "error");
               if (err.response.status == 401) {
-                this.$cookies.set('userEntered', false);
-                this.$cookies.set('adminEntered', false);
+                this.$cookies.set("userEntered", false);
+                this.$cookies.set("adminEntered", false);
                 this.$router.push({ name: "SignupLogin" });
               }
             });
@@ -840,41 +853,22 @@ export default {
 .mainContainer {
   position: relative;
   margin: 5%;
-  border: 2px solid #6d6e71;
 }
 .titlePart {
   display: flex;
   margin-top: 10px;
-  padding-right: 0px;
+  margin-bottom: 20px;
+  padding-right: 3%;
 }
-.titlePart h2 {
+.titlePart h3 {
   margin-right: 10px;
-  color: #6d6e71;
+  color: #1b1c1c;
+  font-size: 22px;
+  font-weight: bold;
 }
 .titleShape {
-  border-left: 10px solid #6d6e71;
-  border-radius: 7px 0 0 7px;
-}
-
-.goHomeBtn {
-  position: absolute;
-  top: 2%;
-  left: 1%;
-  font-weight: bold;
-  color: #6d6e71 !important;
-  width: 12%;
-  margin-bottom: 3%;
-}
-.goHomeBtn:hover {
-  border: none;
-  color: white !important;
-  background-color: #6d6e71;
-  font-weight: bold;
-}
-.topText {
-  padding: 1% 1% 0 0;
-  font-size: 18px;
-  font-weight: bold;
+  border: 3px solid #ff9635;
+  border-radius: 7px;
 }
 .inputContainer {
   display: grid;
@@ -888,17 +882,26 @@ export default {
   flex-direction: column;
   width: 100%;
   padding: 0% 10%;
-  margin-top: 5%;
+  margin-top: 0%;
 }
 .input_1 {
-  padding-top: 0 !important;
   max-height: 50px;
   padding-right: 10px;
   padding-left: 10px;
-  border-radius: 7px;
-  border: 2px solid white;
-  box-shadow: 1px 0px 10px 0px #525355;
+  border-radius: 8px;
+  background-color: #f4f5f6;
   font-family: danaRegular !important;
+}
+.loginText {
+  text-align: right;
+  font-size: 20px;
+  color: #525355;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.childText {
+  color: #8a8b8d;
+  font-weight: 500;
 }
 .input_children {
   width: 70px;
@@ -906,18 +909,17 @@ export default {
   padding-right: 20px;
   margin-right: 20px;
   border-radius: 7px;
-  border: 2px solid white;
-  box-shadow: 1px 0px 10px 0px #525355;
+  background-color: #f4f5f6;
 }
 .textareaClass {
+  width: 100%;
   border-radius: 7px;
-  border: 2px solid white;
-  box-shadow: 1px 0px 10px 0px #525355;
+  background-color: #f4f5f6;
 }
 .datePickerClass {
   min-height: 50px;
-  box-shadow: 1px 0px 10px 0px #525355;
   border-radius: 7px;
+  color: #525355;
 }
 .btnContainer {
   width: 100%;
@@ -925,15 +927,17 @@ export default {
 }
 .submitBtn {
   font-weight: bold;
-  color: #f68100 !important;
-  width: 26%;
-  margin-bottom: 3%;
-}
-.submitBtn:hover {
-  border: none;
   color: white !important;
   background-color: #f68100;
+  width: 44%;
+  border-radius: 12px;
+}
+.closeBtn {
   font-weight: bold;
+  color: #c5c5c6 !important;
+  width: 44%;
+  margin-right: 5%;
+  border-radius: 12px;
 }
 </style>
 <style>
@@ -977,5 +981,24 @@ export default {
 }
 .v-input__details {
   min-height: 0 !important;
+}
+.vpd-input-group label {
+  border-radius: 0px 8px 8px 0px;
+  background-color: #f4f5f6 !important;
+}
+.vpd-input-group input:not(.vpd-is-editable) {
+  border-radius: 8px 0px 0px 8px;
+  background-color: #f4f5f6;
+  border: none !important;
+}
+.datePickerClass svg {
+  fill: #525355 !important;
+}
+.vpd-content {
+  border-radius: 12px;
+}
+.vpd-main *,
+.vpd-wrapper * {
+  color: #f68100 !important;
 }
 </style>

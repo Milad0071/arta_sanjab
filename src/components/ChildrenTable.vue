@@ -2,17 +2,17 @@
   <v-app>
     <v-table class="tableClass" density="compact">
       <thead>
-        <tr>
+        <tr class="tableRows">
           <th v-if="childrenArray.length == 0">
-            <v-icon
+            <!-- <v-icon
               class="iconCol"
               size="large"
               color="green-darken-2"
               icon="mdi-plus"
               @click="sendEmit()"
-            ></v-icon>
+            ></v-icon> -->
           </th>
-          <th v-else></th>
+          <th v-else class="text-right font-weight-bold">عملیات</th>
           <th class="text-right font-weight-bold">ردیف</th>
           <th class="text-right font-weight-bold">نام</th>
           <th class="text-right font-weight-bold">نام خانوادگی</th>
@@ -25,18 +25,22 @@
         </tr>
       </thead>
       <tbody v-if="hasChildBoolean == true">
-        <tr v-for="(item, index) in childrenArray" :key="index">
-          <td v-if="index+1 == childrenArray.length">
-            <v-icon
+        <tr
+          class="tableRows"
+          v-for="(item, index) in childrenArray"
+          :key="index"
+        >
+          <td v-if="index + 1 == childrenArray.length">
+            <!-- <v-icon
               class="iconCol"
               size="large"
               color="green-darken-2"
               icon="mdi-plus"
               @click="sendEmit()"
-            ></v-icon>
+            ></v-icon> -->
           </td>
           <td v-else></td>
-          <td>{{this.toFarsiNumber(index+1)}}</td>
+          <td>{{ this.toFarsiNumber(index + 1) }}</td>
           <td>{{ item.childName }}</td>
           <td>{{ item.childLastName }}</td>
           <td>{{ item.childnCode }}</td>
@@ -54,19 +58,17 @@
   </v-app>
 </template>
 <script>
-
 export default {
-  emits: ['clicked'],
-  props: { children: Array,  hasChild: Boolean},
+  emits: ["clicked"],
+  props: { children: Array, hasChild: Boolean },
   data: () => {
     return {
       childrenArray: null,
       hasChildBoolean: null,
-    }
+    };
   },
   created() {
     this.getCildrenData();
-    
   },
   methods: {
     toFarsiNumber(n) {
@@ -76,10 +78,10 @@ export default {
       }
       n = n.toString();
       var englishNumbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"],
-          persianNumbers = ["۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹", "۰"];
+        persianNumbers = ["۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹", "۰"];
 
       for (var i = 0, numbersLen = englishNumbers.length; i < numbersLen; i++) {
-          n = n.replace(new RegExp(englishNumbers[i], "g"), persianNumbers[i]);
+        n = n.replace(new RegExp(englishNumbers[i], "g"), persianNumbers[i]);
       }
       return n;
     },
@@ -89,27 +91,31 @@ export default {
       if (this.childrenArray.length === 0) {
         this.hasChildBoolean = false;
       }
-      for (let i = 0; i < this.childrenArray.length; i++) { 
-        this.childrenArray[i].childBirthDay = this.toFarsiNumber(this.childrenArray[i].childBirthDay);
-        this.childrenArray[i].childWhichChild = this.toFarsiNumber(this.childrenArray[i].childWhichChild);
-        this.childrenArray[i].childnCode = this.toFarsiNumber(this.childrenArray[i].childnCode);
+      for (let i = 0; i < this.childrenArray.length; i++) {
+        this.childrenArray[i].childBirthDay = this.toFarsiNumber(
+          this.childrenArray[i].childBirthDay
+        );
+        this.childrenArray[i].childWhichChild = this.toFarsiNumber(
+          this.childrenArray[i].childWhichChild
+        );
+        this.childrenArray[i].childnCode = this.toFarsiNumber(
+          this.childrenArray[i].childnCode
+        );
         if (this.childrenArray[i].childAgeCat == 1) {
-          this.childrenArray[i].childAgeCat = 'بازه ۷-۴ سال';
+          this.childrenArray[i].childAgeCat = "بازه ۷-۴ سال";
         } else if (this.childrenArray[i].childAgeCat == 2) {
-          this.childrenArray[i].childAgeCat = 'بازه ۱۱-۸ سال';
+          this.childrenArray[i].childAgeCat = "بازه ۱۱-۸ سال";
         } else if (this.childrenArray[i].childAgeCat == 3) {
-          this.childrenArray[i].childAgeCat = 'بازه ۱۵-۱۲ سال';
+          this.childrenArray[i].childAgeCat = "بازه ۱۵-۱۲ سال";
         }
       }
     },
-    getUsersData() {
-
-    },
+    getUsersData() {},
     sendEmit() {
       this.$emit("clicked");
     },
   },
-}
+};
 </script>
 <style scoped>
 .tableClass {
@@ -117,19 +123,20 @@ export default {
   display: flex;
   justify-content: center;
   color: #373739;
-  background-color: hsl(31, 100%, 48%, 0.5);
-  border-radius: 7px;
-  margin-top: 10%;
+  background-color: white;
+  border-radius: 20px;
+  margin-top: 3%;
 }
-.iconCol {
-  border: 1px solid green;
-  border-radius: 7px;
-  width: 10px !important;
+.tableRows td {
+  text-align: center !important;
+  border-left: 1px solid #eaecf0;
+  padding: 1% !important;
 }
-.iconCol:hover {
-  color: white !important;
-  background: green !important;
-  cursor: pointer !important;;
+.tableRows th {
+  text-align: center !important;
+  border-left: 1px solid #eaecf0;
+  background-color: #fcfcfd;
+  padding: 1% !important;
 }
 </style>
 

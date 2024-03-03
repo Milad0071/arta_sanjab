@@ -249,7 +249,7 @@ export default {
 }
 .mainContainer {
   width: 100%;
-  height: 100%;
+  height: 100vh;
   padding: 10%;
   background-image: url("./../assets/quiz_background.jpg");
   background-size: cover;

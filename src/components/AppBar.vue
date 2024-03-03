@@ -1,10 +1,13 @@
 <template>
   <v-locale-provider style="font-family: danaRegular !important" rtl>
-    <v-app-bar class="mainBar" block :elevation="1" scroll-threshold="0">
+    <v-app-bar class="mainBar" block :elevation="0" scroll-threshold="0">
       <div class="contentBar">
         <div class="welcomePart">
-          <div class="welcomeNote">
+          <div v-if="this.currentUserName" class="welcomeNote">
             <h3>{{ this.currentUserName }} عزیز، خوش اومدی!</h3>
+          </div>
+          <div v-else class="welcomeNote">
+            <h3>مهمان عزیز، خوش اومدی!</h3>
           </div>
           <div class="datePart" dir="auto">
             <p>{{ this.todayDate }}</p>
@@ -43,7 +46,7 @@
           <div class="dividerContainer">
             <v-divider
               class="dividerClass"
-              length="40"
+              length="60"
               color="#525355"
               :thickness="2"
               vertical
@@ -126,11 +129,6 @@ export default {
     todayDate: "",
     items: [
       {
-        id: 1,
-        title: "تکمیل اطلاعات والدین",
-        icon: "mdi-account-details-outline",
-      },
-      {
         id: 2,
         title: "خرید دوره",
         icon: "mdi-basket-plus-outline",
@@ -146,7 +144,7 @@ export default {
   created() {
     this.currentUserName = this.$cookies.get("currentUserName");
     this.currentUserRole = this.$cookies.get("currentUserRole");
-    this.getData();
+    // this.getData();
     this.setJalaliDate();
   },
   methods: {
@@ -155,12 +153,14 @@ export default {
         this.$emit("user-rerender-drawer", 2);
         this.$cookies.remove("addChildActive");
         this.$cookies.remove("parentsDetailsActive");
+        this.$cookies.remove("btnClicked");
         this.$router.push({ name: "ParentsDetails" });
       } else if (id == 2) {
         this.$emit("user-rerender-drawer", 3);
         this.$cookies.remove("addChildActive");
         this.$cookies.remove("parentsDetailsActive");
         this.$cookies.remove("coursesShopActive");
+        this.$cookies.remove("btnClicked");
         this.$router.push({ name: "courseShop" });
       } else if (id == 3) {
         var bodyFormData = new FormData();
@@ -185,10 +185,18 @@ export default {
               this.$cookies.set("userEntered", false);
               this.$cookies.remove("userToken");
               this.$cookies.remove("userRefreshToken");
+              this.$cookies.remove("btnClicked");
+              this.$cookies.remove("currentUserName");
+              this.$cookies.remove("currentUserRole");
+              this.$cookies.remove("btnClicked");
               this.$router.push({ name: "SignupLogin" });
             } else if (response.status == 401 || response.status == 403) {
               this.$cookies.set("userEntered", false);
               this.$cookies.set("adminEntered", false);
+              this.$cookies.remove("btnClicked");
+              this.$cookies.remove("currentUserName");
+              this.$cookies.remove("currentUserRole");
+              this.$cookies.remove("btnClicked");
               this.$router.push({ name: "SignupLogin" });
               this.$swal("مشکلی پیش آمد!", response.message, "error");
               this.verificationBtnLoading = false;
@@ -201,6 +209,9 @@ export default {
             if (err.request.status == 401 || err.request.status == 403) {
               this.$cookies.set("userEntered", false);
               this.$cookies.set("adminEntered", false);
+              this.$cookies.remove("currentUserName");
+              this.$cookies.remove("currentUserRole");
+              this.$cookies.remove("btnClicked");
               this.$router.push({ name: "SignupLogin" });
               this.$swal("مشکلی پیش آمد!", err.message, "error");
               this.verificationBtnLoading = false;
@@ -227,6 +238,7 @@ export default {
               this.$cookies.remove("parentsDetailsActive");
               this.$cookies.remove("coursesShopActive");
               // this.$emit("reset-app");
+              this.$cookies.remove("btnClicked");
               this.$router.push({ name: "courseShop" });
             } else {
               this.$swal("مشکلی پیش آمد!", response.message, "error");
@@ -263,6 +275,7 @@ export default {
               if (response.status == 401) {
                 this.$cookies.set("userEntered", false);
                 this.$cookies.set("adminEntered", false);
+                this.$cookies.remove("btnClicked");
                 this.$router.push({ name: "SignupLogin" });
                 this.$swal(
                   "توکن شما منقضی شده است!",
@@ -278,6 +291,7 @@ export default {
             if (err.response.status == 401) {
               this.$cookies.set("userEntered", false);
               this.$cookies.set("adminEntered", false);
+              this.$cookies.remove("btnClicked");
               this.$router.push({ name: "SignupLogin" });
               this.$swal("توکن شما منقضی شده است!", err.message, "error");
             } else {
@@ -287,8 +301,10 @@ export default {
       }
     },
     showModalFunc() {
-      this.getData();
+      this.$router.push({ name: "Home" });
+      // this.getData();
       this.$emit("dialog", true);
+      this.$cookies.set("btnClicked");
     },
     setJalaliDate() {
       const options = {
@@ -310,6 +326,7 @@ export default {
 }
 .mainBar {
   width: 80% !important;
+  height: 8%;
 }
 .contentBar {
   width: 100% !important;
@@ -375,7 +392,7 @@ export default {
   background-color: #f68100;
   width: 25%;
   height: 10%;
-  border-radius: 8px;
+  border-radius: 12px;
 }
 .userPart {
   width: 40% !important;

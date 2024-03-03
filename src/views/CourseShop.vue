@@ -2,91 +2,94 @@
   <v-app>
     <v-locale-provider rtl>
       <div class="mainContainer flex_column_class">
-        <div class="coursesContainer flex_column_class marginClass">
+        <div class="coursesContainer marginClass">
           <div class="titlePart">
-            <div class="titleShape"></div>
-            <h2>دوره‌های قابل خریداری</h2>
+            <h2>دوره‌های آموزشی</h2>
           </div>
-          <div v-if="showCourses == true" class="cardClass1 flex_class">
+          <div v-if="showCourses == true" class="coursesCardsContainer">
             <v-card
-              class="mx-auto my-12"
-              style="border: 1px solid #6d6e71"
-              min-width="374"
-              elevation="24"
+              class="cardClass mt-5 mr-5 flex_column_class"
               v-for="(course, index) in courses"
               :key="index"
             >
-              <v-img
-                cover
-                height="320"
-                src="./../assets/sanjabTextLogo.png"
-              ></v-img>
-              <v-card-item>
-                <v-card-title>{{ course.name }}</v-card-title>
-              </v-card-item>
-              <v-card-text>
-                <div>{{ course.description }}</div>
-                <div>قیمت: {{ course.price }}ریال</div>
-              </v-card-text>
-              <v-divider class="mx-4 mb-1"></v-divider>
-              <v-card-actions class="btnLocation">
+              <div class="imagesContainer" style="width: 100%">
+                <ChildOneImage v-if="course.id == 1" class="mt-7" />
+                <ChildTwoImage v-else-if="course.id == 2" class="mt-7" />
+                <ChildThreeImage v-else-if="course.id == 3" class="mt-7" />
+              </div>
+              <div class="topPart">
+                <div>
+                  <p>مدرس: نام مدرس</p>
+                </div>
+                <div class="watchPart">
+                  <p>۰۰:۰۰:۰۰</p>
+                  <WatchIcon class="mr-2" />
+                </div>
+              </div>
+              <div class="cardTitle">
+                <h4>{{ course.name }}</h4>
+              </div>
+              <div class="purchasePart">
+                <div class="pricePart">۲۶۵ هزار تومان</div>
                 <v-btn
-                  :loading="buyCourseLoading"
-                  class="text-none buyBtn"
-                  color="#f68100"
-                  variant="outlined"
+                  color="#FF9635"
+                  class="text-none buyCourseBtn"
                   size="large"
+                  variant="outlined"
                   @click="buyCourse(course.id)"
                 >
-                  خرید دوره
+                  خرید
+                  <template v-slot:prepend>
+                    <purchaseIcon />
+                  </template>
                 </v-btn>
-              </v-card-actions>
+              </div>
             </v-card>
           </div>
           <div v-else>دوره متناسب با این کاربر وجود ندارد.</div>
         </div>
-        <div class="coursesContainer flex_column_class mt-4 mb-4">
+        <div
+          v-if="showPurchasedCourses == true"
+          class="myCoursesContainer mb-4"
+        >
           <div class="titlePart">
-            <div class="titleShape"></div>
-            <h2>دوره‌های خریداری شده</h2>
+            <h2>دوره‌های من</h2>
           </div>
-          <div v-if="showPurchasedCourses == true" class="cardClass flex_class">
+          <div v-if="showCourses == true" class="coursesCardsContainer">
             <v-card
-              class="mx-auto my-12"
-              style="border: 1px solid #6d6e71"
-              min-width="374"
-              elevation="24"
-              v-for="(course, index) in purchasedCourses"
+              class="cardClass mt-5 mr-5 flex_column_class"
+              v-for="(course, index) in courses"
               :key="index"
+              @click="goToCourse()"
             >
-              <v-img
-                cover
-                height="320"
-                src="./../assets/sanjabTextLogo.png"
-              ></v-img>
-              <v-card-item>
-                <v-card-title>{{ course.name }}</v-card-title>
-              </v-card-item>
-              <v-card-text>
-                <div>{{ course.description }}</div>
-                <div>{{ course.price }}</div>
-              </v-card-text>
-              <v-divider class="mx-4 mb-1"></v-divider>
-              <v-card-actions class="btnLocation">
-                <v-btn
-                  :loading="continueCourseBtnLoading"
-                  class="text-none buyBtn"
-                  color="#f68100"
-                  variant="outlined"
-                  size="large"
-                  @click="goToCourse()"
-                >
-                  ادامه دوره
-                </v-btn>
-              </v-card-actions>
+              <div class="imagesContainer" style="width: 100%">
+                <ChildOneImage v-if="course.id == 1" class="mt-7" />
+                <ChildTwoImage v-else-if="course.id == 2" class="mt-7" />
+                <ChildThreeImage v-else-if="course.id == 3" class="mt-7" />
+              </div>
+              <div class="topPart">
+                <div>
+                  <p>مدرس: نام مدرس</p>
+                </div>
+                <div class="watchPart">
+                  <p>۰۰:۰۰:۰۰</p>
+                  <WatchIcon class="mr-2" />
+                </div>
+              </div>
+              <div class="cardTitle">
+                <h4>{{ course.name }}</h4>
+              </div>
+              <div class="progressBar">
+                <p>میزان پیشرفت</p>
+                <v-progress-linear
+                  v-model="power"
+                  color="#FF9635"
+                  height="8"
+                  style="border-radius: 20px"
+                ></v-progress-linear>
+              </div>
             </v-card>
           </div>
-          <div v-else>دوره متناسب با این کاربر وجود ندارد.</div>
         </div>
       </div>
     </v-locale-provider>
@@ -94,11 +97,24 @@
 </template>
 <script>
 import axios from "./../axios.js";
+import ChildOneImage from "./../assets/svgIcons/ChildOneImage.vue";
+import ChildTwoImage from "./../assets/svgIcons/ChildTwoImage.vue";
+import ChildThreeImage from "./../assets/svgIcons/ChildThreeImage.vue";
+import WatchIcon from "./../assets/svgIcons/WatchIcon.vue";
+import purchaseIcon from "./../assets/svgIcons/purchaseIcon.vue";
 
 export default {
-  emits: ["reset-app", 'user-rerender-drawer'],
+  emits: ["reset-app", "user-rerender-drawer"],
+  components: {
+    ChildOneImage,
+    ChildTwoImage,
+    ChildThreeImage,
+    WatchIcon,
+    purchaseIcon,
+  },
   data: () => {
     return {
+      power: 78,
       showCourses: true,
       showPurchasedCourses: true,
       buyCourseLoading: false,
@@ -114,67 +130,157 @@ export default {
   methods: {
     getData() {
       //get courses that can be purchased
-      axios({
-        method: "GET",
-        url: `courses/list/?session=${this.$cookies.get("sessionId")}`,
-        headers: {
-          Authorization: `Bearer ${this.$cookies.get("userToken")}`,
-          "Content-Type": "application/json",
-        },
-      })
-        .then((response) => {
-          for (let i = 0; i < response.data.length; i++) {
-            this.courses.push({
-              id: response.data[i].id,
-              name: response.data[i].name,
-              description: response.data[i].description,
-              price: response.data[i].price,
-            });
-          }
+      console.log(this.$cookies.get("childNationalCode"));
+      if (this.$cookies.get("childNationalCode") != null) {
+        axios({
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${this.$cookies.get("userToken")}`,
+            "Content-Type": "application/json",
+          },
+          url: `dashboard/change-child-user/${this.$cookies.get(
+            "childNationalCode"
+          )}/?session=${this.$cookies.get("sessionId")}`,
         })
-        .catch((err) => {
-          this.$swal("مشکلی پیش آمد!", err.message, "error");
-          if (err.response.status == 401) {
-            this.$cookies.set('userEntered', false);
-            this.$cookies.set('adminEntered', false);
-            this.$router.push({ name: "SignupLogin" });
-          }
-        });
-      //get courses that have been purchased
-      axios({
-        method: "GET",
-        url: `dashboard/my-courses/?session=${this.$cookies.get("sessionId")}`,
-        headers: {
-          Authorization: `Bearer ${this.$cookies.get("userToken")}`,
-          "Content-Type": "application/json",
-        },
-      })
-        .then((response) => {
-          for (let i = 0; i < response.data.length; i++) {
-            this.purchasedCourses.push({
-              id: response.data[i].id,
-              name: response.data[i].course.name,
-              description: response.data[i].course.description,
-              price: response.data[i].course.price,
-              startDate: response.data[i].created_at,
-              expireDate: response.data[i].expire_at,
-            });
-          }
-          if (this.purchasedCourses.length > 0) {
-            this.showPurchasedCourses = true;
-          } else {
-            this.showPurchasedCourses = false;
-          }
+          .then(() => {
+            axios({
+              method: "GET",
+              url: `courses/list/?session=${this.$cookies.get("sessionId")}`,
+              headers: {
+                Authorization: `Bearer ${this.$cookies.get("userToken")}`,
+                "Content-Type": "application/json",
+              },
+            })
+              .then((response) => {
+                for (let i = 0; i < response.data.length; i++) {
+                  this.courses.push({
+                    id: response.data[i].id,
+                    name: response.data[i].name,
+                    description: response.data[i].description,
+                    price: response.data[i].price,
+                  });
+                }
+              })
+              .catch((err) => {
+                this.$swal("مشکلی پیش آمد!", err.message, "error");
+                if (err.response.status == 401) {
+                  this.$cookies.set("userEntered", false);
+                  this.$cookies.set("adminEntered", false);
+                  this.$router.push({ name: "SignupLogin" });
+                }
+              });
+            //get courses that have been purchased
+            axios({
+              method: "GET",
+              url: `dashboard/my-courses/?session=${this.$cookies.get(
+                "sessionId"
+              )}`,
+              headers: {
+                Authorization: `Bearer ${this.$cookies.get("userToken")}`,
+                "Content-Type": "application/json",
+              },
+            })
+              .then((response) => {
+                for (let i = 0; i < response.data.length; i++) {
+                  this.purchasedCourses.push({
+                    id: response.data[i].id,
+                    name: response.data[i].course.name,
+                    description: response.data[i].course.description,
+                    price: response.data[i].course.price,
+                    startDate: response.data[i].created_at,
+                    expireDate: response.data[i].expire_at,
+                  });
+                }
+                if (this.purchasedCourses.length > 0) {
+                  this.showPurchasedCourses = true;
+                } else {
+                  this.showPurchasedCourses = false;
+                }
+              })
+              .catch((err) => {
+                this.$swal("مشکلی پیش آمد!", err.message, "error");
+                console.log(err.response.status);
+                if (err.response.status == 401) {
+                  this.$cookies.set("userEntered", false);
+                  this.$cookies.set("adminEntered", false);
+                  this.$router.push({ name: "SignupLogin" });
+                }
+              });
+          })
+          .catch((err) => {
+            this.$swal("مشکلی پیش آمد!", err.message, "error");
+            if (err.response.status == 401) {
+              this.$cookies.set("userEntered", false);
+              this.$cookies.set("adminEntered", false);
+              this.$cookies.remove("btnClicked");
+              this.$router.push({ name: "SignupLogin" });
+            }
+          });
+      } else {
+        axios({
+          method: "GET",
+          url: `courses/list/?session=${this.$cookies.get("sessionId")}`,
+          headers: {
+            Authorization: `Bearer ${this.$cookies.get("userToken")}`,
+            "Content-Type": "application/json",
+          },
         })
-        .catch((err) => {
-          this.$swal("مشکلی پیش آمد!", err.message, "error");
-          console.log(err.response.status);
-          if (err.response.status == 401) {
-            this.$cookies.set('userEntered', false);
-            this.$cookies.set('adminEntered', false);
-            this.$router.push({ name: "SignupLogin" });
-          }
-        });
+          .then((response) => {
+            for (let i = 0; i < response.data.length; i++) {
+              this.courses.push({
+                id: response.data[i].id,
+                name: response.data[i].name,
+                description: response.data[i].description,
+                price: response.data[i].price,
+              });
+            }
+          })
+          .catch((err) => {
+            this.$swal("مشکلی پیش آمد!", err.message, "error");
+            if (err.response.status == 401) {
+              this.$cookies.set("userEntered", false);
+              this.$cookies.set("adminEntered", false);
+              this.$router.push({ name: "SignupLogin" });
+            }
+          });
+        //get courses that have been purchased
+        axios({
+          method: "GET",
+          url: `dashboard/my-courses/?session=${this.$cookies.get(
+            "sessionId"
+          )}`,
+          headers: {
+            Authorization: `Bearer ${this.$cookies.get("userToken")}`,
+            "Content-Type": "application/json",
+          },
+        })
+          .then((response) => {
+            for (let i = 0; i < response.data.length; i++) {
+              this.purchasedCourses.push({
+                id: response.data[i].id,
+                name: response.data[i].course.name,
+                description: response.data[i].course.description,
+                price: response.data[i].course.price,
+                startDate: response.data[i].created_at,
+                expireDate: response.data[i].expire_at,
+              });
+            }
+            if (this.purchasedCourses.length > 0) {
+              this.showPurchasedCourses = true;
+            } else {
+              this.showPurchasedCourses = false;
+            }
+          })
+          .catch((err) => {
+            this.$swal("مشکلی پیش آمد!", err.message, "error");
+            console.log(err.response.status);
+            if (err.response.status == 401) {
+              this.$cookies.set("userEntered", false);
+              this.$cookies.set("adminEntered", false);
+              this.$router.push({ name: "SignupLogin" });
+            }
+          });
+      }
     },
     buyCourse(id) {
       this.buyCourseLoading = true;
@@ -217,8 +323,8 @@ export default {
               this.buyCourseLoading = false;
               this.$swal("مشکلی پیش آمد!", response.message, "error");
               if (response.status == 401) {
-                this.$cookies.set('userEntered', false);
-                this.$cookies.set('adminEntered', false);
+                this.$cookies.set("userEntered", false);
+                this.$cookies.set("adminEntered", false);
                 this.$router.push({ name: "SignupLogin" });
               }
             }
@@ -235,8 +341,8 @@ export default {
           } else {
             this.$swal("مشکلی پیش آمد!", err.message, "error");
             if (err.request.status == 401) {
-              this.$cookies.set('userEntered', false);
-              this.$cookies.set('adminEntered', false);
+              this.$cookies.set("userEntered", false);
+              this.$cookies.set("adminEntered", false);
               this.$router.push({ name: "SignupLogin" });
             }
           }
@@ -254,7 +360,7 @@ export default {
 <style scoped>
 .flex_class {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
 }
 .flex_column_class {
@@ -264,34 +370,109 @@ export default {
   align-items: center;
 }
 .mainContainer {
-  width: 100%;
-  height: 100%;
-  padding-right: 22%;
-  padding-left: 1.8%;
-  background-color: #e2e2e3;
-  background-size: cover;
+  display: flex;
+  flex-flow: column;
+  justify-content: flex-start;
+  font-family: danaRegular !important;
+  width: 80%;
+  height: 91.6vh;
+  margin-top: 3.85%;
+  margin-left: 0px;
+  background-color: #f4f5f6;
+  border-top-right-radius: 60px;
 }
 .coursesContainer {
-  background-color: white;
   width: 100%;
-  border-radius: 7px;
+  padding: 3%;
+}
+.myCoursesContainer {
+  width: 100%;
+  margin-top: -2%;
+  padding-right: 3%;
 }
 .marginClass {
-  margin-top: 10%;
+  margin-top: -2%;
 }
 .titlePart {
   display: flex;
   align-self: flex-start !important;
-  margin-top: 10px;
   padding-right: 0px;
 }
 .titlePart h2 {
   margin-right: 10px;
-  color: #6d6e71;
+  color: #373739;
+  font-weight: 700;
+  font-size: 20px;
 }
-.titleShape {
-  border-left: 10px solid #6d6e71;
-  border-radius: 7px 0 0 7px;
+.coursesCardsContainer {
+  display: flex;
+  align-items: center;
+  margin-top: -1%;
+}
+.cardClass {
+  width: 323px;
+  height: 100%;
+  border-radius: 10px !important;
+  cursor: pointer;
+}
+.imagesContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: -5%;
+}
+.topPart {
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+}
+.watchPart {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.cardTitle {
+  width: 100%;
+  margin-right: 20%;
+  margin-top: 5%;
+  display: flex;
+  justify-content: flex-start !important;
+  align-items: center;
+}
+.purchasePart {
+  width: 100%;
+  padding: 0 10%;
+  margin-top: 2%;
+  margin-bottom: 2%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center !important;
+}
+.pricePart {
+  color: #ff9635;
+  font-size: 18px;
+  font-weight: 500;
+}
+.buyCourseBtn {
+  font-weight: bold;
+  border-radius: 12px;
+  color: white !important;
+  background-color: #f68100;
+}
+.progressBar {
+  width: 85%;
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2%;
+  margin-bottom: 2%;
+}
+.progressBar p {
+  align-self: flex-start;
+  color: #8a8b8d;
+  font-size: 10px;
 }
 .btnLocation {
   display: flex;

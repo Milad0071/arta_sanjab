@@ -1,254 +1,232 @@
 <template>
-  <v-app style="margin-right: 20%; font-family: danaRegular !important">
+  <v-app style="font-family: danaRegular !important">
     <v-locale-provider rtl>
-      <v-container class="flex_column_class">
-        <div style="width: 100%">
-          <!-- children table -->
-          <ChildrenTable
-            :key="componentKey"
-            @clicked="openDialog"
-            :tableType="tableType"
-            :children="children"
-            :hasChild="hasChild"
-          >
-          </ChildrenTable>
-          <!-- guidance part -->
-          <div class="btnContainer flex_column_class">
-            <h3>
-              در صورت وارد کردن اطلاعات تمامی فرزندان، لطفا روی کلید زیر کلیک
-              کنید تا به مرحله ثبت‌نام دوره فرزند هدایت شوید.
-            </h3>
-            <p>
-              (در صورت غیر فعال بودن کلید، لطفا ابتدا اطلاعات فرزندان خود را
-              وارد نمایید!)
-            </p>
-            <v-btn
-              v-if="children.length > 0"
-              color="#525355"
-              class="text-none submitBtn mt-5"
-              size="large"
-              min-width="200"
-              variant="outlined"
-              @click="goToDesktop()"
-            >
-              ثبت‌نام دوره فرزند
-            </v-btn>
-            <v-btn
-              v-else
-              disabled
-              color="#525355"
-              class="text-none submitBtn mt-5"
-              size="large"
-              min-width="200"
-              variant="outlined"
-            >
-              ثبت‌نام دوره فرزند
-            </v-btn>
+      <div class="mainPart flex_column_class">
+        <!-- top section title -->
+        <div class="topTitle">
+          <div class="titlePart">
+            <div class="titleShape"></div>
+            <h3>ثبت فرزند</h3>
           </div>
-          <!-- child form dialog -->
-          <v-dialog
-            v-model="dialog"
-            persistent
-            width="auto"
-            style="z-index: 1 !important"
+          <v-btn
+            color="#FF9635"
+            class="text-none addChildBtn"
+            size="large"
+            variant="outlined"
+            @click="openDialog()"
           >
-            <v-card
-              class="text-center mx-auto ma-4"
-              style="right: 20%"
-              min-width="1020"
-            >
-              <div class="titlePart">
-                <div class="titleShape"></div>
-                <h2>فرم ثبت فرزند</h2>
-              </div>
-              <div class="py-12 px-8 inputContainer">
-                <div class="input_part">
-                  <!-- child name -->
-                  <v-text-field
-                    label="نام"
-                    class="input_1"
-                    placeholder="نام خود را وارد کنید"
-                    variant="plain"
-                    v-on:keydown="stopEnglishChars($event)"
-                    v-model="userName"
-                  >
-                  </v-text-field>
-                  <p
-                    v-if="userNameError == true"
-                    style="color: red; font-weight: fold"
-                  >
-                    فیلد نام نباید خالی باشد!
-                  </p>
-                </div>
-                <div class="input_part">
-                  <!-- child last name -->
-                  <v-text-field
-                    label="نام خانوادگی"
-                    class="input_1"
-                    variant="plain"
-                    placeholder="نام خانوادگی خود را وارد کنید"
-                    v-on:keydown="stopEnglishChars($event)"
-                    v-model="userLastName"
-                  >
-                  </v-text-field>
-                  <p
-                    v-if="userLastNameError == true"
-                    style="color: red; font-weight: fold"
-                  >
-                    فیلد نام خانوادگی نباید خالی باشد!
-                  </p>
-                </div>
-                <div class="input_part">
-                  <!-- child national code -->
-                  <v-text-field
-                    label="کد ملی"
-                    class="ltrClass input_1"
-                    reverse
-                    variant="plain"
-                    placeholder="کد ملی خود را وارد کنید"
-                    v-on:keydown="stopAllChars($event)"
-                    v-model="userNationalCode"
-                  >
-                  </v-text-field>
-                  <p
-                    v-if="userNationalCodeError == true"
-                    style="color: red; font-weight: fold"
-                  >
-                    فیلد کد ملی نباید خالی باشد!
-                  </p>
-                </div>
-                <div class="input_part">
-                  <!-- child birth day -->
-                  <DatePicker
-                    format="jYYYY/jMM/jDD"
-                    simple
-                    class="datePickerClass"
-                    label="تاریخ تولد"
-                    placeholder="1370/01/01"
-                    id="childDate"
-                    v-model="userBirthDay"
-                  />
-                  <p
-                    v-if="userBirthDayError == true"
-                    style="color: red; font-weight: fold"
-                  >
-                    فیلد تاریخ تولد نباید خالی باشد!
-                  </p>
-                </div>
-                <div class="input_part">
-                  <!-- child age category -->
-                  <v-select
-                    :items="ageCategories"
-                    density="comfortable"
-                    class="input_1"
-                    variant="plain"
-                    label="بازه سنی"
-                    placeholder="بازه سنی کودک را مشخص نمایید"
-                    item-text="title"
-                    item-value="value"
-                    v-model="userAgeCat"
-                  ></v-select>
-                  <p
-                    v-if="userAgeCatError == true"
-                    style="color: red; font-weight: fold"
-                  >
-                    فیلد بازه سنی نباید خالی باشد!
-                  </p>
-                </div>
-                <div class="input_part">
-                  <!-- child education -->
-                  <v-text-field
-                    label="فرزند چندم"
-                    class="input_1"
-                    variant="plain"
-                    placeholder="مشخص کنید فرزند چندم هستند"
-                    v-on:keydown="stopEnglishChars($event)"
-                    v-model="whichChild"
-                  >
-                  </v-text-field>
-                  <p
-                    v-if="whichChildError == true"
-                    style="color: red; font-weight: fold"
-                  >
-                    فیلد فرزند چندم نباید خالی باشد!
-                  </p>
-                </div>
-                <div class="input_part">
-                  <!-- child education -->
-                  <v-text-field
-                    label="مقطع تحصیلی"
-                    class="input_1"
-                    variant="plain"
-                    placeholder="مقطع تحصیلی را وارد کنید"
-                    v-on:keydown="stopEnglishChars($event)"
-                    v-model="userEdjucation"
-                  >
-                  </v-text-field>
-                  <p
-                    v-if="userEdjucationError == true"
-                    style="color: red; font-weight: fold"
-                  >
-                    فیلد مقطع تحصیلی نباید خالی باشد!
-                  </p>
-                </div>
-                <div class="input_part">
-                  <!-- child school address -->
-                  <v-text-field
-                    label="شهر محل تحصیل"
-                    class="input_1"
-                    variant="plain"
-                    placeholder="شهر محل تحصیل را وارد کنید"
-                    v-on:keydown="stopEnglishChars($event)"
-                    v-model="userSchoolStudy"
-                  >
-                  </v-text-field>
-                  <p
-                    v-if="userSchoolStudyError == true"
-                    style="color: red; font-weight: fold"
-                  >
-                    فیلد شهر محل تحصیل نباید خالی باشد!
-                  </p>
-                </div>
-              </div>
-              <div class="btnContainer flex_class">
-                <v-btn
-                  color="#525355"
-                  class="text-none submitBtn"
-                  style="margin-top: -8%"
-                  size="large"
-                  min-width="200"
-                  variant="outlined"
-                  @click="
-                    submitFunc(
-                      userName,
-                      userLastName,
-                      userNationalCode,
-                      userBirthDay,
-                      userAgeCat,
-                      userEdjucation,
-                      userSchoolStudy,
-                      whichChild
-                    )
-                  "
-                >
-                  ثبت فرزند
-                </v-btn>
-                <v-btn
-                  color="#525355"
-                  class="text-none closeBtn"
-                  style="margin-top: -8%"
-                  size="large"
-                  min-width="200"
-                  variant="outlined"
-                  @click="closeFunc()"
-                >
-                  انصراف
-                </v-btn>
-              </div>
-            </v-card>
-          </v-dialog>
+            افزودن فرزند +
+          </v-btn>
         </div>
-      </v-container>
+        <!-- children table -->
+        <ChildrenTable
+          style="width: 90%"
+          :key="componentKey"
+          @clicked="openDialog"
+          :tableType="tableType"
+          :children="children"
+          :hasChild="hasChild"
+        >
+        </ChildrenTable>
+        <!-- child form dialog -->
+        <v-dialog
+          v-model="dialog"
+          persistent
+          width="auto"
+          style="z-index: 1 !important"
+        >
+          <v-card
+            class="text-center mx-auto ma-4"
+            style="right: 20%"
+            min-width="1020"
+          >
+            <div class="py-12 px-8 inputContainer">
+              <div class="input_part">
+                <!-- child name -->
+                <h4 class="loginText">نام</h4>
+                <v-text-field
+                  class="input_1"
+                  placeholder="نام خود را وارد کنید"
+                  variant="plain"
+                  v-on:keydown="stopEnglishChars($event)"
+                  v-model="userName"
+                >
+                </v-text-field>
+                <p
+                  v-if="userNameError == true"
+                  style="color: red; font-weight: fold"
+                >
+                  فیلد نام نباید خالی باشد!
+                </p>
+              </div>
+              <div class="input_part">
+                <!-- child last name -->
+                <h4 class="loginText">نام خانوادگی</h4>
+                <v-text-field
+                  class="input_1"
+                  variant="plain"
+                  placeholder="نام خانوادگی خود را وارد کنید"
+                  v-on:keydown="stopEnglishChars($event)"
+                  v-model="userLastName"
+                >
+                </v-text-field>
+                <p
+                  v-if="userLastNameError == true"
+                  style="color: red; font-weight: fold"
+                >
+                  فیلد نام خانوادگی نباید خالی باشد!
+                </p>
+              </div>
+              <div class="input_part">
+                <!-- child national code -->
+                <h4 class="loginText">کد ملی</h4>
+                <v-text-field
+                  class="ltrClass input_1"
+                  reverse
+                  variant="plain"
+                  placeholder="کد ملی خود را وارد کنید"
+                  v-on:keydown="stopAllChars($event)"
+                  v-model="userNationalCode"
+                >
+                </v-text-field>
+                <p
+                  v-if="userNationalCodeError == true"
+                  style="color: red; font-weight: fold"
+                >
+                  فیلد کد ملی نباید خالی باشد!
+                </p>
+              </div>
+              <div class="input_part">
+                <!-- child birth day -->
+                <h4 class="loginText">تاریخ تولد</h4>
+                <DatePicker
+                  format="jYYYY/jMM/jDD"
+                  simple
+                  class="datePickerClass"
+                  placeholder="1370/01/01"
+                  id="childDate"
+                  v-model="userBirthDay"
+                />
+                <p
+                  v-if="userBirthDayError == true"
+                  style="color: red; font-weight: fold"
+                >
+                  فیلد تاریخ تولد نباید خالی باشد!
+                </p>
+              </div>
+              <div class="input_part">
+                <!-- child age category -->
+                <h4 class="loginText">بازه سنی</h4>
+                <v-select
+                  :items="ageCategories"
+                  density="comfortable"
+                  class="input_1"
+                  variant="plain"
+                  placeholder="بازه سنی کودک را مشخص نمایید"
+                  item-text="title"
+                  item-value="value"
+                  v-model="userAgeCat"
+                ></v-select>
+                <p
+                  v-if="userAgeCatError == true"
+                  style="color: red; font-weight: fold"
+                >
+                  فیلد بازه سنی نباید خالی باشد!
+                </p>
+              </div>
+              <div class="input_part">
+                <!-- child education -->
+                <h4 class="loginText">فرزند چندم</h4>
+                <v-text-field
+                  class="input_1"
+                  variant="plain"
+                  placeholder="مشخص کنید فرزند چندم هستند"
+                  v-on:keydown="stopEnglishChars($event)"
+                  v-model="whichChild"
+                >
+                </v-text-field>
+                <p
+                  v-if="whichChildError == true"
+                  style="color: red; font-weight: fold"
+                >
+                  فیلد فرزند چندم نباید خالی باشد!
+                </p>
+              </div>
+              <div class="input_part">
+                <!-- child education -->
+                <h4 class="loginText">مقطع تحصیلی</h4>
+                <v-text-field
+                  class="input_1"
+                  variant="plain"
+                  placeholder="مقطع تحصیلی را وارد کنید"
+                  v-on:keydown="stopEnglishChars($event)"
+                  v-model="userEdjucation"
+                >
+                </v-text-field>
+                <p
+                  v-if="userEdjucationError == true"
+                  style="color: red; font-weight: fold"
+                >
+                  فیلد مقطع تحصیلی نباید خالی باشد!
+                </p>
+              </div>
+              <div class="input_part">
+                <!-- child school address -->
+                <h4 class="loginText">شهر محل تحصیل</h4>
+                <v-text-field
+                  class="input_1"
+                  variant="plain"
+                  placeholder="شهر محل تحصیل را وارد کنید"
+                  v-on:keydown="stopEnglishChars($event)"
+                  v-model="userSchoolStudy"
+                >
+                </v-text-field>
+                <p
+                  v-if="userSchoolStudyError == true"
+                  style="color: red; font-weight: fold"
+                >
+                  فیلد شهر محل تحصیل نباید خالی باشد!
+                </p>
+              </div>
+            </div>
+            <div class="btnContainer flex_class">
+              <v-btn
+                color="#525355"
+                class="text-none submitBtn"
+                style="margin-top: -8%"
+                size="large"
+                min-width="200"
+                variant="outlined"
+                @click="
+                  submitFunc(
+                    userName,
+                    userLastName,
+                    userNationalCode,
+                    userBirthDay,
+                    userAgeCat,
+                    userEdjucation,
+                    userSchoolStudy,
+                    whichChild
+                  )
+                "
+              >
+                ثبت فرزند
+              </v-btn>
+              <v-btn
+                color="#525355"
+                class="text-none closeBtn"
+                style="margin-top: -8%"
+                size="large"
+                min-width="200"
+                variant="outlined"
+                @click="closeFunc()"
+              >
+                انصراف
+              </v-btn>
+            </div>
+          </v-card>
+        </v-dialog>
+      </div>
     </v-locale-provider>
   </v-app>
 </template>
@@ -382,8 +360,8 @@ export default {
         .catch((err) => {
           this.$swal("مشکلی پیش آمد!", err.message, "error");
           if (err.response.status == 401) {
-            this.$cookies.set('userEntered', false);
-            this.$cookies.set('adminEntered', false);
+            this.$cookies.set("userEntered", false);
+            this.$cookies.set("adminEntered", false);
             this.$router.push({ name: "SignupLogin" });
           }
         });
@@ -396,7 +374,7 @@ export default {
       this.userBirthDay = "";
       this.userEdjucation = "";
       this.userSchoolStudy = "";
-      this.whichChild = "";
+      this.whichChildcloseFunc = "";
       this.userNameError = false;
       this.userLastNameError = false;
       this.userNationalCodeError = false;
@@ -463,8 +441,8 @@ export default {
             } else {
               this.$swal("مشکلی پیش آمد، لطفا مجددا تلاش نمایید!", "error");
               if (response.status == 401) {
-                this.$cookies.set('userEntered', false);
-                this.$cookies.set('adminEntered', false);
+                this.$cookies.set("userEntered", false);
+                this.$cookies.set("adminEntered", false);
                 this.$router.push({ name: "SignupLogin" });
               }
             }
@@ -472,8 +450,8 @@ export default {
           .catch((err) => {
             this.$swal("مشکلی پیش آمد!", err.message, "error");
             if (err.response.status == 401) {
-              this.$cookies.set('userEntered', false);
-              this.$cookies.set('adminEntered', false);
+              this.$cookies.set("userEntered", false);
+              this.$cookies.set("adminEntered", false);
               this.$router.push({ name: "SignupLogin" });
             }
           });
@@ -660,46 +638,75 @@ export default {
   align-items: center;
   height: 100%;
 }
+.mainPart {
+  font-family: danaRegular !important;
+  width: 80%;
+  height: 94.2vh;
+  padding-top: 1%;
+  margin-top: 3.85%;
+  margin-left: 0px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f4f5f6;
+  border-top-right-radius: 60px;
+}
+.topTitle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 90%;
+  height: 50px;
+  background-color: white;
+  border-radius: 20px;
+  padding: 3%;
+}
 .btnContainer {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 8% 0 8%;
   width: 100%;
-  margin-top: 5%;
+  margin-top: 8%;
 }
 .submitBtn {
   font-weight: bold;
-  color: #f68100 !important;
-  width: 26%;
-}
-.submitBtn:hover {
-  border: none;
   color: white !important;
   background-color: #f68100;
-  font-weight: bold;
+  width: 43%;
+  border-radius: 12px;
 }
 .closeBtn {
   font-weight: bold;
-  color: #525355 !important;
-  width: 26%;
+  color: #c5c5c6 !important;
+  width: 43%;
   margin-right: 5%;
-}
-.closeBtn:hover {
-  border: none;
-  color: white !important;
-  background-color: #525355;
-  font-weight: bold;
+  border-radius: 12px;
 }
 
 .titlePart {
   display: flex;
-  margin-top: 10px;
+  margin-top: 3px;
   font-family: danaRegular !important;
 }
-.titlePart h2 {
+.titlePart h3 {
   margin-right: 10px;
-  color: #6d6e71;
+  color: #1b1c1c;
+  font-size: 22px;
+  font-weight: bold;
 }
 .titleShape {
-  border-left: 10px solid #6d6e71;
-  border-radius: 7px 0 0 7px;
+  border: 3px solid #ff9635;
+  border-radius: 7px;
+}
+.addChildBtn {
+  font-weight: bold;
+  width: 15%;
+  border-radius: 12px;
+}
+.addChildBtn:hover {
+  color: white !important;
+  background-color: #f68100;
+  border-radius: 12px;
 }
 .inputContainer {
   display: grid;
@@ -721,9 +728,21 @@ export default {
   max-height: 50px;
   padding-right: 10px;
   padding-left: 10px;
-  border-radius: 7px;
+  border-radius: 8px;
   border: 2px solid white;
-  box-shadow: 1px 0px 10px 0px #525355;
+  background-color: #f4f5f6;
+}
+.loginText {
+  text-align: right;
+  font-size: 20px;
+  color: #525355;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.datePickerClass {
+  min-height: 50px;
+  border-radius: 7px;
+  color: #525355;
 }
 </style>
 <style>
@@ -731,27 +750,23 @@ export default {
   font-family: danaRegular;
   src: url("./assets/fonts/Dana-Regular.ttf");
 }
+.v-application {
+  background-color: transparent !important;
+}
 .vpd-input-group {
   min-height: 50px;
 }
 .vpd-input-group label {
-  border-radius: 0px 7px 7px 0px;
-  background-color: #f68100 !important;
+  border-radius: 0px 8px 8px 0px;
+  background-color: #f4f5f6 !important;
 }
 .vpd-input-group input:not(.vpd-is-editable) {
-  border-radius: 7px 0px 0px 7px;
+  border-radius: 8px 0px 0px 8px;
+  background-color: #f4f5f6;
+  border: none !important;
 }
 .vpd-icon-btn {
   padding: 0 15px;
-}
-.v-field--variant-underlined .v-label.v-field-label,
-.v-field--variant-plain .v-label.v-field-label {
-  top: 20% !important;
-}
-.ltrClass > .v-field--variant-underlined .v-label.v-field-label,
-.v-field--variant-plain .v-label.v-field-label {
-  right: 0 !important;
-  margin-top: 2% !important;
 }
 .ltrClass {
   position: relative;
@@ -767,5 +782,20 @@ div:where(.swal2-container).swal2-center > .swal2-popup {
 }
 #childDate > .vpd-wrapper {
   margin-right: 20%;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.vpd-main *, .vpd-wrapper * {
+  color: #f68100 !important;
+}
+.v-text-field .v-field--no-label input,
+.v-text-field .v-field--active input {
+  margin-top: -8px;
+}
+.datePickerClass svg {
+  fill: #525355 !important;
 }
 </style>
